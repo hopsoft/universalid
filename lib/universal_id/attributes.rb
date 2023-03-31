@@ -32,6 +32,7 @@ module UniversalID
       end
     end
 
+    # TODO: support passing additional block list
     def initialize(attributes = {})
       attributes = self.class.deep_transform(attributes)
       merge! attributes.compact

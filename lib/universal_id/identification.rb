@@ -18,7 +18,7 @@ module UniversalID
       def new_from_attributes_signed_global_id(attributes_sgid, options = {})
         new SignedGlobalID.parse(attributes_sgid, DEFAULT_OPTIONS.merge(options)).find
       end
-      alias_method :new_from_attributes_suid, :new_from_attributes_signed_global_id
+      alias_method :new_from_attributes_sgid, :new_from_attributes_signed_global_id
     end
 
     def universal_attributes

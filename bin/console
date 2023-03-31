@@ -3,13 +3,29 @@
 
 require "bundler/setup"
 require "universalid"
+require_relative "../test/models/user"
+
+GlobalID.app = "console.univeralid"
+SignedGlobalID.app = "console.univeralid"
+SignedGlobalID.verifier = GlobalID::Verifier.new("console.univeralid")
+
+ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+ActiveRecord::Schema.define do
+  create_table :users do |t|
+    t.column :name, :string
+    t.column :email, :string
+    t.timestamps
+  end
+end
 
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
 
 # (If you use this, don't forget to add pry to your Gemfile!)
-# require "pry"
-# Pry.start
+require "pry-byebug"
+require "pry-doc"
+Pry.start
 
-require "irb"
-IRB.start(__FILE__)
+
+#require "irb"
+#IRB.start(__FILE__)
