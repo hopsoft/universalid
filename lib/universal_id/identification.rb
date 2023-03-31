@@ -1,42 +1,48 @@
 # frozen_string_literal: true
 
-class UniversalID
+module UniversalID
   module Identification
     extend ActiveSupport::Concern
 
     # TODO: consider making this a Rails engine and adding support for
     #       Rails.application.config.universalid.secret
     SECRET = ENV.fetch("SECRET_KEY_BASE", ENV.fetch("UNIVERSALID_SECRET", "8kTADoLseDfFuUV3"))
-    DEFAULT_OPTIONS = {app: "uid", verifier: GlobalID::Verifier.new(SECRET)}.freeze
+    DEFAULT_OPTIONS = {app: "attributes.universalid", verifier: GlobalID::Verifier.new(SECRET)}.freeze
 
     class_methods do
-      def new_from_universal_id(uid, options = {})
-        new GlobalID.parse(uid, DEFAULT_OPTIONS.merge(options)).find.attributes
+      def new_from_attributes_global_id(attributes_gid, options = {})
+        new GlobalID.parse(attributes_gid, DEFAULT_OPTIONS.merge(options)).find
       end
-      alias_method :new_from_uid, :new_from_universal_id
+      alias_method :new_from_attributes_gid, :new_from_attributes_global_id
 
-      def new_from_signed_universal_id(suid, options = {})
-        new SignedGlobalID.parse(suid, DEFAULT_OPTIONS.merge(options)).find.attributes
+      def new_from_attributes_signed_global_id(attributes_sgid, options = {})
+        new SignedGlobalID.parse(attributes_sgid, DEFAULT_OPTIONS.merge(options)).find
       end
-      alias_method :new_from_suid, :new_from_signed_universal_id
+      alias_method :new_from_attributes_suid, :new_from_attributes_signed_global_id
     end
 
-    def to_universal_id(options = {})
-      GlobalID.create UniversalID.new(attributes), DEFAULT_OPTIONS.merge(options)
-    end
-    alias_method :to_uid, :to_universal_id
-
-    def to_uid_param(options = {})
-      to_universal_id(options).to_param
+    def universal_attributes
+      UniversalID::Attributes.new attributes
     end
 
-    def to_signed_universal_id(options = {})
-      SignedGlobalID.create UniversalID.new(attributes), DEFAULT_OPTIONS.merge(options)
+    def to_attributes_global_id(options = {})
+      GlobalID.create universal_attributes, DEFAULT_OPTIONS.merge(options)
     end
-    alias_method :to_suid, :to_signed_universal_id
+    alias_method :to_attributes_gid, :to_attributes_global_id
 
-    def to_suid_param(options = {})
-      to_signed_global_id(options).to_param
+    def to_attributes_global_id_param(options = {})
+      to_attributes_gid(options).to_param
     end
+    alias_method :to_attributes_gid_param, :to_attributes_global_id_param
+
+    def to_attributes_signed_global_id(options = {})
+      SignedGlobalID.create universal_attributes, DEFAULT_OPTIONS.merge(options)
+    end
+    alias_method :to_attributes_sgid, :to_attributes_signed_global_id
+
+    def to_attributes_signed_global_id_param(options = {})
+      to_attributes_sgid(options).to_param
+    end
+    alias_method :to_attributes_sgid_param, :to_attributes_signed_global_id_param
   end
 end

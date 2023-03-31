@@ -98,7 +98,6 @@ GEM
       refinements (~> 10.0)
       xdg (~> 7.0)
       zeitwerk (~> 2.6)
-    sequel (5.66.0)
     spek (1.0.2)
       dry-monads (~> 1.6)
       refinements (~> 10.0)
@@ -142,7 +141,6 @@ DEPENDENCIES
   pry-byebug
   pry-doc
   rake
-  sequel
   sqlite3
   standard
   tocer
