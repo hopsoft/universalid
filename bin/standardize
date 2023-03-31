@@ -1,0 +1,4 @@
+#!/bin/bash
+
+bundle exec magic_frozen_string_literal
+bundle exec standardrb --fix
