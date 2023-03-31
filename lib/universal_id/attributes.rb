@@ -12,12 +12,14 @@ module UniversalID
 
     class << self
       def find(id)
-        new JSON.parse(Base64.decode64(id))
+        compressed_json = Base64.urlsafe_decode64(id)
+        JSON.parse Zlib::Inflate.inflate(compressed_json)
       end
 
       def deep_transform(hash = {})
         hash.each_with_object({}) do |(key, value), memo|
-          memo[key.to_s] = BLOCK_LIST[key] ? nil : transform(value)
+          key = key.to_s
+          memo[key] = BLOCK_LIST[key] ? nil : transform(value)
         end
       end
 
@@ -39,7 +41,8 @@ module UniversalID
     end
 
     def id
-      Base64.encode64 to_json
+      compressed_json = Zlib::Deflate.deflate(to_json, Zlib::BEST_COMPRESSION)
+      Base64.urlsafe_encode64 compressed_json, padding: false
     end
   end
 end

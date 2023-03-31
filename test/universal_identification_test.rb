@@ -3,7 +3,7 @@
 require_relative "test_helper"
 require_relative "models/user"
 
-class UniversalIDTest < ActiveSupport::TestCase
+class UniversalIdentificationTest < ActiveSupport::TestCase
   setup do
     GlobalID.app = "test"
     SignedGlobalID.app = "test"
@@ -52,20 +52,20 @@ class UniversalIDTest < ActiveSupport::TestCase
     assert_equal({"name" => "Test Example"}, user.universal_attributes)
   end
 
-  def test_attributes_global_id_default_app
+  def test_universal_attributes_global_id_default_app
     user = User.create!(name: "Test Example")
-    attributes_gid = user.to_universal_attributes_gid
-    assert_equal "attributes.universalid", attributes_gid.app
+    ugid = user.to_ugid
+    assert_equal "attributes.universalid", ugid.app
   end
 
-  def test_attributes_global_id_with_nils
+  def test_universal_attributes_global_id_with_nils
     user = User.create!(name: "Test Example")
-    attributes_gid = user.to_universal_attributes_gid
-    attributes_gid_param = user.to_universal_attributes_gid_param
-    new_user_1 = User.new_from_universal_attributes_gid(attributes_gid)
-    new_user_2 = User.new_from_universal_attributes_gid(attributes_gid_param)
-    assert_equal "Z2lkOi8vYXR0cmlidXRlcy51bml2ZXJzYWxpZC9Vbml2ZXJzYWxJRDo6QXR0cmlidXRlcy9leUp1WVcxbElqb2lWR1Z6ZENCRmVHRnRjR3hsSW4wJTNEJTBB", attributes_gid_param
-    assert_equal({"name" => "Test Example"}, attributes_gid.find)
+    ugid = user.to_ugid
+    ugid_param = user.to_ugid_param
+    new_user_1 = User.new_from_ugid(ugid)
+    new_user_2 = User.new_from_ugid(ugid_param)
+    assert_equal "Z2lkOi8vYXR0cmlidXRlcy51bml2ZXJzYWxpZC9Vbml2ZXJzYWxJRDo6QXR0cmlidXRlcy9lTnFyVnNwTHpFMVZzbElLU1MwdVVYQ3RTTXd0eUVsVnFnVUFYRVlINkE", ugid_param
+    assert_equal({"name" => "Test Example"}, ugid.find)
     refute_equal user, new_user_1
     refute_equal user, new_user_2
     refute_equal new_user_1, new_user_2
@@ -76,14 +76,14 @@ class UniversalIDTest < ActiveSupport::TestCase
     refute new_user_2.persisted?
   end
 
-  def test_attributes_global_id
+  def test_universal_attributes_global_id
     user = User.create!(name: "Test Example", email: "test@example.com")
-    attributes_gid = user.to_universal_attributes_gid
-    attributes_gid_param = user.to_universal_attributes_gid_param
-    new_user_1 = User.new_from_universal_attributes_gid(attributes_gid)
-    new_user_2 = User.new_from_universal_attributes_gid(attributes_gid_param)
-    assert_equal "Z2lkOi8vYXR0cmlidXRlcy51bml2ZXJzYWxpZC9Vbml2ZXJzYWxJRDo6QXR0cmlidXRlcy9leUp1WVcxbElqb2lWR1Z6ZENCRmVHRnRjR3hsSWl3aVpXMWhhV3dpT2lKMFpYTjBRR1Y0WVcxd2JHVXUlMEFZMjl0SW4wJTNEJTBB", attributes_gid_param
-    assert_equal({"name" => "Test Example", "email" => "test@example.com"}, attributes_gid.find)
+    ugid = user.to_ugid
+    ugid_param = user.to_ugid_param
+    new_user_1 = User.new_from_universal_attributes_gid(ugid)
+    new_user_2 = User.new_from_universal_attributes_gid(ugid_param)
+    assert_equal "Z2lkOi8vYXR0cmlidXRlcy51bml2ZXJzYWxpZC9Vbml2ZXJzYWxJRDo6QXR0cmlidXRlcy9lTnFyVnNwTHpFMVZzbElLU1MwdVVYQ3RTTXd0eUVsVjBsRkt6VTNNekFFS2x3Q0ZIVklod25ySi1ibEt0UUNyZGhFMw", ugid_param
+    assert_equal({"name" => "Test Example", "email" => "test@example.com"}, ugid.find)
     refute_equal user, new_user_1
     refute_equal user, new_user_2
     refute_equal new_user_1, new_user_2
@@ -94,14 +94,14 @@ class UniversalIDTest < ActiveSupport::TestCase
     refute new_user_2.persisted?
   end
 
-  def test_universal_id
+  def test_universal_attributes_signed_global_id
     user = User.create!(name: "Test Example", email: "test@example.com")
-    attributes_sgid = user.to_universal_attributes_sgid
-    attributes_sgid_param = user.to_universal_attributes_sgid_param
-    new_user_1 = User.new_from_universal_attributes_sgid(attributes_sgid)
-    new_user_2 = User.new_from_universal_attributes_sgid(attributes_sgid_param)
-    assert_equal "BAh7CEkiCGdpZAY6BkVUSSIBgWdpZDovL2F0dHJpYnV0ZXMudW5pdmVyc2FsaWQvVW5pdmVyc2FsSUQ6OkF0dHJpYnV0ZXMvZXlKdVlXMWxJam9pVkdWemRDQkZlR0Z0Y0d4bElpd2laVzFoYVd3aU9pSjBaWE4wUUdWNFlXMXdiR1V1JTBBWTI5dEluMCUzRCUwQQY7AFRJIgxwdXJwb3NlBjsAVEkiDGRlZmF1bHQGOwBUSSIPZXhwaXJlc19hdAY7AFQw--9a565f642f442703689b49224d242563e409ddd0", attributes_sgid_param
-    assert_equal({"name" => "Test Example", "email" => "test@example.com"}, attributes_sgid.find)
+    usgid = user.to_usgid
+    usgid_param = user.to_usgid_param
+    new_user_1 = User.new_from_universal_attributes_sgid(usgid)
+    new_user_2 = User.new_from_universal_attributes_sgid(usgid_param)
+    assert_equal "BAh7CEkiCGdpZAY6BkVUSSJ-Z2lkOi8vYXR0cmlidXRlcy51bml2ZXJzYWxpZC9Vbml2ZXJzYWxJRDo6QXR0cmlidXRlcy9lTnFyVnNwTHpFMVZzbElLU1MwdVVYQ3RTTXd0eUVsVjBsRkt6VTNNekFFS2x3Q0ZIVklod25ySi1ibEt0UUNyZGhFMwY7AFRJIgxwdXJwb3NlBjsAVEkiDGRlZmF1bHQGOwBUSSIPZXhwaXJlc19hdAY7AFQw--a838a876108304673f35dba2d29f39dd28e9c41c", usgid_param
+    assert_equal({"name" => "Test Example", "email" => "test@example.com"}, usgid.find)
     refute_equal user, new_user_1
     refute_equal user, new_user_2
     refute_equal new_user_1, new_user_2
