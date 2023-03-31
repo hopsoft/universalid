@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "base64"
+require "zlib"
 require "active_record"
 require "active_support/all"
 require "globalid"
