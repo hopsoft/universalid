@@ -17,7 +17,10 @@ class UniversalAttributesTest < ActiveSupport::TestCase
     gid = @universal_attributes.to_gid(@gid_options)
     assert_equal "gid://test-gid/UniversalID::Attributes/eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVWqBQCv9wru", gid.to_s
     assert_equal "Z2lkOi8vdGVzdC1naWQvVW5pdmVyc2FsSUQ6OkF0dHJpYnV0ZXMvZU5xclZpcEpMUzVSc2lvcEtrM1ZVVXF0U013dHlFbFZzbElxUzh3cFRWV3FCUUN2OXdydQ", gid.to_param
-    assert_equal({"test" => true, "example" => "value"}, gid.find)
+    expected = {"test" => true, "example" => "value"}
+    assert_equal expected, gid.find
+    assert_equal gid, GlobalID.parse(gid.to_s, @gid_options)
+    assert_equal gid, GlobalID.parse(gid.to_param, @gid_options)
   end
 
   def test_to_sgid_app
@@ -29,6 +32,8 @@ class UniversalAttributesTest < ActiveSupport::TestCase
     expected = "BAh7CEkiCGdpZAY6BkVUSSJgZ2lkOi8vdGVzdC1naWQvVW5pdmVyc2FsSUQ6OkF0dHJpYnV0ZXMvZU5xclZpcEpMUzVSc2lvcEtrM1ZVVXF0U013dHlFbFZzbElxUzh3cFRWV3FCUUN2OXdydQY7AFRJIgxwdXJwb3NlBjsAVEkiDGRlZmF1bHQGOwBUSSIPZXhwaXJlc19hdAY7AFQw--dd496edc94ad3bf7f9604db57bbdeaf91f563d5f"
     assert_equal expected, sgid.to_s
     assert_equal expected, sgid.to_param
-    assert_equal({"test" => true, "example" => "value"}, sgid.find)
+    expected = {"test" => true, "example" => "value"}
+    assert_equal expected, sgid.find
+    assert_equal sgid, SignedGlobalID.parse(sgid.to_param, @gid_options)
   end
 end
