@@ -9,4 +9,10 @@ require "faker"
 require "minitest/reporters"
 Minitest::Reporters.use!
 
+require "globalid"
+GlobalID.app = "test.universalid"
+SignedGlobalID.app = "test.universalid"
+SignedGlobalID.verifier = GlobalID::Verifier.new("test.universalid")
+
 require_relative "../lib/universalid"
+require_relative "./database"

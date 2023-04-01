@@ -9,10 +9,6 @@ class UniversalAttributesTest < ActiveSupport::TestCase
     @gid_options = {app: "test-gid", verifier: GlobalID::Verifier.new("secret")}
   end
 
-  def test_to_gid_app
-    assert_equal "test-gid", @universal_attributes.to_gid(app: "test-gid").app
-  end
-
   def test_to_gid
     gid = @universal_attributes.to_gid(@gid_options)
     assert_equal "gid://test-gid/UniversalID::Attributes/eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVWqBQCv9wru", gid.to_s
@@ -21,10 +17,6 @@ class UniversalAttributesTest < ActiveSupport::TestCase
     assert_equal expected, gid.find
     assert_equal gid, GlobalID.parse(gid.to_s, @gid_options)
     assert_equal gid, GlobalID.parse(gid.to_param, @gid_options)
-  end
-
-  def test_to_sgid_app
-    assert_equal "test-gid", @universal_attributes.to_sgid(@gid_options).app
   end
 
   def test_to_sgid

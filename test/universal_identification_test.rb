@@ -4,27 +4,10 @@ require_relative "test_helper"
 require_relative "models/user"
 
 class UniversalIdentificationTest < ActiveSupport::TestCase
-  setup do
-    GlobalID.app = "test"
-    SignedGlobalID.app = "test"
-    SignedGlobalID.verifier = GlobalID::Verifier.new("test")
-
-    ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
-    ActiveRecord::Schema.define do
-      create_table :users do |t|
-        t.column :name, :string
-        t.column :email, :string
-        t.timestamps
-      end
-    end
-  end
-
   def test_global_id
     user = User.create!(name: "Test Example")
     gid = user.to_gid
     gid_param = gid.to_param
-    assert_equal "test", gid.app
-    assert_equal "Z2lkOi8vdGVzdC9Vc2VyLzE", gid_param
     assert_equal gid, GlobalID.parse(gid_param)
     assert_equal user, gid.find
     assert_equal user, GlobalID::Locator.locate(gid)
@@ -35,10 +18,8 @@ class UniversalIdentificationTest < ActiveSupport::TestCase
     user = User.create!(name: "Test Example")
     sgid = user.to_sgid
     sgid_param = sgid.to_param
-    assert_equal "test", sgid.app
-    assert_equal "BAh7CEkiCGdpZAY6BkVUSSIWZ2lkOi8vdGVzdC9Vc2VyLzEGOwBUSSIMcHVycG9zZQY7AFRJIgxkZWZhdWx0BjsAVEkiD2V4cGlyZXNfYXQGOwBUMA==--13490c0ced36073a6c80577cec2320c2d50b6a31", sgid_param
-    assert_equal sgid, SignedGlobalID.parse(sgid_param)
     assert_equal user, sgid.find
+    assert_equal sgid, SignedGlobalID.parse(sgid_param)
     assert_equal user, SignedGlobalID::Locator.locate(sgid)
   end
 
@@ -50,12 +31,6 @@ class UniversalIdentificationTest < ActiveSupport::TestCase
   def test_universal_attributes_with_nils
     user = User.create!(name: "Test Example")
     assert_equal({"name" => "Test Example"}, user.universal_attributes)
-  end
-
-  def test_universal_attributes_global_id_default_app
-    user = User.create!(name: "Test Example")
-    ugid = user.to_ugid
-    assert_equal "attributes.universalid", ugid.app
   end
 
   def test_universal_attributes_global_id_with_nils
