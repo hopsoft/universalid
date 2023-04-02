@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "test_helper"
-require_relative "models/user"
+require_relative "../test_helper"
 
-class UniversalIdentificationTest < ActiveSupport::TestCase
+class UniversalID::IdentificationTest < ActiveSupport::TestCase
   def test_global_id
     User.uncommitted do
       user = User.create!(name: "Test GID")
@@ -37,30 +36,44 @@ class UniversalIdentificationTest < ActiveSupport::TestCase
     end
   end
 
-  def test_universal_attributes
+  def test_invalid_ugid
+    invalid_ugid = SecureRandom.hex
+    user = User.new_from_ugid(invalid_ugid)
+    refute user.valid?
+    assert user.errors[:base].find { |e| e.include? "UniversalID GlobalID not found!" }
+  end
+
+  def test_invalid_usgid
+    invalid_usgid = SecureRandom.hex
+    user = User.new_from_usgid(invalid_usgid)
+    refute user.valid?
+    assert user.errors[:base].find { |e| e.include? "UniversalID SignedGlobalID not found!" }
+  end
+
+  def test_universalid_hash
     User.uncommitted do
-      user = User.create!(name: "Universal Attributes", email: "universal@attributes.com")
-      expected = {"name" => "Universal Attributes", "email" => "universal@attributes.com"}
-      assert_equal expected, user.universal_attributes
+      user = User.create!(name: "Universal ID Hash", email: "universalid@hash.com")
+      expected = {"name" => "Universal ID Hash", "email" => "universalid@hash.com"}
+      assert_equal expected, user.universalid_hash
     end
   end
 
-  def test_universal_attributes_with_nils
+  def test_universalid_hash_with_nils
     User.uncommitted do
-      user = User.create!(name: "Universal Attributes Nils")
-      expected = {"name" => "Universal Attributes Nils"}
-      assert_equal expected, user.universal_attributes
+      user = User.create!(name: "Universal ID Hash Nils")
+      expected = {"name" => "Universal ID Hash Nils"}
+      assert_equal expected, user.universalid_hash
     end
   end
 
-  def test_universal_attributes_global_id_with_nils
+  def test_universalid_hash_global_id_with_nils
     User.uncommitted do
       user = User.create!(name: "Test UGID Nils")
       ugid = user.to_ugid
 
       expected = {
-        uri: "gid://attributes.universalid/UniversalID::Attributes/eNqrVspLzE1VslIKSS0uUQh193RR8MvMKVaqBQBntwf7",
-        param: "Z2lkOi8vYXR0cmlidXRlcy51bml2ZXJzYWxpZC9Vbml2ZXJzYWxJRDo6QXR0cmlidXRlcy9lTnFyVnNwTHpFMVZzbElLU1MwdVVRaDE5M1JSOE12TUtWYXFCUUJudHdmNw",
+        uri: "gid://UniversalID/UniversalID::Hash/eNqrVspLzE1VslIKSS0uUQh193RR8MvMKVaqBQBntwf7",
+        param: "Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6Okhhc2gvZU5xclZzcEx6RTFWc2xJS1NTMHVVUWgxOTNSUjhNdk1LVmFxQlFCbnR3Zjc",
         hash: {"name" => "Test UGID Nils"}
       }
 
@@ -85,14 +98,14 @@ class UniversalIdentificationTest < ActiveSupport::TestCase
     end
   end
 
-  def test_universal_attributes_global_id
+  def test_universalid_hash_global_id
     User.uncommitted do
       user = User.create!(name: "Test UGID", email: "test@example.com")
       ugid = user.to_ugid
 
       expected = {
-        uri: "gid://attributes.universalid/UniversalID::Attributes/eNqrVspLzE1VslIKSS0uUQh193RR0lFKzU3MzAGKlQDFHFIrEnMLclL1kvNzlWoBZq4PlA",
-        param: "Z2lkOi8vYXR0cmlidXRlcy51bml2ZXJzYWxpZC9Vbml2ZXJzYWxJRDo6QXR0cmlidXRlcy9lTnFyVnNwTHpFMVZzbElLU1MwdVVRaDE5M1JSMGxGS3pVM016QUdLbFFERkhGSXJFbk1MY2xMMWt2TnpsV29CWnE0UGxB",
+        uri: "gid://UniversalID/UniversalID::Hash/eNqrVspLzE1VslIKSS0uUQh193RR0lFKzU3MzAGKlQDFHFIrEnMLclL1kvNzlWoBZq4PlA",
+        param: "Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6Okhhc2gvZU5xclZzcEx6RTFWc2xJS1NTMHVVUWgxOTNSUjBsRkt6VTNNekFHS2xRREZIRklyRW5NTGNsTDFrdk56bFdvQlpxNFBsQQ",
         hash: {"name" => "Test UGID", "email" => "test@example.com"}
       }
 
@@ -117,13 +130,13 @@ class UniversalIdentificationTest < ActiveSupport::TestCase
     end
   end
 
-  def test_universal_attributes_signed_global_id
+  def test_universalid_hash_signed_global_id
     User.uncommitted do
       user = User.create!(name: "Test USGID", email: "test@example.com")
       usgid = user.to_usgid
 
       expected = {
-        param: "BAh7CEkiCGdpZAY6BkVUSSIBfGdpZDovL2F0dHJpYnV0ZXMudW5pdmVyc2FsaWQvVW5pdmVyc2FsSUQ6OkF0dHJpYnV0ZXMvZU5xclZzcEx6RTFWc2xJS1NTMHVVUWdOZHZkMFVkSlJTczFOek13QkNwWUFCUjFTS3hKekMzSlM5Wkx6YzVWcUFYWXpELWMGOwBUSSIMcHVycG9zZQY7AFRJIgxkZWZhdWx0BjsAVEkiD2V4cGlyZXNfYXQGOwBUMA==--c254555cb9d612bd6d2eaa4c3af4b4df3ee7a3d6",
+        param: "BAh7CEkiCGdpZAY6BkVUSSJ7Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6Okhhc2gvZU5xclZzcEx6RTFWc2xJS1NTMHVVUWdOZHZkMFVkSlJTczFOek13QkNwWUFCUjFTS3hKekMzSlM5Wkx6YzVWcUFYWXpELWM_ZXhwaXJlc19pbgY7AFRJIgxwdXJwb3NlBjsAVEkiDGRlZmF1bHQGOwBUSSIPZXhwaXJlc19hdAY7AFQw--d3bb3988178da544a2291262d3be20cae7521598",
         hash: {"name" => "Test USGID", "email" => "test@example.com"}
       }
 
