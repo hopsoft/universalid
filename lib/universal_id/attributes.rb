@@ -4,26 +4,25 @@ module UniversalID
   class Attributes < Hash
     include GlobalID::Identification
 
-    DEFAULT_OPTIONS = {
-      allow_blank: false,
-      block_list: {
-        id: true,
-        created_at: true,
-        updated_at: true
-      }.with_indifferent_access.freeze
-    }.with_indifferent_access.freeze
-
     class << self
+      def config
+        UniversalID.config.attributes
+      end
+
       def find(id)
         compressed_json = Base64.urlsafe_decode64(id)
         JSON.parse Zlib::Inflate.inflate(compressed_json)
+      rescue => error
+        raise UniversalID::LocatorError.new(id, error)
       end
 
       def deep_transform(hash = {})
-        block_list = DEFAULT_OPTIONS[:block_list]
+        allow_list = config[:allow_list]
+        block_list = config[:block_list]
         hash.each_with_object({}) do |(key, value), memo|
           key = key.to_s
-          next if block_list[key]
+          next if allow_list&.none?(key)
+          next if block_list&.any?(key)
           transform(value) { |val| memo[key] = val }
         end
       end
@@ -37,7 +36,7 @@ module UniversalID
         else value
         end
 
-        yield value if value.present? || DEFAULT_OPTIONS[:allow_blank]
+        yield value if value.present? || config[:allow_blank]
         value
       end
     end

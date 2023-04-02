@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "test_helper"
+require_relative "../test_helper"
 
-class UniversalAttributesTest < ActiveSupport::TestCase
+class UniversalID::AttributesTest < ActiveSupport::TestCase
   setup do
     @attributes = UniversalID::Attributes.new(
       id: 1,
@@ -19,6 +19,19 @@ class UniversalAttributesTest < ActiveSupport::TestCase
     }.freeze
 
     @sgid_options = @gid_options.merge(expires_in: nil).freeze
+  end
+
+  def test_find_invalid_id
+    invalid_id = SecureRandom.hex
+
+    error = assert_raises(UniversalID::LocatorError) do
+      UniversalID::Attributes.find invalid_id
+    end
+
+    assert error.message.include?("Failed to locate the id")
+    assert error.message.include?(invalid_id)
+    assert_equal invalid_id, error.id
+    assert error.cause
   end
 
   def test_to_gid
