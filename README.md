@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">UniversalID 🌌</h1>
+  <h1 align="center">Universal ID 🌌</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
       <img alt="Lines of Code" src="https://img.shields.io/badge/loc-166-47d299.svg" />
