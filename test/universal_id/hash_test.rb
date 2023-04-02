@@ -2,9 +2,9 @@
 
 require_relative "../test_helper"
 
-class UniversalID::AttributesTest < ActiveSupport::TestCase
+class UniversalID::HashTest < ActiveSupport::TestCase
   setup do
-    @attributes = UniversalID::Attributes.new(
+    @hash = UniversalID::Hash.new(
       id: 1,
       test: true,
       example: "value",
@@ -25,7 +25,7 @@ class UniversalID::AttributesTest < ActiveSupport::TestCase
     invalid_id = SecureRandom.hex
 
     error = assert_raises(UniversalID::LocatorError) do
-      UniversalID::Attributes.find invalid_id
+      UniversalID::Hash.find invalid_id
     end
 
     assert error.message.include?("Failed to locate the id")
@@ -35,11 +35,11 @@ class UniversalID::AttributesTest < ActiveSupport::TestCase
   end
 
   def test_to_gid
-    gid = @attributes.to_gid(@gid_options)
+    gid = @hash.to_gid(@gid_options)
 
     expected = {
-      uri: "gid://test-gid/UniversalID::Attributes/eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVWqBQCv9wru",
-      param: "Z2lkOi8vdGVzdC1naWQvVW5pdmVyc2FsSUQ6OkF0dHJpYnV0ZXMvZU5xclZpcEpMUzVSc2lvcEtrM1ZVVXF0U013dHlFbFZzbElxUzh3cFRWV3FCUUN2OXdydQ",
+      uri: "gid://test-gid/UniversalID::Hash/eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVWqBQCv9wru",
+      param: "Z2lkOi8vdGVzdC1naWQvVW5pdmVyc2FsSUQ6Okhhc2gvZU5xclZpcEpMUzVSc2lvcEtrM1ZVVXF0U013dHlFbFZzbElxUzh3cFRWV3FCUUN2OXdydQ",
       hash: {"test" => true, "example" => "value"}
     }
 
@@ -51,10 +51,10 @@ class UniversalID::AttributesTest < ActiveSupport::TestCase
   end
 
   def test_to_sgid
-    sgid = @attributes.to_sgid(@sgid_options)
+    sgid = @hash.to_sgid(@sgid_options)
 
     expected = {
-      param: "BAh7CEkiCGdpZAY6BkVUSSJrZ2lkOi8vdGVzdC1naWQvVW5pdmVyc2FsSUQ6OkF0dHJpYnV0ZXMvZU5xclZpcEpMUzVSc2lvcEtrM1ZVVXF0U013dHlFbFZzbElxUzh3cFRWV3FCUUN2OXdydT9leHBpcmVzX2luBjsAVEkiDHB1cnBvc2UGOwBUSSIMZGVmYXVsdAY7AFRJIg9leHBpcmVzX2F0BjsAVDA=--6f7e21af378017145212cc958a8519beef281761",
+      param: "BAh7CEkiCGdpZAY6BkVUSSJlZ2lkOi8vdGVzdC1naWQvVW5pdmVyc2FsSUQ6Okhhc2gvZU5xclZpcEpMUzVSc2lvcEtrM1ZVVXF0U013dHlFbFZzbElxUzh3cFRWV3FCUUN2OXdydT9leHBpcmVzX2luBjsAVEkiDHB1cnBvc2UGOwBUSSIMZGVmYXVsdAY7AFRJIg9leHBpcmVzX2F0BjsAVDA=--0f1b67e81f1d4928a01b03f6d6d1a347397ab843",
       hash: {"test" => true, "example" => "value"}
     }
 
