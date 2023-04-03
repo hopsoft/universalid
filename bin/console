@@ -25,7 +25,8 @@ binding.pry
 
 # Step 1. Capture basic campaign info
 campaign = Campaign.new(name: "Example Campaign", description: "Example Description")
-attrs =  campaign.to_h_with_gid
+attributes = campaign.as_json
+attrs = UniversalID::HashWithGID.new(**attributes)
 id = attrs.id
 uri = attrs.to_gid.to_s
 param = attrs.to_gid_param
@@ -115,15 +116,16 @@ binding.pry
 
 # 2. Reconstruct the shared template .........................................................................
 parsed_gid = GlobalID.parse(param)
-parsed_sgid = SignedGlobalID.parse(signed_param, for: "Promotion 123")
+parsed_sgid = SignedGlobalID.parse(signed_param, for: "v1.1")
 attrs = parsed_gid.find # this is the shared/sold "template"
 signed_attrs = parsed_sgid.find # this is the shared/sold "template"
 copy = Campaign.new(attrs)
 signed_copy = Campaign.new(signed_attrs)
 
 binding.pry
+binding.pry
 
 #require "irb"
 #IRB.start(__FILE__)
 
-#Pry.start # TODO: NATE: uncomment
+Pry.start

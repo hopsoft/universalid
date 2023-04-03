@@ -46,3 +46,35 @@
 </p>
 
 TODO: write docs...
+
+## Why?
+
+### GlobalID
+
+- Standardized marshaling vs bespoke solutions
+- Simplified implementations (templating on top of existing data model or object structure)
+- Enables meta-programmed generic solutions
+- Fully Encapsulated portability across process boundaries and even disparate systems
+- Simplifies concerns like where to persist partial ephemeral data (database, redis, cache, cookie, session, etc..)
+- Eliminates the need to rollback any persisted partial ephemeral data when workflow is abandoned
+
+### SignedGlobalID
+
+- Enhanced Security (prevent MITM attacks etc.)
+- Scoped to optional purpose (i.e. `for`)
+- Versioning via purpose
+- Scarcity via optional expiration
+- Easy to productize and sell
+
+## Performance
+
+NOTE: Performance should be contrasted with alternative approaches like saving saving to cache, database, etc.
+
+```
+# Simple Campaign with 3 associated Email records (nested attributes)
+                                              user     system      total        real
+Marshal to SignedGlobalID                    0.000282   0.000025   0.000307 (  0.000306)
+Marshal from SignedGlobalID                  0.000690   0.000213   0.000903 (  0.001048)
+Marshal to SignedGlobalID (1k iterations)    0.091259   0.000654   0.091913 (  0.092025)
+Marshal from SignedGlobalID (1k iterations)  0.028291   0.000670   0.028961 (  0.028985)
+```
