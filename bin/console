@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
+require "awesome_print"
 require "pry-byebug"
 require "pry-doc"
 
@@ -11,26 +12,88 @@ SignedGlobalID.app = "UniversalID"
 SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
 
 require "universalid"
-require_relative "../test/database"
+require_relative "../test/models"
 
-# ............................................................................................................
-# DATA SEEDS
-# ............................................................................................................
-@campaign = Campaign.create!(name: "Example Campaign", description: "Example Description", trigger: "Sign Up", wait: 1.day)
-welcome_email = Email.create!(campaign: @campaign, subject: "First Email", body: "Welcome")
-followup_email = Email.create!(campaign: @campaign, previous_email: welcome_email, subject: "Second Email", body: "Follow Up")
-upsell_email = Email.create!(campaign: @campaign, previous_email: followup_email, subject: "Third Email", body: "Upsell")
-
-# ............................................................................................................
-# EXPERIMENTS
-#
 # TODO: Do we even need the UniversalID::Identification extension for ActiveRecord?
 #       Can we simplify serialization? Should we simplify?
+
+# ............................................................................................................
+# Multi-Step Form Demo (HTTP)
 # ............................................................................................................
 
-# Creae a Hash representation of the data that can/should be shared ..........................................
-# i.e. What comprises a template?
-@attributes = @campaign.as_json(
+binding.pry
+
+# Step 1. Capture basic campaign info
+campaign = Campaign.new(name: "Example Campaign", description: "Example Description")
+attrs =  campaign.to_h_with_gid
+id = attrs.id
+uri = attrs.to_gid.to_s
+param = attrs.to_gid_param
+
+binding.pry
+
+# Step 2. Capture first email
+attrs = GlobalID.parse(param).find
+campaign = Campaign.new(attrs)
+campaign.emails << campaign.emails.build(subject: "First Email", body: "Welcome", wait: 1.day)
+attributes = campaign.as_json(include: :emails).tap { |h| h["emails_attributes"] = h.delete("emails") }
+attrs = UniversalID::HashWithGID.new(**attributes)
+id = attrs.id
+uri = attrs.to_gid.to_s
+param = attrs.to_gid_param
+
+binding.pry
+
+# Step 3. Capture second email
+attrs = GlobalID.parse(param).find
+campaign = Campaign.new(attrs)
+campaign.emails << campaign.emails.build(subject: "Second Email", body: "Follow Up", wait: 1.week)
+attributes = campaign.as_json(include: :emails).tap { |h| h["emails_attributes"] = h.delete("emails") }
+attrs = UniversalID::HashWithGID.new(**attributes)
+id = attrs.id
+uri = attrs.to_gid.to_s
+param = attrs.to_gid_param
+
+binding.pry
+
+# Step 4. Capture third email
+attrs = GlobalID.parse(param).find
+campaign = Campaign.new(attrs)
+campaign.emails << campaign.emails.build(subject: "Third Email", body: "Hard Sell", wait: 2.days)
+attributes = campaign.as_json(include: :emails).tap { |h| h["emails_attributes"] = h.delete("emails") }
+attrs = UniversalID::HashWithGID.new(**attributes)
+id = attrs.id
+uri = attrs.to_gid.to_s
+param = attrs.to_gid_param
+
+binding.pry
+
+# Step 5. Set campaign trigger etc.
+attrs = GlobalID.parse(param).find
+campaign = Campaign.new(attrs)
+campaign.assign_attributes trigger: "Sign Up"
+attributes = campaign.as_json(include: :emails).tap { |h| h["emails_attributes"] = h.delete("emails") }
+attrs = UniversalID::HashWithGID.new(**attributes)
+id = attrs.id
+uri = attrs.to_gid.to_s
+param = attrs.to_gid_param
+
+# Step 6. Review and save
+binding.pry
+attrs = GlobalID.parse(param).find
+campaign = Campaign.new(attrs)
+campaign.save!
+
+binding.pry
+
+# ............................................................................................................
+# Sharing a persisted campaign as a template
+# ............................................................................................................
+
+binding.pry
+
+# 1. Creae a Hash representation of the data that can/should be shared .......................................
+attributes = campaign.as_json(
   except: [:id, :created_at, :updated_at],
   include: {
     emails: {
@@ -38,24 +101,28 @@ upsell_email = Email.create!(campaign: @campaign, previous_email: followup_email
     }
   }
 )
-@attributes["emails_attributes"] = @attributes.delete("emails")
-@attributes_with_gid = UniversalID::HashWithGID.new(**@attributes)
+attributes["emails_attributes"] = attributes.delete("emails")
+attrs = UniversalID::HashWithGID.new(**attributes) # this is our sharable "template"
+id = attrs.id
+gid = attrs.to_gid
+sgid = attrs.to_sgid(for: "Promotion 123", expires_in: 30.seconds) # limited time offer (i.e. scarcity is built-in)
+uri = gid.to_s
+param = gid.to_param
+signed_param = sgid.to_param
 
-# Think of these Global IDs as portable templates ............................................................
-@gid = @attributes_with_gid.to_gid
-@sgid = @attributes_with_gid.to_sgid(for: "Promotion 123", expires_in: 30.seconds)
+binding.pry
 
-# URIs and/or params that are easy to share ..................................................................
-@gid_uri = @gid.to_s
-@gid_param = @gid.to_param
-@sgid_param = @sgid.to_param
+# 2. Reconstruct the shared template .........................................................................
+parsed_gid = GlobalID.parse(param)
+parsed_sgid = SignedGlobalID.parse(signed_param, for: "Promotion 123")
+attrs = parsed_gid.find # this is the shared/sold "template"
+signed_attrs = parsed_sgid.find # this is the shared/sold "template"
+copy = Campaign.new(attrs)
+signed_copy = Campaign.new(signed_attrs)
 
-# Reconstructed from the shared template .....................................................................
-@parsed_sgid = SignedGlobalID.parse(@sgid_param, for: "Promotion 123")
-@found_sgid = @parsed_sgid.find
-@copy = Campaign.new(@found_sgid)
+binding.pry
 
 #require "irb"
 #IRB.start(__FILE__)
 
-Pry.start
+#Pry.start # TODO: NATE: uncomment

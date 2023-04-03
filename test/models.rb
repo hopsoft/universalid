@@ -13,7 +13,6 @@ ActiveRecord::Schema.define do
     t.column :name, :string
     t.column :description, :string
     t.column :trigger, :string
-    t.column :wait, :integer
     t.timestamps
   end
 
@@ -22,6 +21,7 @@ ActiveRecord::Schema.define do
     t.column :previous_email_id, :integer
     t.column :subject, :string
     t.column :body, :text
+    t.column :wait, :integer
     t.timestamps
   end
 end
