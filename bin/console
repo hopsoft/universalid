@@ -116,13 +116,16 @@ binding.pry
 
 # 2. Reconstruct the shared template .........................................................................
 parsed_gid = GlobalID.parse(param)
-parsed_sgid = SignedGlobalID.parse(signed_param, for: "v1.1")
+parsed_sgid = SignedGlobalID.parse(signed_param, for: "Promotion 123")
 attrs = parsed_gid.find # this is the shared/sold "template"
 signed_attrs = parsed_sgid.find # this is the shared/sold "template"
 copy = Campaign.new(attrs)
 signed_copy = Campaign.new(signed_attrs)
 
 binding.pry
+
+puts "End of demo."
+
 binding.pry
 
 #require "irb"

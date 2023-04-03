@@ -15,7 +15,7 @@ class UniversalID::HashWithGIDTest < ActiveSupport::TestCase
         keep: "value to keep",
         remove: "value to remove"
       },
-      hash_with_gid_options: {block_list: %w[id created_at updated_at remove]}
+      options: {block_list: %w[id created_at updated_at remove]}
     )
   end
 

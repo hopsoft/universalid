@@ -12,18 +12,6 @@ module UniversalID
         block_list: []
       }
 
-      # Default options for UniversalID::Identification ......................................................
-      options.identification = {
-        gid: {app: name},
-        sgid: {
-          app: name,
-          expires_in: nil,
-          verifier: GlobalID::Verifier.new(
-            ENV.fetch("SECRET_KEY_BASE", ENV.fetch("UNIVERSALID_SECRET", name))
-          )
-        }
-      }
-
       options
     end
   end

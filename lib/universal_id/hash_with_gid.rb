@@ -43,9 +43,8 @@ class UniversalID::HashWithGID < Hash
     end
   end
 
-  def initialize(hash_with_gid_options: {}, **hash)
-    options = UniversalID::HashWithGID.config.merge(hash_with_gid_options)
-    merge! self.class.deep_transform(options: options, **hash)
+  def initialize(options: {}, **hash)
+    merge! self.class.deep_transform(options: UniversalID::HashWithGID.config.merge(options), **hash)
   end
 
   def id

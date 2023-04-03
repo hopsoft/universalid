@@ -78,3 +78,9 @@ Marshal from SignedGlobalID                  0.000690   0.000213   0.000903 (  0
 Marshal to SignedGlobalID (1k iterations)    0.091259   0.000654   0.091913 (  0.092025)
 Marshal from SignedGlobalID (1k iterations)  0.028291   0.000670   0.028961 (  0.028985)
 ```
+
+## UniversalID Objects
+
+### Hash
+
+NOTE: The key `options` is reserved for passing configuration overrides when constructing a `UniversalID::HashWithGID`.
