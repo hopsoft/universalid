@@ -2,7 +2,7 @@
   <h1 align="center">Universal ID 🌌</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-166-47d299.svg" />
+      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-77-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
       <img src="https://api.codeclimate.com/v1/badges/80bcd3acced072534a3a/maintainability" />
