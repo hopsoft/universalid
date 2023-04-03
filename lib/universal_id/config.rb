@@ -5,15 +5,11 @@ module UniversalID
     @config ||= begin
       options = ActiveSupport::OrderedOptions.new
 
-      # Default options for UniversalID::Hash ................................................................
-      options.hash = {
+      # Default options for UniversalID::HashWithGID .........................................................
+      options.hash_with_gid = {
         allow_blank: false,
-        allow_list: nil, # applied before block_list when set
-        block_list: [
-          "id",
-          "created_at",
-          "updated_at"
-        ]
+        allow_list: [], # applied before block_list
+        block_list: []
       }
 
       # Default options for UniversalID::Identification ......................................................

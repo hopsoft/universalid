@@ -1,29 +1,24 @@
 # frozen_string_literal: true
 
-# TODO: Consider cleaning up the alias verbosity?
 module UniversalID::Identification
   extend ActiveSupport::Concern
 
   def self.config
-    UniversalID.config.identification
+    UniversalID.config.identification.with_indifferent_access
   end
 
   class_methods do
-    def new_from_universalid_hash_global_id(ugid, options = {})
+    def new_from_ugid(ugid, options = {})
       new GlobalID.parse(ugid, UniversalID::Identification.config[:gid]).find
     rescue => error
       new.tap { |instance| instance.ugid_error = UniversalID::LocatorError.new(ugid, error) }
     end
-    alias_method :new_from_universalid_hash_gid, :new_from_universalid_hash_global_id
-    alias_method :new_from_ugid, :new_from_universalid_hash_gid
 
-    def new_from_universalid_hash_signed_global_id(usgid, options = {})
+    def new_from_usgid(usgid, options = {})
       new SignedGlobalID.parse(usgid, UniversalID::Identification.config[:sgid]).find
     rescue => error
       new.tap { |instance| instance.usgid_error = UniversalID::LocatorError.new(usgid, error) }
     end
-    alias_method :new_from_universalid_hash_sgid, :new_from_universalid_hash_signed_global_id
-    alias_method :new_from_usgid, :new_from_universalid_hash_sgid
   end
 
   included do
@@ -31,57 +26,37 @@ module UniversalID::Identification
     validate :validate_usgid
   end
 
-  attr_accessor :universalid_hash_global_id_error
-  alias_method :universalid_hash_gid_error, :universalid_hash_global_id_error
-  alias_method :universalid_hash_gid_error=, :universalid_hash_global_id_error=
-  alias_method :ugid_error, :universalid_hash_gid_error
-  alias_method :ugid_error=, :universalid_hash_gid_error=
+  attr_accessor :ugid_error, :usgid_error
 
-  attr_accessor :universalid_hash_signed_global_id_error
-  alias_method :universalid_hash_sgid_error, :universalid_hash_signed_global_id_error
-  alias_method :universalid_hash_sgid_error=, :universalid_hash_signed_global_id_error=
-  alias_method :usgid_error, :universalid_hash_sgid_error
-  alias_method :usgid_error=, :universalid_hash_sgid_error=
-
-  def validate_universalid_hash_global_id
+  def validate_ugid
     return unless ugid_error
     errors.add :base, "UniversalID GlobalID not found! #{ugid_error.message}"
   end
-  alias_method :validate_universalid_hash_gid, :validate_universalid_hash_global_id
-  alias_method :validate_ugid, :validate_universalid_hash_gid
 
-  def validate_universalid_hash_signed_global_id
+  def validate_usgid
     return unless usgid_error
     errors.add :base, "UniversalID SignedGlobalID not found! #{usgid_error.message}"
   end
-  alias_method :validate_universalid_hash_sgid, :validate_universalid_hash_signed_global_id
-  alias_method :validate_usgid, :validate_universalid_hash_sgid
 
-  def universalid_hash
-    UniversalID::Hash.new attributes
+  def attributes_with_gid(**hash_with_gid_options)
+    UniversalID::HashWithGID.new(**attributes, hash_with_gid_options: hash_with_gid_options)
   end
 
-  def to_universalid_hash_global_id(options = {})
-    universalid_hash.to_gid UniversalID::Identification.config[:gid].merge(options)
+  def to_ugid(hash_with_gid_options: {}, **gid_options)
+    attrs = attributes_with_gid(**hash_with_gid_options)
+    attrs.to_gid UniversalID::Identification.config[:gid].merge(gid_options)
   end
-  alias_method :to_universalid_hash_gid, :to_universalid_hash_global_id
-  alias_method :to_ugid, :to_universalid_hash_gid
 
-  def to_universalid_hash_global_id_param(options = {})
-    to_universalid_hash_gid(options).to_param
+  def to_ugid_param(hash_with_gid_options: {}, **gid_options)
+    to_ugid(hash_with_gid_options: hash_with_gid_options, **gid_options).to_param
   end
-  alias_method :to_universalid_hash_gid_param, :to_universalid_hash_global_id_param
-  alias_method :to_ugid_param, :to_universalid_hash_gid_param
 
-  def to_universalid_hash_signed_global_id(options = {})
-    universalid_hash.to_sgid UniversalID::Identification.config[:sgid].merge(options)
+  def to_usgid(hash_with_gid_options: {}, **sgid_options)
+    attrs = attributes_with_gid(**hash_with_gid_options)
+    attrs.to_sgid UniversalID::Identification.config[:sgid].merge(sgid_options)
   end
-  alias_method :to_universalid_hash_sgid, :to_universalid_hash_signed_global_id
-  alias_method :to_usgid, :to_universalid_hash_sgid
 
-  def to_universalid_hash_signed_global_id_param(options = {})
-    to_universalid_hash_sgid(options).to_param
+  def to_usgid_param(hash_with_gid_options: {}, **sgid_options)
+    to_usgid(hash_with_gid_options: hash_with_gid_options, **sgid_options).to_param
   end
-  alias_method :to_universalid_hash_sgid_param, :to_universalid_hash_signed_global_id_param
-  alias_method :to_usgid_param, :to_universalid_hash_sgid_param
 end

@@ -9,8 +9,8 @@ class UniversalID::IdentificationTest < ActiveSupport::TestCase
       gid = user.to_gid
 
       expected = {
-        uri: "gid://test.universalid/User/1",
-        param: "Z2lkOi8vdGVzdC51bml2ZXJzYWxpZC9Vc2VyLzE"
+        uri: "gid://UniversalID/User/1",
+        param: "Z2lkOi8vVW5pdmVyc2FsSUQvVXNlci8x"
       }
 
       assert_equal expected[:uri], gid.to_s
@@ -26,7 +26,7 @@ class UniversalID::IdentificationTest < ActiveSupport::TestCase
     User.uncommitted do
       user = User.create!(name: "Test SGID")
       sgid = user.to_sgid
-      expected = "BAh7CEkiCGdpZAY6BkVUSSIiZ2lkOi8vdGVzdC51bml2ZXJzYWxpZC9Vc2VyLzEGOwBUSSIMcHVycG9zZQY7AFRJIgxkZWZhdWx0BjsAVEkiD2V4cGlyZXNfYXQGOwBUMA==--c89571799ff59385d2afc05f815451a9ebefcba4"
+      expected = "BAh7CEkiCGdpZAY6BkVUSSIdZ2lkOi8vVW5pdmVyc2FsSUQvVXNlci8xBjsAVEkiDHB1cnBvc2UGOwBUSSIMZGVmYXVsdAY7AFRJIg9leHBpcmVzX2F0BjsAVDA=--87cfc2f7fa5364f7be2d95cea4ddb46e2a36f0ba"
 
       assert_equal expected, sgid.to_s
       assert_equal expected, sgid.to_param
@@ -50,31 +50,33 @@ class UniversalID::IdentificationTest < ActiveSupport::TestCase
     assert user.errors[:base].find { |e| e.include? "UniversalID SignedGlobalID not found!" }
   end
 
-  def test_universalid_hash
+  def test_attributes_with_gid
     User.uncommitted do
-      user = User.create!(name: "Universal ID Hash", email: "universalid@hash.com")
-      expected = {"name" => "Universal ID Hash", "email" => "universalid@hash.com"}
-      assert_equal expected, user.universalid_hash
+      expected = {"name" => "Attributes With GID", "email" => "attributes_with_gid@example.com"}
+      user = User.create!(expected)
+      refute_equal expected, user.attributes
+      assert_equal expected, user.attributes_with_gid(block_list: %w[id created_at updated_at])
     end
   end
 
-  def test_universalid_hash_with_nils
+  def test_attributes_with_gid_with_nils
     User.uncommitted do
-      user = User.create!(name: "Universal ID Hash Nils")
       expected = {"name" => "Universal ID Hash Nils"}
-      assert_equal expected, user.universalid_hash
+      user = User.create!(expected)
+      refute_equal expected, user.attributes
+      assert_equal expected, user.attributes_with_gid(block_list: %w[id created_at updated_at])
     end
   end
 
-  def test_universalid_hash_global_id_with_nils
+  def test_ugid_with_blanks
     User.uncommitted do
-      user = User.create!(name: "Test UGID Nils")
-      ugid = user.to_ugid
+      user = User.create!(name: "Test UGID with Blanks")
+      ugid = user.to_ugid(hash_with_gid_options: {block_list: %w[id created_at updated_at]})
 
       expected = {
-        uri: "gid://UniversalID/UniversalID::Hash/eNqrVspLzE1VslIKSS0uUQh193RR8MvMKVaqBQBntwf7",
-        param: "Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6Okhhc2gvZU5xclZzcEx6RTFWc2xJS1NTMHVVUWgxOTNSUjhNdk1LVmFxQlFCbnR3Zjc",
-        hash: {"name" => "Test UGID Nils"}
+        uri: "gid://UniversalID/UniversalID::HashWithGID/eNqrVspLzE1VslIKSS0uUQh193RRKM8syVBwyknMyy5WqgUAqs8KnA",
+        param: "Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6Okhhc2hXaXRoR0lEL2VOcXJWc3BMekUxVnNsSUtTUzB1VVFoMTkzUlJLTThzeVZCd3lrbk15eTVXcWdVQXFzOEtuQQ",
+        hash: {"name" => "Test UGID with Blanks"}
       }
 
       new_user_1 = User.new_from_ugid(ugid)
@@ -98,14 +100,14 @@ class UniversalID::IdentificationTest < ActiveSupport::TestCase
     end
   end
 
-  def test_universalid_hash_global_id
+  def test_ugid
     User.uncommitted do
       user = User.create!(name: "Test UGID", email: "test@example.com")
-      ugid = user.to_ugid
+      ugid = user.to_ugid(hash_with_gid_options: {block_list: %w[id created_at updated_at]})
 
       expected = {
-        uri: "gid://UniversalID/UniversalID::Hash/eNqrVspLzE1VslIKSS0uUQh193RR0lFKzU3MzAGKlQDFHFIrEnMLclL1kvNzlWoBZq4PlA",
-        param: "Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6Okhhc2gvZU5xclZzcEx6RTFWc2xJS1NTMHVVUWgxOTNSUjBsRkt6VTNNekFHS2xRREZIRklyRW5NTGNsTDFrdk56bFdvQlpxNFBsQQ",
+        uri: "gid://UniversalID/UniversalID::HashWithGID/eNqrVspLzE1VslIKSS0uUQh193RR0lFKzU3MzAGKlQDFHFIrEnMLclL1kvNzlWoBZq4PlA",
+        param: "Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6Okhhc2hXaXRoR0lEL2VOcXJWc3BMekUxVnNsSUtTUzB1VVFoMTkzUlIwbEZLelUzTXpBR0tsUURGSEZJckVuTUxjbEwxa3ZOemxXb0JacTRQbEE",
         hash: {"name" => "Test UGID", "email" => "test@example.com"}
       }
 
@@ -133,10 +135,10 @@ class UniversalID::IdentificationTest < ActiveSupport::TestCase
   def test_universalid_hash_signed_global_id
     User.uncommitted do
       user = User.create!(name: "Test USGID", email: "test@example.com")
-      usgid = user.to_usgid
+      usgid = user.to_usgid(hash_with_gid_options: {block_list: %w[id created_at updated_at]})
 
       expected = {
-        param: "BAh7CEkiCGdpZAY6BkVUSSJ7Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6Okhhc2gvZU5xclZzcEx6RTFWc2xJS1NTMHVVUWdOZHZkMFVkSlJTczFOek13QkNwWUFCUjFTS3hKekMzSlM5Wkx6YzVWcUFYWXpELWM_ZXhwaXJlc19pbgY7AFRJIgxwdXJwb3NlBjsAVEkiDGRlZmF1bHQGOwBUSSIPZXhwaXJlc19hdAY7AFQw--d3bb3988178da544a2291262d3be20cae7521598",
+        param: "BAh7CEkiCGdpZAY6BkVUSSIBfWdpZDovL1VuaXZlcnNhbElEL1VuaXZlcnNhbElEOjpIYXNoV2l0aEdJRC9lTnFyVnNwTHpFMVZzbElLU1MwdVVRZ05kdmQwVWRKUlNzMU56TXdCQ3BZQUJSMVNLeEp6QzNKUzlaTHpjNVZxQVhZekQtYz9leHBpcmVzX2luBjsAVEkiDHB1cnBvc2UGOwBUSSIMZGVmYXVsdAY7AFRJIg9leHBpcmVzX2F0BjsAVDA=--b10d48fbe830720d6e19da8961ce9c620b4c5718",
         hash: {"name" => "Test USGID", "email" => "test@example.com"}
       }
 

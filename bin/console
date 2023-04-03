@@ -2,9 +2,17 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
+
+require "globalid"
+GlobalID.app = "UniversalID"
+SignedGlobalID.app = "UniversalID"
+SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
+
 require "universalid"
 require_relative "../test/models/user"
 require_relative "../test/database"
+
+UniversalID.config.hash_with_gid[:block_list] = %w[id created_at updated_at]
 
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
