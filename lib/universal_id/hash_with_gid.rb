@@ -35,7 +35,10 @@ class UniversalID::HashWithGID < Hash
       else value
       end
 
-      yield value if value.present? || options[:allow_blank]
+      if block_given?
+        yield value if value.present? || options[:allow_blank]
+      end
+
       value
     end
   end

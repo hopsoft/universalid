@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
+require "pry-byebug"
+require "pry-doc"
 
 require "globalid"
 GlobalID.app = "UniversalID"
@@ -9,18 +11,51 @@ SignedGlobalID.app = "UniversalID"
 SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
 
 require "universalid"
-require_relative "../test/models/user"
 require_relative "../test/database"
 
-UniversalID.config.hash_with_gid[:block_list] = %w[id created_at updated_at]
+# ............................................................................................................
+# DATA SEEDS
+# ............................................................................................................
+@campaign = Campaign.create!(name: "Example Campaign", description: "Example Description", trigger: "Sign Up", wait: 1.day)
+welcome_email = Email.create!(campaign: @campaign, subject: "First Email", body: "Welcome")
+followup_email = Email.create!(campaign: @campaign, previous_email: welcome_email, subject: "Second Email", body: "Follow Up")
+upsell_email = Email.create!(campaign: @campaign, previous_email: followup_email, subject: "Third Email", body: "Upsell")
 
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
+# ............................................................................................................
+# EXPERIMENTS
+#
+# TODO: Do we even need the UniversalID::Identification extension for ActiveRecord?
+#       Can we simplify serialization? Should we simplify?
+# ............................................................................................................
 
-# (If you use this, don't forget to add pry to your Gemfile!)
-require "pry-byebug"
-require "pry-doc"
-Pry.start
+# Creae a Hash representation of the data that can/should be shared ..........................................
+# i.e. What comprises a template?
+@attributes = @campaign.as_json(
+  except: [:id, :created_at, :updated_at],
+  include: {
+    emails: {
+      except: [:id, :campaign_id, :previous_email_id, :created_at, :updated_at]
+    }
+  }
+)
+@attributes["emails_attributes"] = @attributes.delete("emails")
+@attributes_with_gid = UniversalID::HashWithGID.new(**@attributes)
+
+# Think of these Global IDs as portable templates ............................................................
+@gid = @attributes_with_gid.to_gid
+@sgid = @attributes_with_gid.to_sgid(for: "Promotion 123", expires_in: 30.seconds)
+
+# URIs and/or params that are easy to share ..................................................................
+@gid_uri = @gid.to_s
+@gid_param = @gid.to_param
+@sgid_param = @sgid.to_param
+
+# Reconstructed from the shared template .....................................................................
+@parsed_sgid = SignedGlobalID.parse(@sgid_param, for: "Promotion 123")
+@found_sgid = @parsed_sgid.find
+@copy = Campaign.new(@found_sgid)
 
 #require "irb"
 #IRB.start(__FILE__)
+
+Pry.start

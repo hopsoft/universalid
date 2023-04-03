@@ -16,4 +16,3 @@ SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
 
 require_relative "../lib/universalid"
 require_relative "./database"
-require_relative "./models/user"
