@@ -53,14 +53,14 @@ TODO: write docs...
 
 - Standardized marshaling vs bespoke solutions
 - Simplified implementations (templating on top of existing data model or object structure)
-- Enables meta-programmed generic solutions
 - Fully Encapsulated portability across process boundaries and even disparate systems
+- Enables meta-programmed generic solutions
 - Simplifies concerns like where to persist partial ephemeral data (database, redis, cache, cookie, session, etc..)
 - Eliminates the need to rollback any persisted partial ephemeral data when workflow is abandoned
 
 ### SignedGlobalID
 
-- Enhanced Security (prevent MITM attacks etc.)
+- Enhanced Security (can't be tampered with, prevents MITM attacks, etc.)
 - Scoped to optional purpose (i.e. `for`)
 - Versioning via purpose
 - Scarcity via optional expiration
