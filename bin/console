@@ -78,8 +78,9 @@ id = attrs.id
 uri = attrs.to_gid.to_s
 param = attrs.to_gid_param
 
-# Step 6. Review and save
 binding.pry
+
+# Step 6. Review and save
 attrs = GlobalID.parse(param).find
 campaign = Campaign.new(attrs)
 campaign.save!
