@@ -13,19 +13,25 @@ class UniversalID::PortableHashTest < ActiveSupport::TestCase
       created_at: Time.current,
       updated_at: Time.current,
       nested: {
-        keep: "value to keep",
-        remove: "value to remove"
+        keep: "keep",
+        remove: "remove"
       },
       portable_hash_options: {except: %w[remove]} # combines with config
     )
   end
 
   def test_config
-    assert UniversalID.config.portable_hash.is_a?(Hash)
+    expected = {allow_blank: false, only: [], except: ["id", "created_at", "updated_at"]}
+    assert_equal expected, UniversalID.config.portable_hash
+  end
+
+  def test_options
+    expected = {allow_blank: false, only: [], except: ["id", "created_at", "updated_at", "remove"]}
+    assert_equal expected.with_indifferent_access, @hash.options
   end
 
   def test_id
-    assert_equal "eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVXSUcoDyqamKFlVK2WnphbAJBRK8hXA_NpaAOIHFl8", @hash.id
+    assert_equal "eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVXSUcoDyqamKFlVK2WnphYAJcBUbS0AJkYTHw", @hash.id
   end
 
   def test_find
@@ -56,9 +62,9 @@ class UniversalID::PortableHashTest < ActiveSupport::TestCase
     gid = @hash.to_gid
 
     expected = {
-      uri: "gid://UniversalID/UniversalID::PortableHash/eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVXSUcoDyqamKFlVK2WnphbAJBRK8hXA_NpaAOIHFl8",
-      param: "Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6OlBvcnRhYmxlSGFzaC9lTnFyVmlwSkxTNVJzaW9wS2szVlVVcXRTTXd0eUVsVnNsSXFTOHdwVFZYU1Vjb0R5cWFtS0ZsVksyV25waGJBSkJSSzhoWEFfTnBhQU9JSEZsOA",
-      hash: {"test" => true, "example" => "value", "nested" => {"keep" => "value to keep"}}
+      uri: "gid://UniversalID/UniversalID::PortableHash/eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVXSUcoDyqamKFlVK2WnphYAJcBUbS0AJkYTHw",
+      param: "Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6OlBvcnRhYmxlSGFzaC9lTnFyVmlwSkxTNVJzaW9wS2szVlVVcXRTTXd0eUVsVnNsSXFTOHdwVFZYU1Vjb0R5cWFtS0ZsVksyV25waFlBSmNCVWJTMEFKa1lUSHc",
+      hash: {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}}
     }
 
     assert_equal expected[:uri], gid.to_s
@@ -72,8 +78,8 @@ class UniversalID::PortableHashTest < ActiveSupport::TestCase
     sgid = @hash.to_sgid
 
     expected = {
-      param: "BAh7CEkiCGdpZAY6BkVUSSIBf2dpZDovL1VuaXZlcnNhbElEL1VuaXZlcnNhbElEOjpQb3J0YWJsZUhhc2gvZU5xclZpcEpMUzVSc2lvcEtrM1ZVVXF0U013dHlFbFZzbElxUzh3cFRWWFNVY29EeXFhbUtGbFZLMlducGhiQUpCUks4aFhBX05wYUFPSUhGbDgGOwBUSSIMcHVycG9zZQY7AFRJIgxkZWZhdWx0BjsAVEkiD2V4cGlyZXNfYXQGOwBUMA==--d65a50bf6b92fb671ba9323c8b4c26efe8fd6646",
-      hash: {"test" => true, "example" => "value", "nested" => {"keep" => "value to keep"}}
+      param: "BAh7CEkiCGdpZAY6BkVUSSJ_Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6OlBvcnRhYmxlSGFzaC9lTnFyVmlwSkxTNVJzaW9wS2szVlVVcXRTTXd0eUVsVnNsSXFTOHdwVFZYU1Vjb0R5cWFtS0ZsVksyV25waFlBSmNCVWJTMEFKa1lUSHcGOwBUSSIMcHVycG9zZQY7AFRJIgxkZWZhdWx0BjsAVEkiD2V4cGlyZXNfYXQGOwBUMA==--9d0357c4175a7b1c03f3006c81eb6b9ff04feefc",
+      hash: {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}}
     }
 
     assert_equal expected[:param], sgid.to_s

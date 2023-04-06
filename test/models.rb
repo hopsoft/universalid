@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+require "globalid"
 require "active_record"
+
+GlobalID.app = "UniversalID"
+SignedGlobalID.app = "UniversalID"
+SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
 
 ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
 

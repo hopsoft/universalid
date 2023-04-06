@@ -44,16 +44,42 @@ class UniversalID::PortableHash < Hash
   end
 
   delegate :config, to: :"self.class"
+  attr_reader :options
 
   def initialize(hash)
-    options = hash.delete(:portable_hash_options) || {}
-    options[:only] = Set.new(config[:only] + options[:only].to_a).to_a
-    options[:except] = Set.new(config[:except] + options[:except].to_a).to_a
+    @options = merge_options!(extract_options!(hash))
     merge! self.class.deep_transform(hash, options)
   end
 
   def id
     compressed_json = Zlib::Deflate.deflate(to_json, Zlib::BEST_COMPRESSION)
     Base64.urlsafe_encode64 compressed_json, padding: false
+  end
+
+  private
+
+  def extract_options!(hash)
+    options = hash.delete(:portable_hash_options) || hash.delete("portable_hash_options") || {}
+    options = options.each_with_object({}) do |(key, val), memo|
+      memo[key.to_sym] = val.is_a?(Array) ? val.map(&:to_s) : val
+    end
+    options.with_indifferent_access
+  end
+
+  def merge_options!(options)
+    config.each do |key, val|
+      default = config[key]
+      custom = options[key]
+
+      if default.is_a?(Array)
+        custom = [] if custom.nil?
+        custom = custom.is_a?(Array) ? custom : [custom]
+        options[key] = (default + custom).uniq
+      else
+        options[key] = custom || default
+      end
+    end
+
+    options
   end
 end
