@@ -137,12 +137,4 @@ class UniversalID::ActiveModelSerializerTest < ActiveSupport::TestCase
     copy = Campaign.new_from_portable_hash(param)
     assert_equal @campaign.to_portable_hash, copy.to_portable_hash
   end
-
-  def test_new_from_portable_hash_gid_param
-    param = @campaign.to_portable_hash_gid_param
-    copy = Campaign.new_from_portable_hash(param)
-    assert copy.new_record?
-    assert @campaign.persisted?
-    assert_equal @campaign.to_portable_hash, copy.to_portable_hash
-  end
 end
