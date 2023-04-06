@@ -8,10 +8,9 @@ Gem::Specification.new do |s|
   s.authors = ["Nate Hopkins (hopsoft)"]
   s.email = ["natehop@gmail.com"]
 
-  s.summary = "Standardized portability for unsaved ActiveRecords, ActiveRecord::Relations, Hashes, etc."
+  s.summary = "GlobalID for for Arrays, Hashes, and objects like ActiveRecord::Relation, etc."
   s.description = <<~DESC
-    UniversalID standardizes portability for unsaved ActiveRcords,
-    and expands GlobalID support to objects like Hash, ActiveRecord::Relation, and more.
+    UniversalID expands GlobalID support to objects like Array, Hash, ActiveRecord::Relation, and more.
   DESC
 
   s.homepage = "https://github.com/hopsoft/universalid"
@@ -28,10 +27,12 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
+  s.add_dependency "activemodel", ">= 6.0"
+  s.add_dependency "activesupport", ">= 6.0"
   s.add_dependency "globalid", ">= 1.1"
 
   s.add_development_dependency "activerecord"
-  s.add_development_dependency "activesupport"
+  s.add_development_dependency "awesome_print"
   s.add_development_dependency "faker"
   s.add_development_dependency "magic_frozen_string_literal"
   s.add_development_dependency "minitest-reporters"

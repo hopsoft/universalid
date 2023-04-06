@@ -10,10 +10,9 @@ require "minitest/reporters"
 Minitest::Reporters.use!
 
 require "globalid"
-GlobalID.app = "test.universalid"
-SignedGlobalID.app = "test.universalid"
-SignedGlobalID.verifier = GlobalID::Verifier.new("test.universalid")
+GlobalID.app = "UniversalID"
+SignedGlobalID.app = "UniversalID"
+SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
 
 require_relative "../lib/universalid"
-require_relative "./database"
-require_relative "./models/user"
+require_relative "./models"

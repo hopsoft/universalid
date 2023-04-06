@@ -2,9 +2,8 @@
 
 require "active_record"
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include GlobalID::Identification
-  include UniversalID::Identification
 
   def self.uncommitted
     transaction do

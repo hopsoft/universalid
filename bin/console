@@ -2,17 +2,19 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
-require "universalid"
-require_relative "../test/models/user"
-require_relative "../test/database"
-
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
-
-# (If you use this, don't forget to add pry to your Gemfile!)
+require "awesome_print"
 require "pry-byebug"
 require "pry-doc"
-Pry.start
+
+require "globalid"
+GlobalID.app = "UniversalID"
+SignedGlobalID.app = "UniversalID"
+SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
+
+require "universalid"
+require_relative "../test/models"
 
 #require "irb"
 #IRB.start(__FILE__)
+
+Pry.start

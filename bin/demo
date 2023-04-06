@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "awesome_print"
+require "pry-byebug"
+require "pry-doc"
+require "universalid"
+require_relative "../test/models"
+
+# ............................................................................................................
+# Create a Campaign via multi-step form (wizard) running over HTTP
+# ............................................................................................................
+
+binding.pry
+
+# Step 1. Assign basic campaign info
+campaign = Campaign.new(name: "Example Campaign", description: "Example Description")
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 2. Create first email
+campaign = Campaign.new_from_portable_hash(param)
+campaign.emails << campaign.emails.build(subject: "First Email", body: "Welcome", wait: 1.day)
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 3. Create second email
+campaign = Campaign.new_from_portable_hash(param)
+campaign.emails << campaign.emails.build(subject: "Second Email", body: "Follow Up", wait: 1.week)
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 4. Create third email
+campaign = Campaign.new_from_portable_hash(param)
+campaign.emails << campaign.emails.build(subject: "Third Email", body: "Hard Sell", wait: 2.days)
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 5. Configure final details
+campaign = Campaign.new_from_portable_hash(param)
+campaign.assign_attributes trigger: "Sign Up"
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 6. Review and save
+campaign = Campaign.new_from_portable_hash(param)
+campaign.save!
+
+binding.pry
+
+# ............................................................................................................
+# Create a digital product from the Campaign (i.e. template)
+# ............................................................................................................
+
+binding.pry
+
+# 1. Create a portable digital product from the Campaign .....................................................
+campaign = Campaign.first
+signed_param = campaign.to_portable_hash_sgid_param(gid_options: {for: "Promotion 123", expires_in: 30.seconds})
+# NOTE: The signed param is a sellable digital product with built in purpose and scarcity!
+
+# 2. Reconstruct the shared template (digital product) .......................................................
+copy = Campaign.new_from_portable_hash(signed_param, for: "Promotion 123")
+
+binding.pry
+
+# 3. Let the product expire (wait 30 seconds) ................................................................
+# gid = UniversalID::PortableHash.parse_gid(signed_param, for: "Promotion 123")
+invalid_copy = Campaign.new_from_portable_hash(signed_param, for: "Promotion 123")
+
+binding.pry
+
+puts "End of demo."
