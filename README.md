@@ -72,7 +72,7 @@ including unsaved ActiveModels. 🤯
 A GlobalID is an URI that uniquely identifies a model instance.
 It was designed to make ActiveRecord models portable across process boundaries.
 For example, passing a model instance as an argument _(from the web server)_ to a background job.
-They also facilitate use-cases like interleaved search results that mix multiple classes into a single unified result.
+They also facilitate use-cases like interleaved search results that mix multiple classes into a single unified list.
 
 GlobalIDs can also be [signed](https://github.com/rails/globalid#signed-global-ids) and dedicated to a
 [purpose](https://github.com/rails/globalid#signed-global-ids) with an [expiration](https://github.com/rails/globalid#signed-global-ids) policy.
@@ -113,7 +113,7 @@ UniversalID extends GlobalID functionality to more objects.
 
 ### Why Expand Global ID?
 
-A variety of additional use-cases can be handled easily _(with minimal code)_ by extending GlobalID to objects like Hash.
+A variety of additional use-cases can be handled easily _(with minimal code)_ by extending GlobalID to objects like Hash and unsaved ActiveModels.
 Consider a multi-step form or wizard where users incrementally build up a complex set of related ActiveRecord instances.
 
 - When do we save to the database?
