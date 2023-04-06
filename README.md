@@ -49,6 +49,23 @@ including unsaved ActiveModels. 🤯
   </a>
 </p>
 
+<!-- Tocer[start]: Auto-generated, don't remove. -->
+
+## Table of Contents
+
+  - [What is Global ID?](#what-is-global-id)
+    - [Global ID Examples](#global-id-examples)
+  - [What is Universal ID?](#what-is-universal-id)
+    - [Why Expand Global ID?](#why-expand-global-id)
+    - [Summary of Benefits](#summary-of-benefits)
+      - [GlobalID](#globalid)
+      - [SignedGlobalID](#signedglobalid)
+    - [Hash](#hash)
+    - [ActiveModel](#activemodel)
+    - [Benchmarks](#benchmarks)
+
+<!-- Tocer[finish]: Auto-generated, don't remove. -->
+
 ## What is Global ID?
 
 A GlobalID is an URI that uniquely identifies a model instance.
