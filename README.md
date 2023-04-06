@@ -2,7 +2,7 @@
   <h1 align="center">Universal ID 🌌</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-77-47d299.svg" />
+      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-144-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
       <img src="https://api.codeclimate.com/v1/badges/80bcd3acced072534a3a/maintainability" />
@@ -51,36 +51,42 @@ TODO: write docs...
 
 ### GlobalID
 
-- Standardized marshaling vs bespoke solutions
-- Simplified implementations (templating on top of existing data model or object structure)
-- Fully Encapsulated portability across process boundaries and even disparate systems
-- Enables meta-programmed generic solutions
-- Simplifies concerns like where to persist partial ephemeral data (database, redis, cache, cookie, session, etc..)
-- Eliminates the need to rollback any persisted partial ephemeral data when workflow is abandoned
+- Standardizes marshaling _(no more bespoke solutions)_
+- Reduces complexity and total Lines-Of-Code
+- Simplifies derivative works _(works with existing data-models/object-structures)_
+- Encapsulates portability across processes and systems _(self-contained)_
+- Creates opportunity for generic solutions _(meta-programming)_
+- Minimizes data storage needs for incomplete or ephemeral data _(URL safe string)_
+- Facilitates easy rollback when incomplete or ephemeral data is abandoned
 
 ### SignedGlobalID
 
-- Enhanced Security (can't be tampered with, prevents MITM attacks, etc.)
-- Scoped to optional purpose (i.e. `for`)
-- Versioning via purpose
-- Scarcity via optional expiration
-- Easy to productize and sell
-
-## Performance
-
-NOTE: Performance should be contrasted with alternative approaches like saving saving to cache, database, etc.
-
-```
-# Simple Campaign with 3 associated Email records (nested attributes)
-                                              user     system      total        real
-Marshal to SignedGlobalID                    0.000282   0.000025   0.000307 (  0.000306)
-Marshal from SignedGlobalID                  0.000690   0.000213   0.000903 (  0.001048)
-Marshal to SignedGlobalID (1k iterations)    0.091259   0.000654   0.091913 (  0.092025)
-Marshal from SignedGlobalID (1k iterations)  0.028291   0.000670   0.028961 (  0.028985)
-```
+- Enhances security _(can't be tampered with, prevents MITM attacks, etc.)_
+- Provides scoping for a specific purpose _(via `for`)_
+- Supports versioning _(via purpose)_
+- Includes scarcity _(via expiration)_
+- Enables productization _(an SGID string is a digital "product")_
 
 ## UniversalID Objects
 
 ### Hash
 
-NOTE: The key `options` is reserved for passing configuration overrides when constructing a `UniversalID::HashWithGID`.
+### ActiveModel
+
+### Benchmarks
+
+```
+# Simple Campaign with 3 associated Email records (nested attributes)
+                                                               user       system     total      real
+Hash to PortableHash (1k times)                                0.015499   0.000180   0.015679   0.015680
+PortableHash ID (1k times)                                     0.034924   0.000170   0.035094   0.035097
+PortableHash find ID (1k times)                                0.006215   0.000455   0.006670   0.006671
+PortableHash to GID (1k times)                                 0.043284   0.000316   0.043600   0.043603
+PortableHash to SGID (1k times)                                0.043085   0.000466   0.043551   0.043556
+GlobalID parse + find PortableHash GID param (1k times)        0.024027   0.000485   0.024512   0.024516
+SignedGlobalID parse + find PortableHash SGID param (1k times) 0.028170   0.000433   0.028603   0.028639
+ActiveModel to param (1k times)                                0.085547   0.000495   0.086042   0.086043
+ActiveModel to signed param (1k times)                         0.092129   0.000807   0.092936   0.092943
+ActiveModel from param (1k times)                              0.300829   0.001478   0.302307   0.302347
+ActiveModel from signed param (1k times)                       0.318139   0.000835   0.318974   0.319004
+```

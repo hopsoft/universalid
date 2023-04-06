@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-class UniversalID::HashWithGID < Hash
-  include GlobalID::Identification
+class UniversalID::PortableHash < Hash
+  include UniversalID::Portable
 
   class << self
     def config
-      UniversalID.config.hash_with_gid.with_indifferent_access
+      super.portable_hash.with_indifferent_access
     end
 
     def find(id)
@@ -15,13 +15,13 @@ class UniversalID::HashWithGID < Hash
       raise UniversalID::LocatorError.new(id, error)
     end
 
-    def deep_transform(options:, **hash)
-      allow_list = options[:allow_list]
-      block_list = options[:block_list]
+    def deep_transform(hash, options)
+      include_list = options[:only]
+      exclude_list = options[:except]
       hash.each_with_object({}) do |(key, value), memo|
         key = key.to_s
-        next if allow_list.any? && allow_list.none?(key)
-        next if block_list.any?(key)
+        next if include_list.any? && incldue_list.none?(key)
+        next if exclude_list.any?(key)
         transform(value, options: options) { |val| memo[key] = val }
       end
     end
@@ -30,7 +30,7 @@ class UniversalID::HashWithGID < Hash
 
     def transform(value, options:)
       value = case value
-      when Hash then deep_transform(options: options, **value)
+      when Hash then deep_transform(value, options)
       when Array then value.map { |val| transform(val, options: options) }
       else value
       end
@@ -43,8 +43,13 @@ class UniversalID::HashWithGID < Hash
     end
   end
 
-  def initialize(options: {}, **hash)
-    merge! self.class.deep_transform(options: UniversalID::HashWithGID.config.merge(options), **hash)
+  delegate :config, to: :"self.class"
+
+  def initialize(hash)
+    options = hash.delete(:portable_hash_options) || {}
+    options[:only] = Set.new(config[:only] + options[:only].to_a).to_a
+    options[:except] = Set.new(config[:except] + options[:except].to_a).to_a
+    merge! self.class.deep_transform(hash, options)
   end
 
   def id

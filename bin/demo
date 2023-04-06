@@ -1,0 +1,85 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "awesome_print"
+require "pry-byebug"
+require "pry-doc"
+
+require "globalid"
+GlobalID.app = "UniversalID"
+SignedGlobalID.app = "UniversalID"
+SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
+
+require "universalid"
+require_relative "../test/models"
+
+# TODO: Do we even need the UniversalID::Identification extension for ActiveRecord?
+#       Can we simplify serialization? Should we simplify?
+
+# ............................................................................................................
+# Multi-Step Form Demo (HTTP)
+# ............................................................................................................
+
+binding.pry
+
+# Step 1. Capture basic campaign info
+campaign = Campaign.new(name: "Example Campaign", description: "Example Description")
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 2. Capture first email
+campaign = Campaign.new_from_portable_hash(param)
+campaign.emails << campaign.emails.build(subject: "First Email", body: "Welcome", wait: 1.day)
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 3. Capture second email
+campaign = Campaign.new_from_portable_hash(param)
+campaign.emails << campaign.emails.build(subject: "Second Email", body: "Follow Up", wait: 1.week)
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 4. Capture third email
+campaign = Campaign.new_from_portable_hash(param)
+campaign.emails << campaign.emails.build(subject: "Third Email", body: "Hard Sell", wait: 2.days)
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 5. Set campaign trigger etc.
+campaign = Campaign.new_from_portable_hash(param)
+campaign.assign_attributes trigger: "Sign Up" # last step campaign data
+param = campaign.to_portable_hash_gid_param
+
+binding.pry
+
+# Step 6. Review and save
+campaign = Campaign.new_from_portable_hash(param)
+campaign.save!
+
+binding.pry
+
+# ............................................................................................................
+# Sharing a persisted campaign as a template
+# ............................................................................................................
+
+binding.pry
+
+# 1. Creae a Hash representation of the data that can/should be shared .......................................
+campaign = Campaign.first
+signed_param = campaign.to_portable_hash_sgid_param(gid_options: {for: "Promotion 123", expires_in: 1.second})
+
+# 2. Reconstruct the shared template .........................................................................
+valid_copy = Campaign.new_from_portable_hash(signed_param, for: "Promotion 123")
+sleep 1
+invalid_copy = Campaign.new_from_portable_hash(signed_param, for: "Promotion 123")
+
+binding.pry
+
+puts "End of demo."
+
+binding.pry

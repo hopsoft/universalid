@@ -5,11 +5,11 @@ module UniversalID
     @config ||= begin
       options = ActiveSupport::OrderedOptions.new
 
-      # Default options for UniversalID::HashWithGID .........................................................
-      options.hash_with_gid = {
+      # Default options for UniversalID::PortableHash ........................................................
+      options.portable_hash = {
         allow_blank: false,
-        allow_list: [], # applied before block_list
-        block_list: []
+        only: [], # keys to include (trumps except)
+        except: [] # keys to exclude
       }
 
       options

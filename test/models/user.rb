@@ -2,7 +2,9 @@
 
 require "active_record"
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
+  include GlobalID::Identification
+
   def self.uncommitted
     transaction do
       yield

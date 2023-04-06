@@ -1,0 +1,84 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "benchmark"
+require "globalid"
+
+GlobalID.app = "UniversalID"
+SignedGlobalID.app = "UniversalID"
+SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
+
+require_relative "../lib/universalid"
+require_relative "../test/models"
+
+# seed data
+campaign = Campaign.new(name: "Example Campaign", description: "Example Description", trigger: "Sign Up")
+campaign.emails << campaign.emails.build(subject: "First Email", body: "Welcome", wait: 1.day)
+campaign.emails << campaign.emails.build(subject: "Second Email", body: "Follow Up", wait: 1.week)
+campaign.emails << campaign.emails.build(subject: "Third Email", body: "Hard Sell", wait: 2.days)
+campaign.save!
+
+
+param = campaign.to_portable_hash_gid_param
+signed_param = campaign.to_portable_hash_sgid_param
+
+copy = Campaign.new_from_portable_hash(param)
+signed_copy = Campaign.new_from_portable_hash(signed_param)
+
+hash = campaign.as_json
+portable_hash = campaign.to_portable_hash
+portable_hash_id = portable_hash.id
+portable_hash_gid = portable_hash.to_gid
+portable_hash_sgid = portable_hash.to_sgid
+portable_hash_gid_param = portable_hash.to_gid_param
+portable_hash_sgid_param = portable_hash.to_sgid_param
+
+Benchmark.bm do |x|
+  # Hash .....................................................................................................
+  #
+  x.report "Hash to PortableHash (1k times)" do
+    1_000.times { UniversalID::PortableHash.new(hash) }
+  end
+
+  x.report "PortableHash ID (1k times)" do
+    1_000.times { portable_hash.id }
+  end
+
+  x.report "PortableHash find ID (1k times)" do
+    1_000.times { UniversalID::PortableHash.find(portable_hash_id) }
+  end
+
+  x.report "PortableHash to GID (1k times)" do
+    1_000.times { portable_hash.to_gid }
+  end
+
+  x.report "PortableHash to SGID (1k times)" do
+    1_000.times { portable_hash.to_sgid }
+  end
+
+  x.report "GlobalID parse and find PortableHash GID param (1k times)" do
+    1_000.times { GlobalID.parse(portable_hash_gid_param).find }
+  end
+
+  x.report "SignedGlobalID parse and find PortableHash SGID param (1k times)" do
+    1_000.times { SignedGlobalID.parse(portable_hash_sgid_param).find }
+  end
+
+  # ActiveModel ..............................................................................................
+
+  x.report "ActiveModel to param (1k times)" do
+    1_000.times { campaign.to_portable_hash_gid_param }
+  end
+
+  x.report "ActiveModel to signed param (1k times)" do
+    1_000.times { campaign.to_portable_hash_sgid_param }
+  end
+
+  x.report "ActiveModel from param (1k times)" do
+    1_000.times { Campaign.new_from_portable_hash(param) }
+  end
+
+  x.report "ActiveModel from signed param (1k times)" do
+    1_000.times { Campaign.new_from_portable_hash(signed_param) }
+  end
+end

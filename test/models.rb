@@ -1,14 +1,10 @@
 # frozen_string_literal: true
 
+require "active_record"
+
 ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
 
 ActiveRecord::Schema.define do
-  create_table :users do |t|
-    t.column :name, :string
-    t.column :email, :string
-    t.timestamps
-  end
-
   create_table :campaigns do |t|
     t.column :name, :string
     t.column :description, :string
@@ -18,7 +14,6 @@ ActiveRecord::Schema.define do
 
   create_table :emails do |t|
     t.column :campaign_id, :integer
-    t.column :previous_email_id, :integer
     t.column :subject, :string
     t.column :body, :text
     t.column :wait, :integer
@@ -26,6 +21,7 @@ ActiveRecord::Schema.define do
   end
 end
 
+require_relative "../test/models/application_record"
 require_relative "../test/models/campaign"
 require_relative "../test/models/email"
 require_relative "../test/models/user"
