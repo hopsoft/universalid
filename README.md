@@ -5,7 +5,7 @@
       <img alt="Lines of Code" src="https://img.shields.io/badge/loc-165-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
-      <img src="https://api.codeclimate.com/v1/badges/80bcd3acced072534a3a/maintainability" />
+      <img src="https://api.codeclimate.com/v1/badges/567624cbe733fafc2330/maintainability" />
     </a>
     <a href="https://rubygems.org/gems/universalid">
       <img alt="GEM Version" src="https://img.shields.io/gem/v/universalid?color=168AFE&include_prereleases&logo=ruby&logoColor=FE1616">
