@@ -62,6 +62,7 @@ including unsaved ActiveModels. 🤯
       - [SignedGlobalID](#signedglobalid)
     - [Hash](#hash)
     - [ActiveModel](#activemodel)
+    - [Running Tests, Benchmarks, and the Demo](#running-tests-benchmarks-and-the-demo)
     - [Benchmarks](#benchmarks)
   - [License](#license)
 
@@ -214,6 +215,18 @@ sgid = email.to_portable_hash_gid_param(options)
 # Copies are new records and don't include values for id, created_at, or updated_at
 copy = Email.new_from_portable_hash(gid)
 signed_copy = Email.new_from_portable_hash(sgid)
+```
+
+### Running Tests, Benchmarks, and the Demo
+
+```
+git clone https://github.com/hopsoft/universalid.git
+cd universalid
+
+bundle
+rake test
+bin/benchmarks
+bin/demo
 ```
 
 ### Benchmarks
