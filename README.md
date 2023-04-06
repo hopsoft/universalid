@@ -30,12 +30,12 @@
       <img alt="Twitter Follow" src="https://img.shields.io/twitter/url?label=%40hopsoft&style=social&url=https%3A%2F%2Ftwitter.com%2Fhopsoft">
     </a>
   </p>
-  <h2 align="center">GlobalID support for objects like Array, Hash, ActiveRecord::Relation, and more.</h2>
-  <h3 align="center">Simple, standardized, secure marshaling for peace-of-mind object portability.</h3>
+  <h2 align="center">GlobalID support for Array, Hash, ActiveRecord::Relation, and more.</h2>
+  <h3 align="center">Simple, standardized, secure marshaling for peace-of-mind object portability</h3>
 </p>
 
-Object portability has never been easier.
-UniversalID simplifies object marshaling by bringing [`GlobalID`'s](https://github.com/rails/globalid) powerful features to additional Ruby objects...
+Portability has never been easier.
+UniversalID simplifies marshaling by bringing [`GlobalID`'s](https://github.com/rails/globalid) powerful features to more Ruby objects...
 including unsaved ActiveModels. 🤯
 
 ## Sponsors
@@ -63,6 +63,7 @@ including unsaved ActiveModels. 🤯
     - [Hash](#hash)
     - [ActiveModel](#activemodel)
     - [Benchmarks](#benchmarks)
+  - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
 
@@ -71,10 +72,9 @@ including unsaved ActiveModels. 🤯
 A GlobalID is an URI that uniquely identifies a model instance.
 It was designed to make ActiveRecord models portable across process boundaries.
 For example, passing a model instance as an argument _(from the web server)_ to a background job.
+They also facilitate use-cases like interleaved search results that mix multiple classes into a single unified result.
 
-GlobalIDs also facilitate use-cases like interleaved search results that mix multiple classes into a single unified list.
-
-They can also be [signed](https://github.com/rails/globalid#signed-global-ids) and dedicated to a
+GlobalIDs can also be [signed](https://github.com/rails/globalid#signed-global-ids) and dedicated to a
 [purpose](https://github.com/rails/globalid#signed-global-ids) with an [expiration](https://github.com/rails/globalid#signed-global-ids) policy.
 
 ### Global ID Examples
@@ -114,7 +114,6 @@ UniversalID extends GlobalID functionality to more objects.
 ### Why Expand Global ID?
 
 A variety of additional use-cases can be handled easily _(with minimal code)_ by extending GlobalID to objects like Hash.
-
 Consider a multi-step form or wizard where users incrementally build up a complex set of related ActiveRecord instances.
 
 - When do we save to the database?
@@ -122,14 +121,14 @@ Consider a multi-step form or wizard where users incrementally build up a comple
 - Should we persist the data in cache instead?
 - What if the user abandons the process?
 - How do we cleanup abandoned data?
-- Should we consider full-stack-frontend to manage things client side before saving? 😱
+- Should we consider full-stack-frontend to manage state client side before saving? 😱
 
-**Don't fret!** Universal ID supports safely marshaling the unsaved ActiveRecord between steps.
+**Don't fret!** UniversalID supports safely marshaling unsaved ActiveModels between steps.
 
 ```ruby
 # 1. Start multi-step form (partial data)
 campaign = Campaign.new(name: "Example") #....... unsaved data
-param = campaign.to_portable_hash_sgid_param #... make it portable (assign to hidden field, add to querystrig etc.)
+param = campaign.to_portable_hash_sgid_param #... make it portable (assign this to a hidden field, querystrig etc.)
 
 # HTTP request / crossing a process boundary / etc.
 
@@ -202,7 +201,7 @@ gid = email.to_portable_hash_gid_param #..... Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2
 sgid = email.to_portable_hash_sgid_param #... BAh7CEkiCGdpZAY6BkVUSSJzZ2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6OlBvcnRhYmxlSG...
 
 copy = Email.new_from_portable_hash(gid)
-secure_copy = Email.new_from_portable_hash(sgid)
+signed_copy = Email.new_from_portable_hash(sgid)
 
 email.save!
 
@@ -214,7 +213,7 @@ sgid = email.to_portable_hash_gid_param(options)
 
 # Copies are new records and don't include values for id, created_at, or updated_at
 copy = Email.new_from_portable_hash(gid)
-secure_copy = Email.new_from_portable_hash(sgid)
+signed_copy = Email.new_from_portable_hash(sgid)
 ```
 
 ### Benchmarks
@@ -273,3 +272,7 @@ ActiveModelSerializer#to_portable_hash_sgid_param      0.991336   0.002782   0.9
 Average                                                0.000099   0.000000   0.000099 (  0.000099)
 ..................................................................................................
 ```
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
