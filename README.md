@@ -155,6 +155,7 @@ UniversalID can be used to solve a multitude of problems with minimal effort.
 - Sharable artifacts (reports, configurations, etc.)
 - Data versioning
 - Digital products
+- Marshaling Current::Attributes for use in background jobs
 - etc. *the only limit is your imagination*
 
 ### Summary of Benefits
