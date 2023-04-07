@@ -8,6 +8,25 @@ require "universalid"
 require_relative "../test/models"
 
 # ............................................................................................................
+# Global ID Refersher
+# ............................................................................................................
+
+binding.pry
+
+campaign = Campaign.create(name: "Example Campaign")
+
+gid = campaign.to_global_id # to_gid
+gid_param = campaign.to_gid_param
+
+sgid = campaign.to_signed_global_id # to_sgid
+sgid_param = campaign.to_sgid_param
+
+a = GlobalID.parse(gid_param).find
+b = SignedGlobalID.parse(sgid_param).find
+
+binding.pry
+
+# ............................................................................................................
 # Create a Campaign via multi-step form (wizard) running over HTTP
 # ............................................................................................................
 
@@ -60,18 +79,20 @@ binding.pry
 binding.pry
 
 # 1. Create a portable digital product from the Campaign .....................................................
-campaign = Campaign.first
-signed_param = campaign.to_portable_hash_sgid_param(gid_options: {for: "Promotion 123", expires_in: 30.seconds})
+campaign = Campaign.find(campaign.id)
+version = UniversalID::PortableVersion.new("1.0.0", scope: "Promotional Event 2022")
+signed_param = campaign.to_portable_hash_sgid_param(gid_options: {for: version.to_gid_param, expires_in: 30.seconds})
 # NOTE: The signed param is a sellable digital product with built in purpose and scarcity!
 
 # 2. Reconstruct the shared template (digital product) .......................................................
-copy = Campaign.new_from_portable_hash(signed_param, for: "Promotion 123")
+copy = Campaign.new_from_portable_hash(signed_param, for: version.to_gid_param)
+invalid_copy = Campaign.new_from_portable_hash(signed_param, for: "Wrong Purpose")
 
 binding.pry
 
 # 3. Let the product expire (wait 30 seconds) ................................................................
-# gid = UniversalID::PortableHash.parse_gid(signed_param, for: "Promotion 123")
-invalid_copy = Campaign.new_from_portable_hash(signed_param, for: "Promotion 123")
+# gid = UniversalID::PortableHash.parse_gid(signed_param, for: version)
+expired_copy = Campaign.new_from_portable_hash(signed_param, for: version.to_gid_param)
 
 binding.pry
 
