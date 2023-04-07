@@ -129,7 +129,7 @@ Consider a multi-step form or wizard where users incrementally build up a comple
 ```ruby
 # 1. Start multi-step form (partial data)
 campaign = Campaign.new(name: "Example") #....... unsaved data
-param = campaign.to_portable_hash_sgid_param #... make it portable (assign this to a hidden field, querystrig etc.)
+param = campaign.to_portable_hash_sgid_param #... make it portable (assign this to a hidden field, querystring etc.)
 
 # HTTP request / crossing a process boundary / etc.
 
