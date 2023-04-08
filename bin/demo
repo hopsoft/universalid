@@ -96,9 +96,9 @@ binding.pry
 
 campaign = Campaign.find(campaign.id)
 
-version = UniversalID::PortableVersion.new("1.0.0", scope: "Promotional Event 2023")
+version = UniversalID::PortableVersion.new("1.0.0", scope: "Promotional Event 2023").to_sgid_param
 
-signed_param = campaign.to_portable_hash_sgid_param(gid_options: {for: version.to_gid_param, expires_in: 30.seconds})
+signed_param = campaign.to_portable_hash_sgid_param(gid_options: {for: version, expires_in: 30.seconds})
 
 # NOTE: The signed param is a sellable digital product with built in purpose and scarcity!
 
@@ -107,7 +107,7 @@ signed_param = campaign.to_portable_hash_sgid_param(gid_options: {for: version.t
 # ............................................................................................................
 binding.pry
 
-copy = Campaign.new_from_portable_hash(signed_param, for: version.to_gid_param)
+copy = Campaign.new_from_portable_hash(signed_param, for: version)
 
 invalid_copy = Campaign.new_from_portable_hash(signed_param, for: "Wrong Purpose")
 
@@ -117,7 +117,7 @@ invalid_copy = Campaign.new_from_portable_hash(signed_param, for: "Wrong Purpose
 binding.pry
 
 # gid = UniversalID::PortableHash.parse_gid(signed_param, for: version)
-expired_copy = Campaign.new_from_portable_hash(signed_param, for: version.to_gid_param)
+expired_copy = Campaign.new_from_portable_hash(signed_param, for: version)
 
 # ............................................................................................................
 binding.pry
