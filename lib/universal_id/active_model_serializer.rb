@@ -12,6 +12,10 @@ module UniversalID::ActiveModelSerializer
         gid = UniversalID::PortableHash.parse_gid(value.to_s, options)
         gid&.find || {portable_hash_error: "Invalid or expired UniversalID::PortableHash! #{value.to_s.inspect}"}
       end
+
+      # hook to ETL from old version to current version of the data structure
+      hash = yield(hash) if block_given?
+
       new hash
     rescue => error
       new(portable_hash_error: "Invalid or expired UniversalID::PortableHash! #{error.inspect}")
