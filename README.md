@@ -16,6 +16,9 @@
     <a href="https://github.com/testdouble/standard">
       <img alt="Ruby Style" src="https://img.shields.io/badge/style-standard-168AFE?logo=ruby&logoColor=FE1616" />
     </a>
+    <a href="https://gitpod.io/#https://github.com/hopsoft/universalid">
+      <img alt="Gitpod - Ready to Code" src="https://img.shields.io/badge/Gitpod-Ready--to--Code-green?style=flat&logo=gitpod&logoColor=white" />
+    </a>
     <a href="https://github.com/hopsoft/universalid/actions/workflows/tests.yml">
       <img alt="Tests" src="https://github.com/hopsoft/universalid/actions/workflows/tests.yml/badge.svg" />
     </a>
