@@ -15,4 +15,4 @@ SignedGlobalID.app = "UniversalID"
 SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
 
 require_relative "../lib/universalid"
-require_relative "./models"
+require_relative "models"

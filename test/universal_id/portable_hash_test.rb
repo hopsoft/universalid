@@ -78,7 +78,7 @@ class UniversalID::PortableHashTest < ActiveSupport::TestCase
     sgid = @hash.to_sgid
 
     expected = {
-      param: "BAh7CEkiCGdpZAY6BkVUSSJ_Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6OlBvcnRhYmxlSGFzaC9lTnFyVmlwSkxTNVJzaW9wS2szVlVVcXRTTXd0eUVsVnNsSXFTOHdwVFZYU1Vjb0R5cWFtS0ZsVksyV25waFlBSmNCVWJTMEFKa1lUSHcGOwBUSSIMcHVycG9zZQY7AFRJIgxkZWZhdWx0BjsAVEkiD2V4cGlyZXNfYXQGOwBUMA==--9d0357c4175a7b1c03f3006c81eb6b9ff04feefc",
+      param: "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJbjluYVdRNkx5OVZibWwyWlhKellXeEpSQzlWYm1sMlpYSnpZV3hKUkRvNlVHOXlkR0ZpYkdWSVlYTm9MMlZPY1hKV2FYQktURk0xVW5OcGIzQkxhek5XVlZWeGRGTk5kM1I1Uld4V2MyeEpjVk00ZDNCVVZsaFRWV052UkhseFlXMUxSbXhXU3pKWGJuQm9XVUZLWTBKVllsTXdRVXByV1ZSSWR3WTZCa1ZVIiwiZXhwIjpudWxsLCJwdXIiOiJkZWZhdWx0In19--7259000e65fcb7457126b4b8165a5710c14cec5c",
       hash: {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}}
     }
 
