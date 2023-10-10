@@ -6,6 +6,7 @@ require "active_record"
 GlobalID.app = "UniversalID"
 SignedGlobalID.app = "UniversalID"
 SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
+GlobalID::Locator.use "UniversalID", UniversalID::Locator.new
 
 ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
 

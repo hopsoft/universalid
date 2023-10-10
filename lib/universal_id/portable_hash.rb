@@ -32,7 +32,8 @@ class UniversalID::PortableHash < Hash
       value = case value
       when Hash then deep_transform(value, options)
       when Array then value.map { |val| transform(val, options: options) }
-      else value
+      else
+        implements_gid?(value) ? value.to_gid.to_s : value
       end
 
       if block_given?
@@ -40,6 +41,15 @@ class UniversalID::PortableHash < Hash
       end
 
       value
+    end
+
+    def implements_gid?(value)
+      value.respond_to?(:to_gid_param) && value.try(:persisted?)
+    end
+
+    def possible_gid_string?(value)
+      return false unless value.is_a?(String)
+      GID_PARAM_REGEX.match? value
     end
   end
 
