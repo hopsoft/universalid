@@ -11,3 +11,6 @@ require_relative "universal_id/config"
 require_relative "universal_id/portable"
 require_relative "universal_id/portable_hash"
 require_relative "universal_id/active_model_serializer"
+require_relative "universal_id/locator"
+
+GID_PARAM_REGEX = /\Agid:\/\/.*\z/
