@@ -20,7 +20,7 @@ class UniversalID::PortableHash < Hash
       exclude_list = options[:except]
       hash.each_with_object({}) do |(key, value), memo|
         key = key.to_s
-        next if include_list.any? && incldue_list.none?(key)
+        next if include_list.any? && include_list.none?(key)
         next if exclude_list.any?(key)
         transform(value, options: options) { |val| memo[key] = val }
       end
