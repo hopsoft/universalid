@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "active_model"
-require "active_support"
 require "base64"
 require "globalid"
 require "zlib"
+require "active_model"
+require "active_support"
 require_relative "universal_id/version"
 require_relative "universal_id/errors"
 require_relative "universal_id/config"
