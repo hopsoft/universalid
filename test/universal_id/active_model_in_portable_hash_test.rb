@@ -28,9 +28,8 @@ class UniversalID::ActiveModelInPortableHashTest < ActiveSupport::TestCase
   end
 
   def test_to_gid
-    gid = @portable_hash.to_gid
     expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign}
-    assert_equal expected, gid.find
+    assert_equal expected, @portable_hash.to_gid.find
   end
 
   def test_to_sgid

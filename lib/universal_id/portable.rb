@@ -5,7 +5,7 @@ module UniversalID::Portable
   include GlobalID::Identification
 
   GID_REGEX = /\Agid:\/\/.+\z/
-  GID_PARAM_REGEX = /\A[0-9a-zA-Z+\/]{20,}={0,2}.*\z/
+  GID_PARAM_REGEX = /\A[0-9a-zA-Z_+-\/]{20,}={0,2}.*\z/
 
   class_methods do
     def config
