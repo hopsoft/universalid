@@ -12,6 +12,11 @@ module UniversalID::Portable
       UniversalID.config
     end
 
+    def possible_gid_string?(value)
+      return false unless value.is_a?(String)
+      GID_REGEX.match?(value) || GID_PARAM_REGEX.match?(value)
+    end
+
     def parse_gid(gid, options = {})
       return gid if gid.is_a?(GlobalID)
       return nil unless possible_gid_string?(gid)
@@ -20,11 +25,6 @@ module UniversalID::Portable
 
     def find(id)
       raise NotImplementedError
-    end
-
-    def possible_gid_string?(value)
-      return false unless value.is_a?(String)
-      GID_REGEX.match?(value) || GID_PARAM_REGEX.match?(value)
     end
   end
 

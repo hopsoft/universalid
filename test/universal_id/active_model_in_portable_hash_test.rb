@@ -5,7 +5,7 @@ require_relative "../test_helper"
 class UniversalID::ActiveModelInPortableHashTest < ActiveSupport::TestCase
   def setup
     @campaign = Campaign.find_or_create_by!(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
-    @hash = {
+    @portable_hash = UniversalID::PortableHash.new(
       test: true,
       example: "value",
       other: nil,
@@ -15,8 +15,7 @@ class UniversalID::ActiveModelInPortableHashTest < ActiveSupport::TestCase
       },
       campaign: @campaign,
       portable_hash_options: {except: %w[remove]} # combines with config
-    }
-    @portable_hash = UniversalID::PortableHash.new(@hash)
+    )
   end
 
   def teardown

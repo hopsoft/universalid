@@ -27,7 +27,7 @@ class UniversalID::PortableHash < Hash
     end
 
     alias_method :deep_transform, :dehydrate
-    UniversalID.deprecator.deprecate_methods self, :deep_transform
+    UniversalID.deprecator.deprecate_methods self, :deep_transform, deep_transform: "Use `dehydrate` instead."
 
     def hydrate(hash)
       hash.each_with_object({}) do |(key, value), memo|
