@@ -26,6 +26,9 @@ class UniversalID::PortableHash < Hash
       end
     end
 
+    alias_method :deep_transform, :dehydrate
+    UniversalID.deprecator.deprecate_methods self, :deep_transform
+
     def hydrate(hash)
       hash.each_with_object({}) do |(key, value), memo|
         deep_hydrate(value) { |val| memo[key] = val }
