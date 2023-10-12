@@ -4,8 +4,8 @@ require_relative "../test_helper"
 
 class UniversalID::ActiveModelInPortableHashTest < ActiveSupport::TestCase
   def setup
-    @campaign = Campaign.create!(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
-    @hash = UniversalID::PortableHash.new(
+    @campaign = Campaign.find_or_create_by!(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
+    @hash = {
       test: true,
       example: "value",
       other: nil,
@@ -15,7 +15,8 @@ class UniversalID::ActiveModelInPortableHashTest < ActiveSupport::TestCase
       },
       campaign: @campaign,
       portable_hash_options: {except: %w[remove]} # combines with config
-    )
+    }
+    @portable_hash = UniversalID::PortableHash.new(@hash)
   end
 
   def teardown
@@ -23,22 +24,18 @@ class UniversalID::ActiveModelInPortableHashTest < ActiveSupport::TestCase
   end
 
   def test_find
-    assert_equal @hash, UniversalID::PortableHash.find(@hash.id)
+    expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign}
+    assert_equal expected, UniversalID::PortableHash.find(@portable_hash.id)
   end
 
   def test_to_gid
-    gid = @hash.to_gid
-
+    gid = @portable_hash.to_gid
     expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign}
-
     assert_equal expected, gid.find
   end
 
   def test_to_sgid
-    sgid = @hash.to_sgid
-
     expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign}
-
-    assert_equal expected, sgid.find
+    assert_equal expected, @portable_hash.to_sgid.find
   end
 end

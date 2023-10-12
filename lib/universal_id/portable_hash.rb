@@ -10,30 +10,35 @@ class UniversalID::PortableHash < Hash
 
     def find(id)
       compressed_json = Base64.urlsafe_decode64(id)
-      JSON.parse Zlib::Inflate.inflate(compressed_json)
+      hydrate JSON.parse(Zlib::Inflate.inflate(compressed_json))
     rescue => error
       raise UniversalID::LocatorError.new(id, error)
     end
 
-    def deep_transform(hash, options)
-      include_list = options[:only]
-      exclude_list = options[:except]
+    def dehydrate(hash, options)
+      include_list = options[:only] || []
+      exclude_list = options[:except] || []
       hash.each_with_object({}) do |(key, value), memo|
         key = key.to_s
         next if include_list.any? && include_list.none?(key)
         next if exclude_list.any?(key)
-        transform(value, options: options) { |val| memo[key] = val }
+        deep_dehydrate(value, options: options) { |val| memo[key] = val }
+      end
+    end
+
+    def hydrate(hash)
+      hash.each_with_object({}) do |(key, value), memo|
+        deep_hydrate(value) { |val| memo[key] = val }
       end
     end
 
     private
 
-    def transform(value, options:)
+    def deep_dehydrate(value, options:)
       value = case value
-      when Hash then deep_transform(value, options)
-      when Array then value.map { |val| transform(val, options: options) }
-      else
-        implements_gid?(value) ? value.to_gid.to_s : value
+      when Array then value.map { |val| deep_dehydrate(val, options: options) }
+      when Hash then dehydrate(value, options)
+      else implements_gid?(value) ? value.to_gid_param : value
       end
 
       if block_given?
@@ -43,13 +48,22 @@ class UniversalID::PortableHash < Hash
       value
     end
 
-    def implements_gid?(value)
-      value.respond_to?(:to_gid_param) && value.try(:persisted?)
+    def deep_hydrate(value)
+      value = case value
+      when Array then value.map { |val| deep_hydrate(val) }
+      when Hash then hydrate(value)
+      else
+        parsed = parse_gid(value) if possible_gid_string?(value)
+        parsed || value
+      end
+
+      value = value.find if value.is_a?(GlobalID)
+      yield value if block_given?
+      value
     end
 
-    def possible_gid_string?(value)
-      return false unless value.is_a?(String)
-      GID_PARAM_REGEX.match? value
+    def implements_gid?(value)
+      value.respond_to? :to_gid_param
     end
   end
 
@@ -58,7 +72,7 @@ class UniversalID::PortableHash < Hash
 
   def initialize(hash)
     @options = merge_options!(extract_options!(hash))
-    merge! self.class.deep_transform(hash, options)
+    merge! self.class.dehydrate(hash, options)
   end
 
   def id

@@ -13,14 +13,17 @@ class UniversalID::Locator < GlobalID::Locator::BaseLocator
     when Array
       value.map(&:deep_hydrate) if value.is_a?(Array)
     when Hash
-      value.deep_transform_values { |v| possible_gid_string?(v) ? GlobalID::Locator.locate(v) : v }
+      value.deep_transform_values do |val|
+        if UniversalID.possible_gid_string?(val)
+          GlobalID.parse(val)&.find
+        elsif UniversalID.possible_sgid_string?(val)
+          SignedGlobalID.parse(val)&.find
+        else
+          val
+        end
+      end
     else
       value
     end
-  end
-
-  def possible_gid_string?(value)
-    return false unless value.is_a?(String)
-    GID_PARAM_REGEX.match? value
   end
 end

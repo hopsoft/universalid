@@ -27,8 +27,8 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
-  s.add_dependency "activemodel", ">= 6.0", "< 7.1"
-  s.add_dependency "activesupport", ">= 6.0", "< 7.1"
+  s.add_dependency "activemodel", ">= 6.0"
+  s.add_dependency "activesupport", ">= 6.0"
   s.add_dependency "globalid", ">= 1.1"
 
   s.add_development_dependency "activerecord"
