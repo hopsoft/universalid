@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require "base64"
-require "globalid"
 require "zlib"
+require "globalid"
 require "active_model"
 require "active_support"
 require_relative "universal_id/version"
