@@ -4,7 +4,7 @@ module UniversalID::Portable
   extend ActiveSupport::Concern
   include GlobalID::Identification
 
-  GID_REGEX = /\Agid:\/\/.*\z/
+  GID_REGEX = /\Agid:\/\/.+\z/
   GID_PARAM_REGEX = /\A[0-9a-zA-Z+\/]{20,}={0,2}.*\z/
 
   class_methods do
