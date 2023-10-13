@@ -221,17 +221,16 @@ copy = Email.new_from_portable_hash(gid)
 signed_copy = Email.new_from_portable_hash(sgid)
 ```
 
-### ActiveModel Nested in Hash
+### Deeply Nested GlobalIDs
 
-UniversalID can also handle instances of `ActiveModel` that are nested inside a hash:
+UniversalID implicitly handles deeply nested objects that implement GlobalID.
 
 ```rb
-@campaign = Campaign.create(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
-@hash = UniversalID::PortableHash.new({name: "Example", list: [1,2,3], object: {nested: true}, campaign: @campaign})
+campaign = Campaign.create(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
+portable = UniversalID::PortableHash.new({name: "Example", list: [1,2,3], object: {nested: true}, campaign: campaign})
 
-gid_param = portable.to_gid_param #..... Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6OlBvcnRhYmxlSGFzaC9lTnFyVnNwTHpFMVZzbEp5clVqTUxj...
-sgid_param = portable.to_sgid_param #... BAh7CEkiCGdpZAY6BkVUSSIBg2dpZDovL1VuaXZlcnNhbElEL1VuaXZlcnNhbElEOjpQb3J0YWJsZUhhc2gvZU5x...
-
+gid_param = portable.to_gid_param #..... Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6OlBvcnRhYmxlSGFzaC...
+sgid_param = portable.to_sgid_param #... eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJZ0hFWjJsa09pOHZWVzVwZG...
 
 UniversalID::PortableHash.parse_gid(gid_param).find
 {name: "Example", list: [1,2,3], object: {nested: true}, campaign: <Campaign id: ...>}}
@@ -239,12 +238,6 @@ UniversalID::PortableHash.parse_gid(gid_param).find
 
 UniversalID::PortableHash.parse_gid(sgid_param).find
 {"name"=>"Example", "list"=>[1, 2, 3], "object"=>{"nested"=>true, campaign: <Campaign id: ...>}}
-```
-
-**Note**: To use this feature, you have to engage our custom GlobalID Locator:
-
-```rb
-GlobalID::Locator.use :my_app, UniversalID::Locator.new
 ```
 
 ### Running Tests, Benchmarks, and the Demo
