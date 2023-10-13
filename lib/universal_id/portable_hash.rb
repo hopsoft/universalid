@@ -38,10 +38,14 @@ class UniversalID::PortableHash < Hash
     private
 
     def deep_dehydrate(value, options:)
-      value = case value
-      when Array then value.map { |val| deep_dehydrate(val, options: options) }
-      when Hash then dehydrate(value, options)
-      else implements_gid?(value) ? value.to_gid_param : value
+      value = if implements_gid?(value)
+        implements_gid?(value) ? value.to_gid_param : value
+      else
+        case value
+        when Array then value.map { |val| deep_dehydrate(val, options: options) }
+        when Hash then dehydrate(value, options)
+        else value
+        end
       end
 
       if block_given?
@@ -52,12 +56,14 @@ class UniversalID::PortableHash < Hash
     end
 
     def deep_hydrate(value)
-      value = case value
-      when Array then value.map { |val| deep_hydrate(val) }
-      when Hash then hydrate(value)
+      value = if possible_gid_string?(value)
+        parse_gid(value) || value
       else
-        parsed = parse_gid(value) if possible_gid_string?(value)
-        parsed || value
+        case value
+        when Array then value.map { |val| deep_hydrate(val) }
+        when Hash then hydrate(value)
+        else value
+        end
       end
 
       value = value.find if value.is_a?(GlobalID)
