@@ -71,6 +71,37 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
       }
     }
 
+    assert_equal expected, UniversalID::PortableHash.parse_gid(b.to_gid_param).find
+  end
+
+  def test_parse_and_find_by_sgid_deep
+    a = UniversalID::PortableHash.new(
+      test: true,
+      nested: @portable_hash
+    )
+
+    assert UniversalID::PortableHash.possible_gid_string?(a["nested"])
+
+    b = UniversalID::PortableHash.new(
+      test: true,
+      nested: a
+    )
+
+    assert UniversalID::PortableHash.possible_gid_string?(b["nested"])
+
+    expected = {
+      "test" => true,
+      "nested" => {
+        "test" => true,
+        "nested" => {
+          "test" => true,
+          "example" => "value",
+          "nested" => {"keep" => "keep"},
+          "campaign" => @campaign
+        }
+      }
+    }
+
     assert_equal expected, UniversalID::PortableHash.parse_gid(b.to_sgid_param).find
   end
 end
