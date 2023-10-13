@@ -34,6 +34,10 @@ class UniversalID::PortableHashTest < ActiveSupport::TestCase
     assert_equal "eNqrVipJLS5RsiopKk3VUUqtSMwtyElVslIqS8wpTVXSUcoDyqamKFlVK2WnphYAJcBUbS0AJkYTHw", @hash.id
   end
 
+  def test_cache_key
+    assert_equal "UniversalID::PortableHash/ab27422bb1b56e481ae4eba214e22907", @hash.cache_key
+  end
+
   def test_find
     assert_equal @hash, UniversalID::PortableHash.find(@hash.id)
   end

@@ -21,4 +21,8 @@ module UniversalID::Portable
   def id
     raise NotImplementedError
   end
+
+  def cache_key
+    "#{self.class.name}/#{Digest::MD5.hexdigest(id)}"
+  end
 end

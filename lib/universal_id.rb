@@ -2,6 +2,7 @@
 
 require "base64"
 require "zlib"
+require "digest/md5"
 require "globalid"
 require "active_model"
 require "active_support/all"
