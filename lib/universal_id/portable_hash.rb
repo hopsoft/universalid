@@ -40,6 +40,8 @@ class UniversalID::PortableHash < Hash
     def deep_dehydrate(value, options:)
       value = if implements_gid?(value)
         value.to_gid_param
+      elsif defined?(ActiveRecord) && value.is_a?(ActiveRecord::Associations::CollectionProxy)
+        deep_dehydrate(value.to_a, options: options)
       else
         case value
         when Array then value.map { |val| deep_dehydrate(val, options: options) }

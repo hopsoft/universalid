@@ -5,6 +5,10 @@ require_relative "../test_helper"
 class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
   def setup
     @campaign = Campaign.find_or_create_by!(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
+    @campaign.emails << @campaign.emails.build(subject: "First Email", body: "Welcome", wait: 1.day)
+    @campaign.emails << @campaign.emails.build(subject: "Second Email", body: "Follow Up", wait: 1.week)
+    @campaign.emails << @campaign.emails.build(subject: "Third Email", body: "Hard Sell", wait: 2.days)
+
     @portable_hash = UniversalID::PortableHash.new(
       test: true,
       example: "value",
@@ -14,9 +18,10 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
         remove: "remove"
       },
       campaign: @campaign,
+      emails: @campaign.emails,
       portable_hash_options: {except: %w[remove]} # combines with config
     )
-    @expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign}
+    @expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign, "emails" => @campaign.emails.to_a}
   end
 
   def teardown
@@ -66,7 +71,8 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
           "test" => true,
           "example" => "value",
           "nested" => {"keep" => "keep"},
-          "campaign" => @campaign
+          "campaign" => @campaign,
+          "emails" => @campaign.emails.to_a
         }
       }
     }
@@ -97,7 +103,8 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
           "test" => true,
           "example" => "value",
           "nested" => {"keep" => "keep"},
-          "campaign" => @campaign
+          "campaign" => @campaign,
+          "emails" => @campaign.emails.to_a
         }
       }
     }
