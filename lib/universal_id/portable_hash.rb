@@ -39,7 +39,7 @@ class UniversalID::PortableHash < Hash
 
     def deep_dehydrate(value, options:)
       value = if implements_gid?(value)
-        implements_gid?(value) ? value.to_gid_param : value
+        value.to_gid_param
       else
         case value
         when Array then value.map { |val| deep_dehydrate(val, options: options) }
