@@ -221,6 +221,25 @@ copy = Email.new_from_portable_hash(gid)
 signed_copy = Email.new_from_portable_hash(sgid)
 ```
 
+### Deeply Nested GlobalIDs
+
+UniversalID implicitly handles deeply nested objects that implement GlobalID.
+
+```rb
+campaign = Campaign.create(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
+portable = UniversalID::PortableHash.new({name: "Example", list: [1,2,3], object: {nested: true}, campaign: campaign})
+
+gid_param = portable.to_gid_param #..... Z2lkOi8vVW5pdmVyc2FsSUQvVW5pdmVyc2FsSUQ6OlBvcnRhYmxlSGFzaC...
+sgid_param = portable.to_sgid_param #... eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJZ0hFWjJsa09pOHZWVzVwZG...
+
+UniversalID::PortableHash.parse_gid(gid_param).find
+{name: "Example", list: [1,2,3], object: {nested: true}, campaign: <Campaign id: ...>}}
+
+
+UniversalID::PortableHash.parse_gid(sgid_param).find
+{"name"=>"Example", "list"=>[1, 2, 3], "object"=>{"nested"=>true, campaign: <Campaign id: ...>}}
+```
+
 ### Running Tests, Benchmarks, and the Demo
 
 ```

@@ -3,6 +3,7 @@
 require "bundler"
 require "pry-byebug"
 require "pry-doc"
+require "active_support"
 require "active_support/test_case"
 require "faker"
 

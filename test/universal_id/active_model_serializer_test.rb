@@ -79,7 +79,7 @@ class UniversalID::ActiveModelSerializerTest < ActiveSupport::TestCase
     assert_equal @campaign.name, copy.name
     assert_equal @campaign.to_portable_hash, copy.to_portable_hash
 
-    sleep 0.1
+    sleep 0.1.seconds
 
     copy = Campaign.new_from_portable_hash(param)
     assert copy.invalid?
@@ -100,7 +100,7 @@ class UniversalID::ActiveModelSerializerTest < ActiveSupport::TestCase
     assert_equal @campaign.name, copy.name
     assert_equal @campaign.to_portable_hash, copy.to_portable_hash
 
-    sleep 0.1
+    sleep 0.1.seconds
 
     copy = Campaign.new_from_portable_hash(param, for: "Testing")
     assert copy.invalid?
