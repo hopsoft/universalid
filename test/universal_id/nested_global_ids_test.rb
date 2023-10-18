@@ -21,7 +21,7 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
       emails: @campaign.emails,
       portable_hash_options: {except: %w[remove]} # combines with config
     )
-    @expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign, "emails" => @campaign.emails.to_a}
+    @expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign, "emails" => @campaign.emails}
   end
 
   def teardown
@@ -72,7 +72,7 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
           "example" => "value",
           "nested" => {"keep" => "keep"},
           "campaign" => @campaign,
-          "emails" => @campaign.emails.to_a
+          "emails" => @campaign.emails
         }
       }
     }
@@ -104,7 +104,7 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
           "example" => "value",
           "nested" => {"keep" => "keep"},
           "campaign" => @campaign,
-          "emails" => @campaign.emails.to_a
+          "emails" => @campaign.emails
         }
       }
     }
