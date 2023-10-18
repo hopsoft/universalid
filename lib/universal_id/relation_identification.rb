@@ -7,7 +7,12 @@ module UniversalID::RelationIdentification
     compressed_sql = Base64.urlsafe_decode64(id)
     sql = Zlib::Inflate.inflate(compressed_sql)
 
-    extract_model_class(sql).find_by_sql(Arel.sql(sql))
+    records = extract_model_class(sql).find_by_sql(Arel.sql(sql))
+    relation = ActiveRecord::Relation.new(extract_model_class(sql))
+    relation.instance_variable_set(:@records, records)
+    relation.instance_variable_set(:@loaded, true)
+
+    relation
   rescue => error
     raise UniversalID::LocatorError.new(id, error)
   end
@@ -20,7 +25,7 @@ module UniversalID::RelationIdentification
   private
 
   def extract_model_class(sql)
-    find_model_by_table_name(extract_table_name(sql))
+    @model_class ||= find_model_by_table_name(extract_table_name(sql))
   end
 
   def find_model_by_table_name(table_name)
