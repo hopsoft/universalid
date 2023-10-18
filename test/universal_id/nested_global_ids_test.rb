@@ -19,9 +19,10 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
       },
       campaign: @campaign,
       emails: @campaign.emails,
+      all_emails: Email.all,
       portable_hash_options: {except: %w[remove]} # combines with config
     )
-    @expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign, "emails" => @campaign.emails}
+    @expected = {"test" => true, "example" => "value", "nested" => {"keep" => "keep"}, "campaign" => @campaign, "emails" => @campaign.emails, "all_emails" => Email.all}
   end
 
   def teardown
@@ -72,12 +73,18 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
           "example" => "value",
           "nested" => {"keep" => "keep"},
           "campaign" => @campaign,
-          "emails" => @campaign.emails
+          "emails" => @campaign.emails,
+          "all_emails" => Email.all
         }
       }
     }
 
-    assert_equal expected, UniversalID::PortableHash.parse_gid(b.to_gid_param).find
+    located = UniversalID::PortableHash.parse_gid(b.to_gid_param).find
+
+    assert_equal expected, located
+    assert_equal @campaign.class, located["nested"]["nested"]["campaign"].class
+    assert_equal @campaign.emails.class, located["nested"]["nested"]["emails"].class
+    assert_equal Email.all.class, located["nested"]["nested"]["all_emails"].class
   end
 
   def test_parse_and_find_by_sgid_deep
@@ -104,11 +111,17 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
           "example" => "value",
           "nested" => {"keep" => "keep"},
           "campaign" => @campaign,
-          "emails" => @campaign.emails
+          "emails" => @campaign.emails,
+          "all_emails" => Email.all
         }
       }
     }
 
-    assert_equal expected, UniversalID::PortableHash.parse_gid(b.to_sgid_param).find
+    located = UniversalID::PortableHash.parse_gid(b.to_sgid_param).find
+
+    assert_equal expected, located
+    assert_equal @campaign.class, located["nested"]["nested"]["campaign"].class
+    assert_equal @campaign.emails.class, located["nested"]["nested"]["emails"].class
+    assert_equal Email.all.class, located["nested"]["nested"]["all_emails"].class
   end
 end
