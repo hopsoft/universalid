@@ -44,7 +44,7 @@ class UniversalID::PortableHash < Hash
         # fall back to target relation
         deep_dehydrate(value.scope, options: options)
       elsif defined?(ActiveRecord) && value.is_a?(ActiveRecord::Relation)
-        deep_dehydrate(value.to_a, options: options)
+        deep_dehydrate(value.select(value.primary_key).to_a, options: options)
       else
         case value
         when Array then value.map { |val| deep_dehydrate(val, options: options) }
