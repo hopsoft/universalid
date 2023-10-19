@@ -85,6 +85,10 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
     assert located["nested"]["nested"]["campaign"].is_a?(@campaign.class)
     assert located["nested"]["nested"]["emails"].is_a?(ActiveRecord::Relation)
     assert located["nested"]["nested"]["all_emails"].is_a?(ActiveRecord::Relation)
+
+    # assert element equality
+    assert_equal located["nested"]["nested"]["emails"].to_a, @campaign.emails.to_a
+    assert_equal located["nested"]["nested"]["all_emails"].to_a, Email.all.to_a
   end
 
   def test_parse_and_find_by_sgid_deep
@@ -123,5 +127,9 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
     assert located["nested"]["nested"]["campaign"].is_a?(@campaign.class)
     assert located["nested"]["nested"]["emails"].is_a?(ActiveRecord::Relation)
     assert located["nested"]["nested"]["all_emails"].is_a?(ActiveRecord::Relation)
+
+    # assert element equality
+    assert_equal located["nested"]["nested"]["emails"].to_a, @campaign.emails.to_a
+    assert_equal located["nested"]["nested"]["all_emails"].to_a, Email.all.to_a
   end
 end
