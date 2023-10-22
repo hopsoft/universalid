@@ -5,11 +5,9 @@ class UniversalID::PackableHash
 
   class << self
     def config
-      @config ||= super[:hash].with_indifferent_access.tap do |c|
-        only = c[:only] || []
-        except = c[:except] || []
-        c[:only] = only.map(&:to_s)
-        c[:except] = except.map(&:to_s)
+      super[:packable_hash].with_indifferent_access.tap do |c|
+        c[:only] = (c[:only] || []).map(&:to_s)
+        c[:except] = (c[:except] || []).map(&:to_s)
       end
     end
 

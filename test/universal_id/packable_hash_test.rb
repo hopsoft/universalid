@@ -4,8 +4,8 @@ require_relative "../test_helper"
 
 class UniversalID::HashTest < ActiveSupport::TestCase
   def setup
-    UniversalID.config[:hash][:except] = %w[id created_at updated_at remove]
-    @config = UniversalID.config[:hash]
+    @orig_config = UniversalID.config[:packable_hash].dup
+    UniversalID.config[:packable_hash][:except] = %w[id created_at updated_at remove]
     @hash = {
       test: true,
       example: "value",
@@ -20,8 +20,8 @@ class UniversalID::HashTest < ActiveSupport::TestCase
     @packable_hash = UniversalID::PackableHash.new(@hash)
   end
 
-  def test_config
-    assert_equal @config, UniversalID.config[:hash]
+  def teardown
+    UniversalID.config[:packable_hash] = @orig_config
   end
 
   def test_packable_hash

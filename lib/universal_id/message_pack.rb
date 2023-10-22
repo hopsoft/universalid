@@ -15,3 +15,4 @@ module UniversalID::MessagePack
 end
 
 require_relative "message_pack/types/object"
+require_relative "message_pack/types/time"

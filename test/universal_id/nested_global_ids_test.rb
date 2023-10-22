@@ -4,7 +4,8 @@ require_relative "../test_helper"
 
 class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
   def setup
-    UniversalID.config[:hash][:except] = %w[remove]
+    @orig_config = UniversalID.config[:packable_hash].dup
+    UniversalID.config[:packable_hash][:except] = %w[remove]
     @campaign = Campaign.find_or_create_by!(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
     @hash = {
       test: true,
@@ -41,6 +42,7 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
   end
 
   def teardown
+    UniversalID.config[:packable_hash] = @orig_config
     @campaign.destroy
   end
 
