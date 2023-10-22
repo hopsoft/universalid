@@ -29,4 +29,3 @@ end
 require_relative "../test/models/application_record"
 require_relative "../test/models/campaign"
 require_relative "../test/models/email"
-require_relative "../test/models/user"

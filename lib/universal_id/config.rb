@@ -2,17 +2,13 @@
 
 module UniversalID
   def self.config
-    @config ||= begin
-      options = ActiveSupport::OrderedOptions.new
-
+    @config ||= ActiveSupport::OrderedOptions.new.tap do |c|
       # Default options for UniversalID::PortableHash ........................................................
-      options.portable_hash = {
+      c.hash = {
         allow_blank: false,
         only: [], # keys to include (trumps except)
         except: [] # keys to exclude
       }
-
-      options
     end
   end
 end
