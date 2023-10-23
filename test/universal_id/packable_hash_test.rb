@@ -60,7 +60,7 @@ class UniversalID::HashTest < ActiveSupport::TestCase
 
     assert_equal expected[:uri], gid.to_s
     assert_equal expected[:param], gid.to_param
-    assert_equal expected[:hash], gid.find
+    assert_equal expected[:hash], gid.find.to_h
     assert_equal gid, GlobalID.parse(expected[:uri])
     assert_equal gid, GlobalID.parse(expected[:param])
   end
@@ -75,7 +75,7 @@ class UniversalID::HashTest < ActiveSupport::TestCase
 
     assert_equal expected[:param], sgid.to_s
     assert_equal expected[:param], sgid.to_param
-    assert_equal expected[:hash], sgid.find
+    assert_equal expected[:hash], sgid.find.to_h
     assert_equal sgid, SignedGlobalID.parse(expected[:param])
   end
 end

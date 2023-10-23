@@ -10,6 +10,10 @@ class UniversalID::PackableHash
         c[:except] = (c[:except] || []).map(&:to_s)
       end
     end
+
+    def find(id)
+      new super
+    end
   end
 
   delegate_missing_to :@hash
