@@ -18,8 +18,8 @@ class UniversalID::PackableHash
     @hash = hash.with_indifferent_access
   end
 
-  def to_packable(**)
-    packable_value(self, **).deep_stringify_keys
+  def to_packable(**options)
+    packable_value(self, **options).deep_stringify_keys
   end
 
   private

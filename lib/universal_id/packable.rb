@@ -61,7 +61,7 @@ module UniversalID::Packable
     raise NotImplementedError
   end
 
-  def cache_key(**)
-    "#{self.class.name}/#{Digest::MD5.hexdigest(id(**))}"
+  def cache_key(**options)
+    "#{self.class.name}/#{Digest::MD5.hexdigest(id(**options))}"
   end
 end
