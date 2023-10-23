@@ -4,8 +4,6 @@ require_relative "../test_helper"
 
 class UniversalID::HashTest < ActiveSupport::TestCase
   def setup
-    @orig_config = UniversalID.config[:packable_hash].dup
-    UniversalID.config[:packable_hash][:except] = %w[id created_at updated_at remove]
     @hash = {
       test: true,
       example: "value",
@@ -20,25 +18,22 @@ class UniversalID::HashTest < ActiveSupport::TestCase
     @packable_hash = UniversalID::PackableHash.new(@hash)
   end
 
-  def teardown
-    UniversalID.config[:packable_hash] = @orig_config
-  end
-
   def test_packable_hash
     assert @hash, @packable_hash.to_h
   end
 
   def test_id
-    assert_equal "eNprXlKSWlxyeHlqRWJuQU7q0rLEnNLUZXlAsdSUxiXZqakFYAIAdhkSPA", @packable_hash.id
+    assert_equal "eNprXlKSWlxyeHlqRWJuQU7q0rLEnNLUZXlAsdSUxiXZqakFYAIAdhkSPA", @packable_hash.id(except: %w[created_at updated_at remove])
   end
 
   def test_cache_key
-    assert_equal "UniversalID::PackableHash/c0e15c990791eaa8c00b71a89444e4f2", @packable_hash.cache_key
+    assert_equal "UniversalID::PackableHash/c0e15c990791eaa8c00b71a89444e4f2", @packable_hash.cache_key(except: %w[created_at updated_at remove])
   end
 
   def test_find
     expected = {test: true, example: "value", nested: {keep: "keep"}}
-    assert_equal expected, UniversalID::PackableHash.find(@packable_hash.id)
+    actual = UniversalID::PackableHash.find(@packable_hash.id(except: %w[created_at updated_at remove]))
+    assert_equal expected, actual.deep_symbolize_keys
   end
 
   def test_find_invalid
@@ -55,7 +50,7 @@ class UniversalID::HashTest < ActiveSupport::TestCase
   end
 
   def test_to_gid
-    gid = @packable_hash.to_gid
+    gid = @packable_hash.to_gid(uid: {except: %w[created_at updated_at remove]})
 
     expected = {
       uri: "gid://UniversalID/UniversalID::PackableHash/eNprXlKSWlxyeHlqRWJuQU7q0rLEnNLUZXlAsdSUxiXZqakFYAIAdhkSPA",
@@ -71,7 +66,7 @@ class UniversalID::HashTest < ActiveSupport::TestCase
   end
 
   def test_to_sgid
-    sgid = @packable_hash.to_sgid
+    sgid = @packable_hash.to_sgid(uid: {except: %w[created_at updated_at remove]})
 
     expected = {
       param: "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJbXRuYVdRNkx5OVZibWwyWlhKellXeEpSQzlWYm1sMlpYSnpZV3hKUkRvNlVHRmphMkZpYkdWSVlYTm9MMlZPY0hKWWJFdFRWMng0ZVdWSWJIRlNWMHAxVVZVM2NUQnlURVZ1VGt4VldsaHNRWE5rVTFWNGFWaGFjV0ZyUmxsQlNVRmthR3RUVUVFR09nWkZWQT09IiwiZXhwIjpudWxsLCJwdXIiOiJkZWZhdWx0In19--c10543bab07e009450c50b945ce5add413ba44b6",

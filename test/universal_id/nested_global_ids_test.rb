@@ -4,8 +4,7 @@ require_relative "../test_helper"
 
 class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
   def setup
-    @orig_config = UniversalID.config[:packable_hash].dup
-    UniversalID.config[:packable_hash][:except] = %w[remove]
+    # UniversalID.config[:packable_hash][:except] = %w[remove]
     @campaign = Campaign.find_or_create_by!(name: "Example Campaign", description: "Example Description", trigger: "Example Trigger")
     @hash = {
       test: true,
@@ -16,7 +15,7 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
         remove: "remove"
       },
       campaign: @campaign
-    }
+    }.deep_symbolize_keys
     @packable_hash = UniversalID::PackableHash.new(@hash)
     @expected = {test: true, example: "value", nested: {keep: "keep"}, campaign: @campaign}
 
@@ -38,43 +37,52 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
           campaign: @campaign
         }
       }
-    }
+    }.deep_symbolize_keys
   end
 
   def teardown
-    UniversalID.config[:packable_hash] = @orig_config
     @campaign.destroy
   end
 
   def test_to_gid
-    assert_equal @expected, @packable_hash.to_gid.find
+    actual = @packable_hash.to_gid(uid: {except: %w[remove]}).find
+    assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_to_sgid
-    assert_equal @expected, @packable_hash.to_sgid.find
+    actual = @packable_hash.to_sgid(uid: {except: %w[remove]}).find
+    assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_find_by_packable_hash_id
-    assert_equal @expected, UniversalID::PackableHash.find(@packable_hash.id)
+    actual = UniversalID::PackableHash.find(@packable_hash.id(except: %w[remove]))
+    assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_find_by_gid_param
-    assert_equal @expected, GlobalID.parse(@packable_hash.to_gid_param).find
+    $nate = 1
+    actual = GlobalID.parse(@packable_hash.to_gid_param(uid: {except: %w[remove]})).find
+    $nate = nil
+    assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_find_by_sgid_param
-    assert_equal @expected, SignedGlobalID.parse(@packable_hash.to_sgid_param).find
+    actual = SignedGlobalID.parse(@packable_hash.to_sgid_param(uid: {except: %w[remove]})).find
+    assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_nested_find_by_id
-    assert_equal @nested_expected, UniversalID::PackableHash.find(@nested_packable_hash.id)
+    actual = UniversalID::PackableHash.find(@nested_packable_hash.id(except: %w[remove]))
+    assert_equal @nested_expected, actual.deep_symbolize_keys
   end
 
   def test_nested_find_by_gid
-    assert_equal @nested_expected, GlobalID.parse(@nested_packable_hash.to_gid_param).find
+    actual = GlobalID.parse(@nested_packable_hash.to_gid_param(uid: {except: %w[remove]})).find
+    assert_equal @nested_expected, actual.deep_symbolize_keys
   end
 
   def test_nested_find_by_sgid
-    assert_equal @nested_expected, SignedGlobalID.parse(@nested_packable_hash.to_sgid_param).find
+    actual = SignedGlobalID.parse(@nested_packable_hash.to_sgid_param(uid: {except: %w[remove]})).find
+    assert_equal @nested_expected, actual.deep_symbolize_keys
   end
 end
