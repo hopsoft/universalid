@@ -60,9 +60,7 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
   end
 
   def test_find_by_gid_param
-    $nate = 1
     actual = GlobalID.parse(@packable_hash.to_gid_param(uid: {except: %w[remove]})).find
-    $nate = nil
     assert_equal @expected, actual.deep_symbolize_keys
   end
 
