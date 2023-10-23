@@ -58,16 +58,15 @@ class UniversalID::ActiveModelSerializerTest < ActiveSupport::TestCase
     actual = campaign.to_packable_hash(methods: :emails_attributes)
     assert_equal expected, actual.deep_symbolize_keys
 
-    expected = "eNprXJGcmFuQmJme17IkLzE3dY1farmCM1RodUpqcXJRZkFJZn7eepCEC4K_vKQoMz09tWg1SDwEwt6YmpuYmVMcn1gClEwqLUktntS8vLg0KSs1uQSszhUkr2C4JCk_pXKdp3quQl5-iUJxYllqiuKS8sTMknMMnFYN2LQY4dGioVAEAC9nUH0"
+    id = "eNprXJGcmFuQmJme17IkLzE3dY1farmCM1RodUpqcXJRZkFJZn7eepCEC4K_vKQoMz09tWg1SDwEwt6YmpuYmVMcn1gClEwqLUktntS8vLg0KSs1uQSszhUkr2C4JCk_pXKdp3quQl5-iUJxYllqiuKS8sTMknMMnFYN2LQY4dGioVAEAC9nUH0"
     actual = campaign.to_packable_hash(methods: :emails_attributes).id
-    assert_equal expected, actual
+    assert_equal id, actual
 
     actual = Campaign.from_packable_hash(actual)
     assert_equal campaign.attributes, actual.attributes
     assert_equal campaign.emails.map(&:attributes), actual.emails.map(&:attributes)
 
     # also works if you don't know the model name(s)
-    id = "eNprXJGcmFuQmJme17IkLzE3dY1farmCM1RodUpqcXJRZkFJZn7eepCEC4K_vKQoMz09tWg1SDwEwt6YmpuYmVMcn1gClEwqLUktntS8vLg0KSs1uQSszhUkr2C4JCk_pXKdp3quQl5-iUJxYllqiuKS8sTMknMMnFYN2LQY4dGioVAEAC9nUH0"
     actual = ApplicationRecord.from_packable_hash(id) # <- Using ApplicationRecord for the lookup 🤯
     assert_equal campaign.attributes, actual.attributes
     assert_equal campaign.emails.map(&:attributes), actual.emails.map(&:attributes)
