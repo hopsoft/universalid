@@ -41,6 +41,7 @@ class UniversalID::PackableHash
   end
 
   def packable_value(value, **options)
+    options = options.with_indifferent_access # TODO: Remove this line after we stop supporting Ruby 2.7
     case value
     when Array then value.map { |val| packable_value(val, **options) }
     when Hash, UniversalID::PackableHash
