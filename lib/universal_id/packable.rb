@@ -11,9 +11,22 @@ module UniversalID::Packable
   class_methods do
     delegate :config, to: :UniversalID
 
-    # Required to satisfy the GlobalID::Identification interface/protocol
-    def find(id)
-      UniversalID::Marshal.load id
+    # Attempts to find or reconstruct a UniversalID::Packable from the given id.
+    #
+    # Supports the following values:
+    # - UniversalID::Packable
+    # - A UniversalID::Packable id string
+    # - A GlobalID or SignedGlobalID from a UniversalID::Packable
+    #
+    # Raises UniversalID::LocatorError if the id cannot be located
+    def find(id, options = {})
+      value = if id.is_a?(UniversalID::Packable)
+        id
+      elsif UniversalID.possible_gid_string?(id)
+        gid = GlobalID.parse(id, options) || SignedGlobalID.parse(value, options)
+        gid&.find
+      end
+      value || UniversalID::Marshal.load(id)
     end
   end
 

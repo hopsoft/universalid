@@ -13,18 +13,11 @@ module UniversalID::ActiveModelSerializer
     #
     # Returns nil if the record cannot be found or reconstructed.
     def from_packable_hash(value, options = {})
-      hash = if value.is_a?(UniversalID::PackableHash)
-        value
-      elsif UniversalID.possible_gid_string?(value)
-        gid = GlobalID.parse(value, options) || SignedGlobalID.parse(value, options)
-        gid&.find
-      end
-      hash ||= UniversalID::PackableHash.find(value)
-
+      hash = UniversalID::PackableHash.find(value)
       model = hash&.keys&.first&.classify&.safe_constantize
       attributes = hash&.values&.first
-      return nil unless model && attributes
 
+      return nil unless model && attributes
       return model.new(attributes) unless attributes[:id]
 
       model.find_by(id: attributes[:id]).tap do |record|
