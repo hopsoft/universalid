@@ -49,6 +49,75 @@ class UniversalID::HashTest < ActiveSupport::TestCase
     assert error.cause
   end
 
+  def test_id_with_allow_blank_option
+    hash = {a: 1, b: 2, c: nil, d: [], e: {}}
+    portable_hash = UniversalID::PackableHash.new(hash)
+
+    # default (false)
+    actual = UniversalID::PackableHash.find(portable_hash.id).to_h
+    assert_equal hash.slice(:a, :b), actual.deep_symbolize_keys
+
+    # true
+    actual = UniversalID::PackableHash.find(portable_hash.id(allow_blank: true)).to_h
+    assert_equal hash, actual.deep_symbolize_keys
+  end
+
+  def test_id_with_only_option
+    hash = {a: 1, b: 2, c: 3}
+    portable_hash = UniversalID::PackableHash.new(hash)
+    expected = hash.slice(:a, :b)
+
+    # symbol values
+    actual = UniversalID::PackableHash.find(portable_hash.id(only: %i[a b])).to_h
+    assert_equal expected, actual.deep_symbolize_keys
+
+    # string values
+    actual = UniversalID::PackableHash.find(portable_hash.id(only: %w[a b])).to_h
+    assert_equal expected, actual.deep_symbolize_keys
+  end
+
+  def test_id_with_only_option_nested
+    hash = {a: 1, b: 2, c: 3, z: {a: "nested"}}
+    portable_hash = UniversalID::PackableHash.new(hash)
+    expected = hash.slice(:a, :z)
+
+    # symbol values
+    actual = UniversalID::PackableHash.find(portable_hash.id(only: %i[a z])).to_h
+    assert_equal expected, actual.deep_symbolize_keys
+
+    # string values
+    actual = UniversalID::PackableHash.find(portable_hash.id(only: %w[a z])).to_h
+    assert_equal expected, actual.deep_symbolize_keys
+  end
+
+  def test_id_with_except_option
+    hash = {a: 1, b: 2, c: 3}
+    portable_hash = UniversalID::PackableHash.new(hash)
+    expected = hash.slice(:a, :b)
+
+    # symbol values
+    actual = UniversalID::PackableHash.find(portable_hash.id(except: %i[c])).to_h
+    assert_equal expected, actual.deep_symbolize_keys
+
+    # string values
+    actual = UniversalID::PackableHash.find(portable_hash.id(except: %w[c])).to_h
+    assert_equal expected, actual.deep_symbolize_keys
+  end
+
+  def test_id_with_except_option_nested
+    hash = {a: 1, b: 2, c: 3, d: {c: "nested"}}
+    portable_hash = UniversalID::PackableHash.new(hash)
+    expected = hash.slice(:a, :b)
+
+    # symbol values
+    actual = UniversalID::PackableHash.find(portable_hash.id(except: %i[c])).to_h
+    assert_equal expected, actual.deep_symbolize_keys
+
+    # string values
+    actual = UniversalID::PackableHash.find(portable_hash.id(except: %w[c])).to_h
+    assert_equal expected, actual.deep_symbolize_keys
+  end
+
   def test_to_gid
     gid = @packable_hash.to_gid(uid: {except: %w[created_at updated_at remove]})
 

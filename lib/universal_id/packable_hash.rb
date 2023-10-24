@@ -23,22 +23,33 @@ class UniversalID::PackableHash
   end
 
   def to_packable(**options)
+    options = normalize_options(**options)
     packable_value(self, **options).deep_stringify_keys
   end
 
   private
 
-  def packable_value(value, **options)
-    options = config.merge(options)
+  def normalize_options(**options)
+    config.merge(options).tap do |opts|
+      opts[:allow_blank] = !!opts[:allow_blank]
+      %i[only except].each do |key|
+        opts[key] ||= []
+        opts[key] = [opts[key]].compact.flatten unless opts[key].is_a?(Array)
+        opts[key] = opts[key].map(&:to_s)
+      end
+    end
+  end
 
+  def packable_value(value, **options)
     case value
     when Array then value.map { |val| packable_value(val, **options) }
     when Hash, UniversalID::PackableHash
       value.each_with_object({}) do |(key, val), memo|
         key = key.to_s
-        next if options[:only].any? && options[:none].none?(key)
+        next if options[:only].any? && options[:only].none?(key)
         next if options[:except].any?(key)
-        memo[key] = packable_value(val, **options) if val.present? || options[:allow_blank]
+        val = packable_value(val, **options)
+        memo[key] = val if val.present? || options[:allow_blank]
       end
     else value
     end
