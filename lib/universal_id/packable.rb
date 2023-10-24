@@ -23,7 +23,7 @@ module UniversalID::Packable
       value = if id.is_a?(UniversalID::Packable)
         id
       elsif UniversalID.possible_gid_string?(id)
-        gid = GlobalID.parse(id, options) || SignedGlobalID.parse(value, options)
+        gid = GlobalID.parse(id, options) || SignedGlobalID.parse(id, options)
         gid&.find
       end
       value || UniversalID::Marshal.load(id)

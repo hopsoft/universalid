@@ -59,12 +59,12 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
   end
 
   def test_find_by_gid_param
-    actual = GlobalID.parse(@packable_hash.to_gid_param(uid: {except: %w[remove]})).find
+    actual = UniversalID::PackableHash.find(@packable_hash.to_gid_param(uid: {except: %w[remove]}))
     assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_find_by_sgid_param
-    actual = SignedGlobalID.parse(@packable_hash.to_sgid_param(uid: {except: %w[remove]})).find
+    actual = UniversalID::PackableHash.find(@packable_hash.to_sgid_param(uid: {except: %w[remove]}))
     assert_equal @expected, actual.deep_symbolize_keys
   end
 
@@ -74,12 +74,12 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
   end
 
   def test_nested_find_by_gid
-    actual = GlobalID.parse(@nested_packable_hash.to_gid_param(uid: {except: %w[remove]})).find
+    actual = UniversalID::PackableHash.find(@nested_packable_hash.to_gid_param(uid: {except: %w[remove]}))
     assert_equal @nested_expected, actual.deep_symbolize_keys
   end
 
   def test_nested_find_by_sgid
-    actual = SignedGlobalID.parse(@nested_packable_hash.to_sgid_param(uid: {except: %w[remove]})).find
+    actual = UniversalID::PackableHash.find(@nested_packable_hash.to_sgid_param(uid: {except: %w[remove]}))
     assert_equal @nested_expected, actual.deep_symbolize_keys
   end
 end

@@ -30,9 +30,33 @@ class UniversalID::HashTest < ActiveSupport::TestCase
     assert_equal "UniversalID::PackableHash/c0e15c990791eaa8c00b71a89444e4f2", @packable_hash.cache_key(except: %w[created_at updated_at remove])
   end
 
-  def test_find
+  def test_find_id
     expected = {test: true, example: "value", nested: {keep: "keep"}}
     actual = UniversalID::PackableHash.find(@packable_hash.id(except: %w[created_at updated_at remove]))
+    assert_equal expected, actual.deep_symbolize_keys
+  end
+
+  def test_find_gid
+    expected = {test: true, example: "value", nested: {keep: "keep"}}
+    actual = UniversalID::PackableHash.find(@packable_hash.to_gid(uid: {except: %w[created_at updated_at remove]}))
+    assert_equal expected, actual.deep_symbolize_keys
+  end
+
+  def test_find_gid_param
+    expected = {test: true, example: "value", nested: {keep: "keep"}}
+    actual = UniversalID::PackableHash.find(@packable_hash.to_gid_param(uid: {except: %w[created_at updated_at remove]}))
+    assert_equal expected, actual.deep_symbolize_keys
+  end
+
+  def test_find_sgid
+    expected = {test: true, example: "value", nested: {keep: "keep"}}
+    actual = UniversalID::PackableHash.find(@packable_hash.to_sgid(uid: {except: %w[created_at updated_at remove]}))
+    assert_equal expected, actual.deep_symbolize_keys
+  end
+
+  def test_find_sgid_param
+    expected = {test: true, example: "value", nested: {keep: "keep"}}
+    actual = UniversalID::PackableHash.find(@packable_hash.to_sgid_param(uid: {except: %w[created_at updated_at remove]}))
     assert_equal expected, actual.deep_symbolize_keys
   end
 

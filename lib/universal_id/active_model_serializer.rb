@@ -4,15 +4,7 @@ module UniversalID::ActiveModelSerializer
   extend ActiveSupport::Concern
 
   class_methods do
-    # Attempts to find or reconstruct a record from the given value.
-    #
-    # Supports the following values:
-    # - UniversalID::PackableHash
-    # - A UniversalID::PackableHash id
-    # - A GlobalID or SignedGlobalID from a UniversalID::PackableHash
-    #
-    # Returns nil if the record cannot be found or reconstructed.
-    def from_packable_hash(value, options = {})
+    def from_packable(value, options = {})
       hash = UniversalID::PackableHash.find(value)
       model = hash&.keys&.first&.classify&.safe_constantize
       attributes = hash&.values&.first
@@ -26,7 +18,7 @@ module UniversalID::ActiveModelSerializer
     end
   end
 
-  def to_packable_hash(options = {})
+  def to_packable(options = {})
     UniversalID::PackableHash.new as_json(options.merge(root: true))
   end
 end
