@@ -274,6 +274,13 @@ bin/demo
 ### Benchmarks
 
 ```
+Model Name: MacBook Air
+Chip: Apple M1
+Total Number of Cores: 8 (4 performance and 4 efficiency)
+Memory: 16 GB
+
+--------------------------------------------------------------------------------------------------
+
 # Simple Campaign with 3 associated Email records (nested attributes)
 
 ==================================================================================================
