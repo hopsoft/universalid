@@ -37,8 +37,12 @@
   <h3 align="center">Simple, standardized, secure marshaling</h3>
 </p>
 
+---
+
 __**Why UniversalID?**__ For the modern Rails developer aiming to streamline processes, ensure data flexibility, and elevate their toolkit.
 __Discover the potential, and make your Rails applications more powerful than ever!__
+
+---
 
 :white_check_mark: **Instant Portability**: Make ANY object effortlessly portable across process boundaries by including one module and implementing a single method!
 
