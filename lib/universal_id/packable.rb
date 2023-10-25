@@ -11,14 +11,14 @@ module UniversalID::Packable
   class_methods do
     delegate :config, to: :UniversalID
 
-    # Attempts to find or reconstruct a UniversalID::Packable from the given id.
+    # Finds a UniversalID::Packable instance
     #
-    # Supports the following values:
-    # - UniversalID::Packable
-    # - A UniversalID::Packable id string
-    # - A GlobalID or SignedGlobalID from a UniversalID::Packable
+    # @param id [UniversalID::Packable, GlobalID, SignedGlobalID, String] the ID to find
+    # @param options [Hash] options for the GlobalID or SignedGlobalID parse method
+    #                       ignored if the id is not a GlobalID or SignedGlobalID string
     #
-    # Raises UniversalID::LocatorError if the id cannot be located
+    # @return [UniversalID::Packable, nil] the found UniversalID object or nil if no object was found.
+    # @raise [UniversalID::LocatorError] if the id cannot be found
     def find(id, options = {})
       value = if id.is_a?(UniversalID::Packable)
         id
@@ -62,18 +62,28 @@ module UniversalID::Packable
     end
   end
 
-  # Required to satisfy the GlobalID::Identification interface/protocol
+  # Returns a UniversalID string
+  #
+  # @param options [Hash] options to pass to the `to_packable` method
+  # @return [String] the Universal ID of the object.
   def id(**options)
     options = @packable_options || {} if options.blank?
     UniversalID::Marshal.dump to_packable(**options)
   end
 
-  # Abstract method to be implemented by including classes
-  # to satisfy the UniversalID::Packable interface/protocol
+  # Converts an object to a UniversalID::Packable
+  #
+  # @param options [Hash] Options for the conversion process
+  # @return [UniversalID::Packable] The object in packable format
+  # @raise [NotImplementedError] If the method is not implemented in a subclass
   def to_packable(**options)
     raise NotImplementedError
   end
 
+  # Generates a unique cache key for the object based on its ID
+  #
+  # @param options [Hash] A hash of options to be passed to the `id` method
+  # @return [String] A string that uniquely identifies the object for caching purposes
   def cache_key(**options)
     "#{self.class.name}/#{Digest::MD5.hexdigest(id(**options))}"
   end
