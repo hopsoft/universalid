@@ -4,6 +4,10 @@ class UniversalID::PackableHash
   include UniversalID::Packable
 
   class << self
+    # Returns the default configuration for UniversalID::PackableHash
+    # Ensures that the keys of the hash can be accessed both as strings and symbols
+    #
+    # @return [HashWithIndifferentAccess] the configuration
     def config
       @config ||= super[:packable_hash].with_indifferent_access.tap do |c|
         c[:only] = (c[:only] || []).map(&:to_s)
@@ -11,6 +15,11 @@ class UniversalID::PackableHash
       end
     end
 
+    # Finds a UniversalID::PackableHash record by it's ID
+    #
+    # @param id [UniversalID::Packable, GlobalID, SignedGlobalID, String] the ID to find
+    # @return [UniversalID::Packable, nil] the found UniversalID object or nil if no object was found.
+    # @raise [UniversalID::LocatorError] if the id cannot be found
     def find(id)
       new super
     end
@@ -18,10 +27,22 @@ class UniversalID::PackableHash
 
   delegate_missing_to :@hash
 
+  # Initializes a new instance of UniversalID::PackableHash
+  #
+  # @param hash [Hash] (default: {}) the Hash to wrap
+  # @return [void]
   def initialize(hash = {})
     @hash = hash.with_indifferent_access
   end
 
+  # Converts the object to a UniversalID::PackableHash
+  # Implicitly and recursively converts any values that impelment GlobalID::Identification
+  #
+  # @param options [Hash] the options to normalize and use for packing.
+  # @option options [Boolean] (default: false) :allow_blank whether to allow blank values
+  # @option options [Array] (default: []) :only keys to include (recursive, trumps except)
+  # @option options [Array] (default: []) :except keys to exclude (recursive)
+  # @return [UniversalID::PackableHash]
   def to_packable(**options)
     options = normalize_options(**options)
     packable_value(self, **options).deep_stringify_keys

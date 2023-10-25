@@ -16,7 +16,6 @@ module UniversalID::Packable
     # @param id [UniversalID::Packable, GlobalID, SignedGlobalID, String] the ID to find
     # @param options [Hash] options for the GlobalID or SignedGlobalID parse method
     #                       ignored if the id is not a GlobalID or SignedGlobalID string
-    #
     # @return [UniversalID::Packable, nil] the found UniversalID object or nil if no object was found.
     # @raise [UniversalID::LocatorError] if the id cannot be found
     def find(id, options = {})

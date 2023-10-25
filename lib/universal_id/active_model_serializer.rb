@@ -4,7 +4,12 @@ module UniversalID::ActiveModelSerializer
   extend ActiveSupport::Concern
 
   class_methods do
-    def from_packable(value, options = {})
+    # Converts a UniversalID::PackableHash to an ActiveRecord
+    #
+    # @param value [UniversalID::Packable, GlobalID, SignedGlobalID, String] the packable value to be converted
+    # @return [Object, nil] an ActiveRecord instance or nil
+    # @raise [UniversalID::LocatorError] if the packable value cannot be found
+    def from_packable(value, ...)
       hash = UniversalID::PackableHash.find(value)
       model = hash&.keys&.first&.classify&.safe_constantize
       attributes = hash&.values&.first
@@ -18,6 +23,10 @@ module UniversalID::ActiveModelSerializer
     end
   end
 
+  # Converts an ActiveRecord to a UniversalID::PackableHash
+  #
+  # @param options [Hash] (default: {}) options to pass to the as_json method
+  # @return [UniversalID::PackableHash]
   def to_packable(options = {})
     UniversalID::PackableHash.new as_json(options.merge(root: true))
   end
