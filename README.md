@@ -2,7 +2,7 @@
   <h1 align="center">Universal ID 🌌</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-165-47d299.svg" />
+      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-216-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
       <img src="https://api.codeclimate.com/v1/badges/567624cbe733fafc2330/maintainability" />
@@ -37,9 +37,26 @@
   <h3 align="center">Simple, standardized, secure marshaling for peace-of-mind object portability</h3>
 </p>
 
-Portability has never been easier.
-UniversalID simplifies marshaling by bringing [`GlobalID`'s](https://github.com/rails/globalid) powerful features to more Ruby objects...
-including unsaved ActiveModels. 🤯
+**Introducing the UniversalID Gem: The Future of Object Portability in Rails!**
+
+:white_check_mark: **Instant Portability**: Make ANY object effortlessly portable across process boundaries by including one module and implementing a single method!
+
+:white_check_mark: **Small Payload**: Reduced payload size ensures effortless sharing of objects in URLs, browser cookies, local storage, or any desired location, stress-free.
+
+:white_check_mark: **Deep Marshaling**: Implicitly marshal embedded objects that implement GlobalID, even when they're deeply nested inside your data structure.
+
+:white_check_mark: **ActiveRecord Support**: Unsaved changes? New records? Child records? UniversalID has got you covered.
+
+:white_check_mark: **Limitless Use Cases**: From hassle-free multi-step forms to implicit marhsaling of CurrentAttributes for ActiveJobs/Sidekiq Workers - the sky's the limit!
+
+:white_check_mark: **Simple Data Migration**: Transfer large subsets of data between fragmented datastores without centralized/tempoary storage - just marshal, pass, and unmarshal!
+
+:white_check_mark: **Secure Your Data**: Since UniversalID conforms to the GlobalID protocol, utilize security features from SignedGlobalID, like 'purpose' and 'expiration'.
+
+:white_check_mark: **Self-Contained Digital Products**: Pave the way for innovative digital product creation.
+
+__**Why UniversalID?**__ For the modern Rails developer aiming to streamline processes, ensure data flexibility, and elevate their toolkit.
+__Discover the potential, and make your Rails applications more powerful than ever!__
 
 ## Sponsors
 
@@ -73,7 +90,7 @@ including unsaved ActiveModels. 🤯
 
 ## What is Global ID?
 
-A GlobalID is an URI that uniquely identifies a model instance.
+A GlobalID is an URI that uniquely identifies an ActiveRecord instance.
 It was designed to make ActiveRecord models portable across process boundaries.
 For example, passing a model instance as an argument _(from the web server)_ to a background job.
 They also facilitate use-cases like interleaved search results that mix multiple classes into a single unified list.
@@ -111,13 +128,13 @@ UniversalID extends GlobalID functionality to more objects.
 
 - Array
 - Hash
-- ActiveModel _(unsaved)_
+- ActiveRecord _(unsaved or with unsaved changes)_
 - ActiveRecord::Relation
 - etc.
 
 ### Why Expand Global ID?
 
-A variety of additional use-cases can be handled easily _(with minimal code)_ by extending GlobalID to objects like Hash and unsaved ActiveModels.
+A variety of additional use-cases can be handled easily _(with minimal code)_ by extending GlobalID to support unsaved ActiveRecords and other objects like Hash.
 Consider a multi-step form or wizard where users incrementally build up a complex set of related ActiveRecord instances.
 
 - When do we save to the database?
@@ -127,7 +144,7 @@ Consider a multi-step form or wizard where users incrementally build up a comple
 - How do we cleanup abandoned data?
 - Should we consider full-stack-frontend to manage state client side before saving? 😱
 
-**Don't fret!** UniversalID supports safely marshaling unsaved ActiveModels between steps.
+**Don't fret!** UniversalID supports safely marshaling unsaved ActiveRecors between steps.
 
 ```ruby
 # 1. Start multi-step form (partial data)
