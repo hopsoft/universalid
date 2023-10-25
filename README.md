@@ -37,6 +37,9 @@
   <h3 align="center">Simple, standardized, secure marshaling</h3>
 </p>
 
+__**Why UniversalID?**__ For the modern Rails developer aiming to streamline processes, ensure data flexibility, and elevate their toolkit.
+__Discover the potential, and make your Rails applications more powerful than ever!__
+
 :white_check_mark: **Instant Portability**: Make ANY object effortlessly portable across process boundaries by including one module and implementing a single method!
 
 :white_check_mark: **Small Payload**: Reduced payload size ensures effortless sharing of objects in URLs, browser cookies, local storage, or any desired location, stress-free.
@@ -52,9 +55,6 @@
 :white_check_mark: **Secure Your Data**: Since UniversalID conforms to the GlobalID protocol, utilize security features from SignedGlobalID, like 'purpose' and 'expiration'.
 
 :white_check_mark: **Self-Contained Digital Products**: Pave the way for innovative digital product creation.
-
-__**Why UniversalID?**__ For the modern Rails developer aiming to streamline processes, ensure data flexibility, and elevate their toolkit.
-__Discover the potential, and make your Rails applications more powerful than ever!__
 
 ## Sponsors
 
@@ -126,7 +126,7 @@ UniversalID extends GlobalID functionality to more objects.
 
 - Array
 - Hash
-- ActiveRecord _(unsaved or with unsaved changes)_
+- ActiveRecord _(saved, unsaved, or with unsaved changes)_
 - ActiveRecord::Relation
 - etc.
 
@@ -142,7 +142,7 @@ Consider a multi-step form or wizard where users incrementally build up a comple
 - How do we cleanup abandoned data?
 - Should we consider full-stack-frontend to manage state client side before saving? 😱
 
-**Don't fret!** UniversalID supports safely marshaling unsaved ActiveRecors between steps.
+**Don't fret!** UniversalID supports safely marshaling unsaved ActiveRecords between steps.
 
 ```ruby
 # 1. Start multi-step form (partial data)
