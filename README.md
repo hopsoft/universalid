@@ -33,11 +33,9 @@
       <img alt="Twitter Follow" src="https://img.shields.io/twitter/url?label=%40hopsoft&style=social&url=https%3A%2F%2Ftwitter.com%2Fhopsoft">
     </a>
   </p>
-  <h2 align="center">GlobalID support for Array, Hash, ActiveRecord::Relation, and more.</h2>
-  <h3 align="center">Simple, standardized, secure marshaling for peace-of-mind object portability</h3>
+  <h2 align="center">Introducing the UniversalID Gem: The Future of Object Portability in Rails!</h2>
+  <h3 align="center">Simple, standardized, secure marshaling</h3>
 </p>
-
-**Introducing the UniversalID Gem: The Future of Object Portability in Rails!**
 
 :white_check_mark: **Instant Portability**: Make ANY object effortlessly portable across process boundaries by including one module and implementing a single method!
 
