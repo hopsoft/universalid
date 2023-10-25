@@ -60,17 +60,6 @@ __Discover the potential, and make your Rails applications more powerful than ev
 
 :white_check_mark: **Self-Contained Digital Products**: Pave the way for innovative digital product creation.
 
-## Sponsors
-
-<p align="center">
-  <em>Proudly sponsored by</em>
-</p>
-<p align="center">
-  <a href="https://www.clickfunnels.com?utm_source=hopsoft&utm_medium=open-source&utm_campaign=universalid">
-    <img src="https://images.clickfunnel.com/uploads/digital_asset/file/176632/clickfunnels-dark-logo.svg" width="575" />
-  </a>
-</p>
-
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
@@ -89,6 +78,17 @@ __Discover the potential, and make your Rails applications more powerful than ev
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
+
+## Sponsors
+
+<p align="center">
+  <em>Proudly sponsored by</em>
+</p>
+<p align="center">
+  <a href="https://www.clickfunnels.com?utm_source=hopsoft&utm_medium=open-source&utm_campaign=universalid">
+    <img src="https://images.clickfunnel.com/uploads/digital_asset/file/176632/clickfunnels-dark-logo.svg" width="575" />
+  </a>
+</p>
 
 ## What is Global ID?
 
@@ -275,56 +275,57 @@ bin/demo
 
 ```
 # Simple Campaign with 3 associated Email records (nested attributes)
+
 ==================================================================================================
 Benchmarking 10000 iterations
 ==================================================================================================
                                                            user     system      total        real
-PortableHash.new                                       0.194428   0.000358   0.194786 (  0.194788)
-Average                                                0.000019   0.000000   0.000019 (  0.000019)
+PackableHash.new                                       0.016230   0.000346   0.016576 (  0.016678)
+Average                                                0.000002   0.000000   0.000002 (  0.000002)
 ..................................................................................................
                                                            user     system      total        real
-PortableHash.new w/ options                            0.191249   0.000421   0.191670 (  0.191677)
-Average                                                0.000019   0.000000   0.000019 (  0.000019)
+PackableHash.new w/ options                            0.032482   0.000432   0.032914 (  0.033105)
+Average                                                0.000003   0.000000   0.000003 (  0.000003)
 ..................................................................................................
                                                            user     system      total        real
-PortableHash.find                                      0.061181   0.002219   0.063400 (  0.063401)
-Average                                                0.000006   0.000000   0.000006 (  0.000006)
+PackableHash.find                                      0.231522   0.006379   0.237901 (  0.239147)
+Average                                                0.000023   0.000001   0.000024 (  0.000024)
 ..................................................................................................
                                                            user     system      total        real
-PortableHash#id                                        0.342809   0.001674   0.344483 (  0.344494)
-Average                                                0.000034   0.000000   0.000034 (  0.000034)
+PackableHash#id                                        0.214681   0.023791   0.238472 (  0.238879)
+Average                                                0.000021   0.000002   0.000024 (  0.000024)
 ..................................................................................................
                                                            user     system      total        real
-PortableHash#to_gid                                    0.422914   0.001586   0.424500 (  0.424498)
-Average                                                0.000042   0.000000   0.000042 (  0.000042)
+PackableHash#to_gid                                    0.322109   0.011918   0.334027 (  0.334213)
+Average                                                0.000032   0.000001   0.000033 (  0.000033)
 ..................................................................................................
                                                            user     system      total        real
-PortableHash#to_gid_param                              0.437669   0.001826   0.439495 (  0.439509)
-Average                                                0.000044   0.000000   0.000044 (  0.000044)
+PackableHash#to_gid_param                              0.358419   0.005656   0.364075 (  0.364187)
+Average                                                0.000036   0.000001   0.000036 (  0.000036)
 ..................................................................................................
                                                            user     system      total        real
-PortableHash#to_sgid                                   0.430941   0.002055   0.432996 (  0.433020)
-Average                                                0.000043   0.000000   0.000043 (  0.000043)
+PackableHash#to_sgid                                   0.332682   0.022946   0.355628 (  0.355834)
+Average                                                0.000033   0.000002   0.000036 (  0.000036)
 ..................................................................................................
                                                            user     system      total        real
-PortableHash#to_sgid_param                             0.492965   0.001968   0.494933 (  0.494978)
-Average                                                0.000049   0.000000   0.000049 (  0.000049)
+PackableHash#to_sgid_param                             0.510308   0.030927   0.541235 (  0.541707)
+Average                                                0.000051   0.000003   0.000054 (  0.000054)
 ..................................................................................................
                                                            user     system      total        real
-ActiveModelSerializer.new_from_portable_hash           3.009667   0.006939   3.016606 (  3.017388)
-Average                                                0.000301   0.000001   0.000302 (  0.000302)
+ActiveModelSerializer.from_packable                    1.160950   0.008105   1.169055 (  1.170653)
+Average                                                0.000116   0.000001   0.000117 (  0.000117)
 ..................................................................................................
                                                            user     system      total        real
-ActiveModelSerializer.new_from_portable_hash (signed)  3.189282   0.006650   3.195932 (  3.196076)
-Average                                                0.000319   0.000001   0.000320 (  0.000320)
+ActiveModelSerializer.from_packable (signed)           1.451884   0.009179   1.461063 (  1.465221)
+Average                                                0.000145   0.000001   0.000146 (  0.000147)
 ..................................................................................................
                                                            user     system      total        real
-ActiveModelSerializer#to_portable_hash_gid_param       0.923773   0.002653   0.926426 (  0.926427)
-Average                                                0.000092   0.000000   0.000093 (  0.000093)
+ActiveModelSerializer#to_packable.to_gid_param         0.510293   0.002411   0.512704 (  0.513190)
+Average                                                0.000051   0.000000   0.000051 (  0.000051)
 ..................................................................................................
                                                            user     system      total        real
-ActiveModelSerializer#to_portable_hash_sgid_param      0.991336   0.002782   0.994118 (  0.994133)
-Average                                                0.000099   0.000000   0.000099 (  0.000099)
+ActiveModelSerializer#to_packable.to_sgid_param        0.695506   0.004005   0.699511 (  0.701094)
+Average                                                0.000070   0.000000   0.000070 (  0.000070)
 ..................................................................................................
 ```
 

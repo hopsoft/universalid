@@ -26,30 +26,30 @@ campaign.emails << campaign.emails.build(subject: "Third Email", body: "Hard Sel
 campaign.save!
 
 # setup ......................................................................................................
-param = campaign.to_portable_hash_gid_param
-signed_param = campaign.to_portable_hash_sgid_param
+param = campaign.to_packable.to_gid_param
+signed_param = campaign.to_packable.to_sgid_param
 hash = campaign.as_json
-hash_with_options = hash.merge(portable_hash_options: {except: [:trigger, :wait]})
-portable_hash = campaign.to_portable_hash
-portable_hash_id = portable_hash.id
+hash_with_options = hash.merge(packable_hash_options: {except: [:trigger, :wait]})
+packable_hash = campaign.to_packable(except: [:trigger, :wait])
+packable_hash_id = packable_hash.id
 
 # benchmarks .................................................................................................
 puts "".ljust(@pad, "=")
 puts "Benchmarking #{@count} iterations"
 puts "".ljust(@pad, "=")
 
-# PortableHash ...............................................................................................
-run("PortableHash.new") { UniversalID::PortableHash.new(hash) }
-run("PortableHash.new w/ options") { UniversalID::PortableHash.new(hash_with_options) }
-run("PortableHash.find") { UniversalID::PortableHash.find(portable_hash_id) }
-run("PortableHash#id") { portable_hash.id }
-run("PortableHash#to_gid") { portable_hash.to_gid }
-run("PortableHash#to_gid_param") { portable_hash.to_gid_param }
-run("PortableHash#to_sgid") { portable_hash.to_sgid }
-run("PortableHash#to_sgid_param") { portable_hash.to_sgid_param }
+# PackableHash ...............................................................................................
+run("PackableHash.new") { UniversalID::PackableHash.new(hash) }
+run("PackableHash.new w/ options") { UniversalID::PackableHash.new(hash_with_options) }
+run("PackableHash.find") { UniversalID::PackableHash.find(packable_hash_id) }
+run("PackableHash#id") { packable_hash.id }
+run("PackableHash#to_gid") { packable_hash.to_gid }
+run("PackableHash#to_gid_param") { packable_hash.to_gid_param }
+run("PackableHash#to_sgid") { packable_hash.to_sgid }
+run("PackableHash#to_sgid_param") { packable_hash.to_sgid_param }
 
 # ActiveModel ..............................................................................................
-run("ActiveModelSerializer.new_from_portable_hash") { Campaign.new_from_portable_hash(param) }
-run("ActiveModelSerializer.new_from_portable_hash (signed)") { Campaign.new_from_portable_hash(signed_param) }
-run("ActiveModelSerializer#to_portable_hash_gid_param") { campaign.to_portable_hash_gid_param }
-run("ActiveModelSerializer#to_portable_hash_sgid_param") { campaign.to_portable_hash_sgid_param }
+run("ActiveModelSerializer.from_packable") { Campaign.from_packable(param) }
+run("ActiveModelSerializer.from_packable (signed)") { Campaign.from_packable(signed_param) }
+run("ActiveModelSerializer#to_packable.to_gid_param") { campaign.to_packable.to_gid_param }
+run("ActiveModelSerializer#to_packable.to_sgid_param") { campaign.to_packable.to_sgid_param }
