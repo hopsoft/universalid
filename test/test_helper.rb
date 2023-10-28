@@ -17,3 +17,19 @@ SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
 
 require_relative "../lib/universalid"
 require_relative "models"
+
+# test_helper.rb
+class Object
+  @@debug = false
+
+  def debug?
+    !!@@debug
+  end
+
+  def debug
+    @@debug = true
+    yield
+  ensure
+    @@debug = false
+  end
+end
