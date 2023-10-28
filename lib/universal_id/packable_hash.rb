@@ -1,29 +1,29 @@
 # frozen_string_literal: true
 
-class UniversalID::MarshalableHash
+class UniversalID::PackableHash
   include UniversalID::Packable
 
   class << self
-    # Returns the default default configuration for UniversalID::MarshalableHash
+    # Returns the default default configuration for UniversalID::PackableHash
     #
     # @return [HashWithIndifferentAccess] the default configuration
     def config
-      @config ||= UniversalID.config.dig(:marshalable_hash).with_indifferent_access
+      @config ||= UniversalID.config.dig(:packable_hash).with_indifferent_access
     end
 
-    # Returns the default options for `to_packpackable`
-    # These defaults can be overridden when calling `to_packable`
+    # Default options for UniversalID::PackableHash#pack
+    # These defaults can be overridden when calling #pack
     #
     # @return [HashWithIndifferentAccess]
-    def default_to_packable_options
-      @default_to_packable_options ||= config.dig(:to_packable_options).tap do |c|
+    def default_pack_options
+      @default_pack_options ||= config.dig(:pack_options).tap do |c|
         c[:only] = (c[:only] || []).map(&:to_s)
         c[:except] = (c[:except] || []).map(&:to_s)
       end
     end
   end
 
-  delegate :default_to_packable_options, to: :"self.class"
+  delegate :default_pack_options, to: :"self.class"
   delegate_missing_to :@hash
 
   # Initializes a new instance of UniversalID::MarshalableHash
@@ -34,7 +34,7 @@ class UniversalID::MarshalableHash
     @hash = hash.with_indifferent_access
   end
 
-  # Converts the object to a UniversalID::MarshalableHash
+  # Packs the Hash into a compact URL safe String
   # Implicitly and recursively converts any values that impelment GlobalID::Identification
   #
   # @param options [Hash] the options to normalize and use for packing.
@@ -42,17 +42,16 @@ class UniversalID::MarshalableHash
   # @option options [Array] (default: []) :only keys to include (recursive, trumps except)
   # @option options [Array] (default: []) :except keys to exclude (recursive)
   # @return [UniversalID::PackableObject]
-  def to_packable(options = {})
-    UniversalID::PackableObject.new(
-      packable_value(@hash, normalize_options(options)).deep_stringify_keys
-    )
+  def pack(options = {})
+    value = packable_value(@hash, normalize_options(options)).deep_stringify_keys
+    UniversalID::Marshal.dump value
   end
 
   private
 
   def normalize_options(options = {})
     options ||= {}
-    default_to_packable_options.merge(options).with_indifferent_access.tap do |opts|
+    default_pack_options.merge(options).with_indifferent_access.tap do |opts|
       opts[:allow_blank] = !!opts[:allow_blank]
       %i[only except].each do |key|
         opts[key] ||= []
@@ -65,7 +64,7 @@ class UniversalID::MarshalableHash
   def packable_value(value, options = {})
     case value
     when Array then value.map { |val| packable_value(val, options) }
-    when Hash, UniversalID::MarshalableHash
+    when Hash, UniversalID::PackableHash
       value.each_with_object({}) do |(key, val), memo|
         key = key.to_s
         next if options[:only].any? && options[:only].none?(key)

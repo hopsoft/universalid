@@ -3,44 +3,55 @@
 module UniversalID::Packable
   extend ActiveSupport::Concern
 
+  UID_REGEX = /\Auid:\/\/.+\z/
+  GID_REGEX = /\Agid:\/\/.+\z/
+  GID_PARAM_REGEX = /\A[0-9a-zA-Z_+-\/]{20,}={0,2}.*\z/
+
   class_methods do
-    # Finds a UniversalID::Packable instance
+    # Unpacks a value into a UniversalID::Packable instance
     #
-    # @param id [UniversalID::Packable, GlobalID, SignedGlobalID, String] the ID to find
+    # @param value [UniversalID::Packable, UniversalID::UID, URI::GID, GlobalID, SignedGlobalID, String] the value to unpack
     # @param options [Hash] options for the GlobalID or SignedGlobalID parse method
-    #                       ignored if the id is not a GlobalID or SignedGlobalID string
-    # @return [UniversalID::Packable, nil] the found UniversalID object or nil if no object was found.
-    # @raise [UniversalID::LocatorError] if the id cannot be found
-    # @raise [UniversalID::NotImplementedError]
-    def find(id, options = {})
-      new UniversalID::PackableObject.find(id, options)
+    #                       ignored if the value is not a GlobalID or SignedGlobalID string
+    # @return [UniversalID::Packable, nil] a UniversalID::Packable or nil
+    def unpack(value, options = {})
+      case value
+      when ->(v) { v.blank? } then nil
+      when UniversalID::Packable then value
+      when UniversalID::UID then value.packable_class.unpack(value.payload) if value.unpackable?
+      when GlobalID then unpack(GlobalID.parse(value, options)&.find, options)
+      when SignedGlobalID then unpack(SignedGlobalID.parse(value, options)&.find, options)
+      when URI::GID then unpack(value.to_s, options)
+      when String
+        return unpack(UniversalID::UID.parse(value)) if GID_REGEX.match?(value.to_s)
+        return unpack(GlobalID.parse(value) || SignedGlobalID.parse(value, options)) if GID_REGEX.match?(value.to_s)
+
+        gid = GlobalID.parse(value) || SignedGlobalID.parse(value, options)
+        return unpack(gid) if gid
+
+        unpacked = UniversalID::Marshal.load(value)
+        unpacked ? new(unpacked) : nil
+      end
     end
   end
 
-  # Add GlobalID::Identification `to_*` conversion methods
-  # All `to_*` methods are delegated to the UniversalID::PackableObject returned by `to_packable`
-  # Each GID method accepts the same options as the corresponding GlobalID::Identification method
-  # with the addition of a `packable_options: {}` keypair which is passed to `to_packable`
-  GlobalID::Identification.public_instance_methods(false).each do |name|
-    next if method_defined?(name)
-    next unless name.to_s.start_with?("to_")
+  included do
+    attr_reader :object
 
-    method = GlobalID::Identification.instance_method(name)
-    args = method.parameters
-    next unless args.length == 1
-    next unless args.first&.first == :opt
-
-    define_method name do |packable_options: {}, **options|
-      to_packable(packable_options).send(name, **options)
+    def initialize(object = Object.new)
+      @object = object
     end
   end
 
-  # Converts an object to a UniversalID::PackableObject
+  # Packs the Object into a compact URL safe String
   #
-  # @param options [Hash] Options for the conversion process
-  # @return [UniversalID::PackableObject]
-  # @raise [NotImplementedError]
-  def to_packable(options = {})
-    raise NotImplementedError
+  # @param options [Hash] packing options (ignored, but can be overridden by subclasses)
+  # @return [String] the packed value
+  def pack(options = {})
+    UniversalID::Marshal.dump object
+  end
+
+  def to_uri(pack_options = {})
+    UniversalID::UID.create self, pack_options: pack_options
   end
 end

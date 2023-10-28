@@ -3,8 +3,15 @@
 module UniversalID
   def self.config
     @config ||= ActiveSupport::OrderedOptions.new.tap do |c|
-      c.marshalable_hash = {
-        to_packable_options: {
+      # Default application name
+      c.app = "UniversalID"
+
+      # Default logger
+      c.logger = Rails.logger if defined?(Rails)
+
+      # Default options for UniversalID::PackableHash#pack
+      c.packable_hash = {
+        pack_options: {
           allow_blank: false,
           only: [], # keys to include (trumps except)
           except: [] # keys to exclude

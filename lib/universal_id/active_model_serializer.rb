@@ -10,7 +10,7 @@ module UniversalID::ActiveModelSerializer
     # @param options [Hash] options for the GlobalID or SignedGlobalID parse method
     #                       ignored if the id is not a GlobalID or SignedGlobalID string
     # @return [Object, nil] an ActiveRecord instance or nil
-    # @raise [UniversalID::LocatorError] if the packable value cannot be found
+    # @raise [UniversalID::LoadError] if the packable value cannot be found
     def from_packable(value, options = {})
       hash = UniversalID::MarshalableHash.find(value, options)
       keys = hash&.keys || []

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "msgpack"
+
 module UniversalID::MessagePack
   class << self
     def next_type_id
@@ -14,5 +16,5 @@ module UniversalID::MessagePack
   end
 end
 
-require_relative "message_pack/types/object"
-require_relative "message_pack/types/time"
+path = File.join(File.dirname(__FILE__), "message_pack", "types", "**", "*.rb")
+Dir.glob(path).each { |file| require file }
