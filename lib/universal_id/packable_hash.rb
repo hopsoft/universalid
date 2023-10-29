@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "packable/object"
+require_relative "packable_base"
 
-class UniversalID::PackableHash < UniversalID::Packable::Object
+class UniversalID::PackableHash < UniversalID::PackableBase
   class << self
     # Returns the default default configuration for UniversalID::PackableHash
     #

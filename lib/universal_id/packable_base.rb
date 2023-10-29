@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "../marshal"
-require_relative "../uri/uid"
-require_relative "../global_id_object"
+require_relative "marshal"
+require_relative "uri/uid"
+require_relative "global_id_object"
 
-class UniversalID::Packable::Object
+class UniversalID::PackableBase
   class << self
     # Unpacks a value into a UniversalID::Packable instance
     #
@@ -14,7 +14,7 @@ class UniversalID::Packable::Object
     # @return [UniversalID::Packable, nil] a UniversalID::Packable or nil
     def unpack(value, **options)
       case value
-      when UniversalID::Packable::Object then value
+      when UniversalID::PackableBase then value
       when UniversalID::URI::UID then value.packable_class.unpack(value.packed) if value.unpackable?
       when GlobalID, SignedGlobalID then unpack(value.find)
       when URI::GID then unpack(value.to_s, options)
