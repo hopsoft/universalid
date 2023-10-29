@@ -4,7 +4,7 @@ module UniversalID
   def self.config
     @config ||= ActiveSupport::OrderedOptions.new.tap do |c|
       # Default application name
-      c.app = "UniversalID"
+      c.app = GlobalID.app || "UniversalID"
 
       # Default logger
       c.logger = Rails.logger if defined?(Rails)

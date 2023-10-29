@@ -6,19 +6,17 @@ require "pry-doc"
 require "active_support"
 require "active_support/test_case"
 require "faker"
+require "simplecov"
 
 require "minitest/reporters"
 Minitest::Reporters.use!
 
 require "globalid"
+
 GlobalID.app = "UniversalID"
 SignedGlobalID.app = "UniversalID"
 SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
 
-require_relative "../lib/universalid"
-require_relative "models"
-
-# test_helper.rb
 class Object
   @@debug = false
 
@@ -33,3 +31,8 @@ class Object
     @@debug = false
   end
 end
+
+SimpleCov.start
+
+require_relative "../lib/universalid"
+require_relative "models"

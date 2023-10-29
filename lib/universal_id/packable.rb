@@ -18,7 +18,7 @@ module UniversalID::Packable
       case value
       when ->(v) { v.blank? } then nil
       when UniversalID::Packable then value
-      when UniversalID::UID then value.packable_class.unpack(value.payload) if value.unpackable?
+      when UniversalID::URI::UID then value.packable_class.unpack(value.payload) if value.unpackable?
       when GlobalID then unpack(GlobalID.parse(value, options)&.find, options)
       when SignedGlobalID then unpack(SignedGlobalID.parse(value, options)&.find, options)
       when URI::GID then unpack(value.to_s, options)
@@ -52,6 +52,6 @@ module UniversalID::Packable
   end
 
   def to_uri(pack_options = {})
-    UniversalID::UID.create self, pack_options: pack_options
+    UniversalID::URI::UID.create self, pack_options: pack_options
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module UniversalID
+module UniversalID::URI
   class UID < URI::Generic
     using UniversalID::Extensions::ObjectRefinement
     using UniversalID::Extensions::StringRefinement
@@ -15,6 +15,17 @@ module UniversalID
         host = app_name.componentize
         path = "/#{packable.class.name.componentize}/#{packable.pack(pack_options)}"
         parse "uid://#{host}#{path}"
+      end
+
+      def new(...)
+        super.tap do |uri|
+          if uri.invalid?
+            raise URI::InvalidURIError, "Scheme must be `uid`" if uri.scheme != "uid"
+            raise URI::InvalidURIError, "Unable to parse `app_name`" if uri.app_name.blank?
+            raise URI::InvalidURIError, "Unable to parse `packable_class_name`" if uri.packable_class_name.blank?
+            raise URI::InvalidURIError, "Unable to parse `payload`" if uri.payload.blank?
+          end
+        end
       end
     end
 
@@ -42,6 +53,14 @@ module UniversalID
 
     def unpackable?
       packable_class.respond_to?(:unpack) && payload.present?
+    end
+
+    def valid?
+      scheme == "uid" && app_name.present? && packable_class_name.present?
+    end
+
+    def invalid?
+      !valid?
     end
 
     def deconstruct_keys(_keys)
