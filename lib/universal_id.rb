@@ -14,10 +14,10 @@ require_relative "universal_id/version"
 require_relative "universal_id/config"
 require_relative "universal_id/extensions"
 require_relative "universal_id/message_pack"
-require_relative "universal_id/marshal"
-require_relative "universal_id/packable"
-require_relative "universal_id/packable_hash"
-require_relative "universal_id/uri"
+
+path = File.join(File.dirname(__FILE__), "universal_id/packable", "**", "*.rb")
+Dir.glob(path).each { |file| require file }
+
 require_relative "universal_id/active_model_serializer"
 
 module UniversalID

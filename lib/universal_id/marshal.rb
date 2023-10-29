@@ -27,14 +27,8 @@ module UniversalID::Marshal
   # @param id [String] a URL-safe Base64 encoded string representing the serialized object
   # @return [Object, nil] the unmarshaled object
   def self.load(id)
-    begin
-      decoded = Base64.urlsafe_decode64(id)
-      inflated = Zlib::Inflate.inflate(decoded)
-      unpacked = MessagePack.unpack(inflated)
-    rescue => error
-      raise UniversalID::LoadError.new(id, error)
-    end
-
-    unpacked
+    decoded = Base64.urlsafe_decode64(id)
+    inflated = Zlib::Inflate.inflate(decoded)
+    unpacked = MessagePack.unpack(inflated)
   end
 end

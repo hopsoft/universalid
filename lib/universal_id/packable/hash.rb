@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-class UniversalID::PackableHash
-  include UniversalID::Packable
+require_relative "object"
 
+class UniversalID::Packable::Hash < UniversalID::Packable::Object
   class << self
     # Returns the default default configuration for UniversalID::PackableHash
     #
     # @return [HashWithIndifferentAccess] the default configuration
     def config
-      @config ||= UniversalID.config.dig(:packable_hash).with_indifferent_access
+      @config ||= UniversalID.config.dig(:packable, :hash).with_indifferent_access
     end
 
     # Default options for UniversalID::PackableHash#pack
@@ -64,7 +64,7 @@ class UniversalID::PackableHash
   def packable_value(value, options = {})
     case value
     when Array then value.map { |val| packable_value(val, options) }
-    when Hash, UniversalID::PackableHash
+    when ::Hash, UniversalID::Packable::Hash
       value.each_with_object({}) do |(key, val), memo|
         key = key.to_s
         next if options[:only].any? && options[:only].none?(key)

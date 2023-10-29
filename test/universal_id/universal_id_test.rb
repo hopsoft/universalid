@@ -6,11 +6,13 @@ class UniversalIDTest < ActiveSupport::TestCase
   def test_config
     expected = {
       app: "UniversalID",
-      packable_hash: {
-        pack_options: {
-          allow_blank: false,
-          only: [],
-          except: []
+      packable: {
+        hash: {
+          pack_options: {
+            allow_blank: false,
+            only: [],
+            except: []
+          }
         }
       }
     }

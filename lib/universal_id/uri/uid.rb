@@ -11,9 +11,9 @@ module UniversalID::URI
         new(*components)
       end
 
-      def create(packable, app_name: UniversalID.app, pack_options: {})
+      def create(packable, app_name: UniversalID.app, **options)
         host = app_name.componentize
-        path = "/#{packable.class.name.componentize}/#{packable.pack(pack_options)}"
+        path = "/#{packable.class.name.componentize}/#{packable.pack(options)}"
         parse "uid://#{host}#{path}"
       end
 
@@ -23,9 +23,13 @@ module UniversalID::URI
             raise URI::InvalidURIError, "Scheme must be `uid`" if uri.scheme != "uid"
             raise URI::InvalidURIError, "Unable to parse `app_name`" if uri.app_name.blank?
             raise URI::InvalidURIError, "Unable to parse `packable_class_name`" if uri.packable_class_name.blank?
-            raise URI::InvalidURIError, "Unable to parse `payload`" if uri.payload.blank?
+            raise URI::InvalidURIError, "Unable to parse `packed`" if uri.packed.blank?
           end
         end
+      end
+
+      def match?(value)
+        value.to_s.start_with? "uid://"
       end
     end
 
@@ -46,13 +50,13 @@ module UniversalID::URI
       Object.const_find packable_class_name
     end
 
-    def payload
+    def packed
       _, _, value = path.split("/", 3)
       value.to_s
     end
 
     def unpackable?
-      packable_class.respond_to?(:unpack) && payload.present?
+      packable_class.respond_to?(:unpack) && packed.present?
     end
 
     def valid?
