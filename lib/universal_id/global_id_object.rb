@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../uri/uid"
+require_relative "uri/uid"
 
 module UniversalID::Packable
-  class ModelProxy
+  class GlobalIDObject
     include GlobalID::Identification
 
     class << self

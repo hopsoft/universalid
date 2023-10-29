@@ -85,13 +85,13 @@ class UniversalID::Packable::HashTest < ActiveSupport::TestCase
     assert_equal expected, hash.to_h
   end
 
-  def test_to_model_proxy
-    proxy = @packable.to_model_proxy(except: %w[created_at updated_at remove])
-    assert proxy.is_a?(UniversalID::Packable::ModelProxy)
+  def test_to_global_id_object
+    proxy = @packable.to_global_id_object(except: %w[created_at updated_at remove])
+    assert proxy.is_a?(UniversalID::Packable::GlobalIDObject)
   end
 
-  def test_unpack_gid
-    gid = @packable.to_model_proxy(except: %w[created_at updated_at remove]).to_gid
+  def test_unpack_global_id
+    gid = @packable.to_global_id_object(except: %w[created_at updated_at remove]).to_gid
     expected = {
       "test" => true,
       "example" => "value",

@@ -2,7 +2,7 @@
 
 require_relative "../marshal"
 require_relative "../uri/uid"
-require_relative "model_proxy"
+require_relative "../global_id_object"
 
 class UniversalID::Packable::Object
   class << self
@@ -55,7 +55,9 @@ class UniversalID::Packable::Object
 
   alias_method :to_uid, :to_uri
 
-  def to_model_proxy(**options)
-    UniversalID::Packable::ModelProxy.new to_uid(**options).to_s
+  def to_global_id_object(**options)
+    UniversalID::Packable::GlobalIDObject.new to_uid(**options).to_s
   end
+
+  alias_method :to_gid_object, :to_global_id_object
 end
