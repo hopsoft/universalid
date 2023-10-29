@@ -15,7 +15,7 @@ class UniversalID::ActiveModelSerializerTest < ActiveSupport::TestCase
   end
 
   def test_to_packable
-    expected = UniversalID::MarshalableHash.new(campaign: {id: @campaign.id})
+    expected = UniversalID::PackableHash.new(campaign: {id: @campaign.id})
     actual = @campaign.to_packable(only: %i[id])
     assert_equal expected.deep_symbolize_keys, actual.deep_symbolize_keys
   end
@@ -46,7 +46,7 @@ class UniversalID::ActiveModelSerializerTest < ActiveSupport::TestCase
 
   def test_to_packable_with_unsaved_changes
     @campaign.name = "Unsaved Change"
-    expected = UniversalID::MarshalableHash.new(campaign: {id: @campaign.id, name: "Unsaved Change"})
+    expected = UniversalID::PackableHash.new(campaign: {id: @campaign.id, name: "Unsaved Change"})
     actual = @campaign.to_packable(only: %i[id name])
     assert_equal expected.deep_symbolize_keys, actual.deep_symbolize_keys
   end

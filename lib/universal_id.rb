@@ -15,7 +15,7 @@ require_relative "universal_id/config"
 require_relative "universal_id/extensions"
 require_relative "universal_id/message_pack"
 
-path = File.join(File.dirname(__FILE__), "universal_id/packable", "**", "*.rb")
+path = File.join(File.dirname(__FILE__), "universal_id/packable*.rb")
 Dir.glob(path).each { |file| require file }
 
 require_relative "universal_id/active_model_serializer"

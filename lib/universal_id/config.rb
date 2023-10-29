@@ -10,13 +10,11 @@ module UniversalID
       c.logger = Rails.logger if defined?(Rails)
 
       # Default options for UniversalID::PackableHash#pack
-      c.packable = {
-        hash: {
-          pack_options: {
-            allow_blank: false,
-            only: [], # keys to include (trumps except)
-            except: [] # keys to exclude
-          }
+      c.packable_hash = {
+        pack_options: {
+          allow_blank: false,
+          only: [], # keys to include (trumps except)
+          except: [] # keys to exclude
         }
       }
     end

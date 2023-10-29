@@ -71,7 +71,7 @@ copy = Campaign.from_packable(signed_param, for: "Promotion 123")
 binding.pry
 
 # 3. Let the product expire (wait 30 seconds) ................................................................
-# gid = UniversalID::MarshalableHash.parse_gid(signed_param, for: "Promotion 123")
+# gid = UniversalID::PackableHash.parse_gid(signed_param, for: "Promotion 123")
 invalid_copy = Campaign.from_packable(signed_param, for: "Promotion 123")
 
 binding.pry

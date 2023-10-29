@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
+require_relative "test_helper"
 
-class UniversalID::Packable::HashTest < ActiveSupport::TestCase
+class UniversalID::PackableHashTest < ActiveSupport::TestCase
   def setup
     @hash = {
       test: true,
@@ -15,7 +15,7 @@ class UniversalID::Packable::HashTest < ActiveSupport::TestCase
         remove: "remove"
       }
     }
-    @packable = UniversalID::Packable::Hash.new(@hash)
+    @packable = UniversalID::PackableHash.new(@hash)
   end
 
   def test_config
@@ -27,7 +27,7 @@ class UniversalID::Packable::HashTest < ActiveSupport::TestCase
       }
     }
 
-    assert expected, UniversalID::Packable::Hash.config
+    assert expected, UniversalID::PackableHash.config
   end
 
   def test_marshalable_hash
@@ -42,46 +42,46 @@ class UniversalID::Packable::HashTest < ActiveSupport::TestCase
 
   def test_unpack
     packed = @packable.pack(except: %w[created_at updated_at remove])
-    hash = UniversalID::Packable::Hash.unpack(packed)
+    hash = UniversalID::PackableHash.unpack(packed)
     expected = {
       "test" => true,
       "example" => "value",
       "nested" => {"keep" => "keep"}
     }
 
-    assert hash.is_a?(UniversalID::Packable::Hash)
+    assert hash.is_a?(UniversalID::PackableHash)
     assert_equal expected, hash.to_h
   end
 
   def test_to_uid
-    expected = "uid://universal_id/universal_id-packable-hash/eNprXlKSWlxyeHlqRWJuQU7q0rLEnNLUZXlAsdSUxiXZqakFYAIAdhkSPA"
+    expected = "uid://universal_id/universal_id-packable_hash/eNprXlKSWlxyeHlqRWJuQU7q0rLEnNLUZXlAsdSUxiXZqakFYAIAdhkSPA"
     actual = @packable.to_uid(except: %w[created_at updated_at remove]).to_s
     assert_equal expected, actual
   end
 
   def test_unpack_uid
     uid = @packable.to_uid(except: %w[created_at updated_at remove])
-    hash = UniversalID::Packable::Hash.unpack(uid)
+    hash = UniversalID::PackableHash.unpack(uid)
     expected = {
       "test" => true,
       "example" => "value",
       "nested" => {"keep" => "keep"}
     }
 
-    assert hash.is_a?(UniversalID::Packable::Hash)
+    assert hash.is_a?(UniversalID::PackableHash)
     assert_equal expected, hash.to_h
   end
 
   def test_unpack_uid_string
     uid_string = @packable.to_uid(except: %w[created_at updated_at remove]).to_s
-    hash = UniversalID::Packable::Hash.unpack(uid_string)
+    hash = UniversalID::PackableHash.unpack(uid_string)
     expected = {
       "test" => true,
       "example" => "value",
       "nested" => {"keep" => "keep"}
     }
 
-    assert hash.is_a?(UniversalID::Packable::Hash)
+    assert hash.is_a?(UniversalID::PackableHash)
     assert_equal expected, hash.to_h
   end
 
@@ -98,6 +98,6 @@ class UniversalID::Packable::HashTest < ActiveSupport::TestCase
       "nested" => {"keep" => "keep"}
     }
 
-    assert_equal expected, UniversalID::Packable::Hash.unpack(gid).to_h
+    assert_equal expected, UniversalID::PackableHash.unpack(gid).to_h
   end
 end

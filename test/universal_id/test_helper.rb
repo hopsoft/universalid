@@ -34,5 +34,5 @@ end
 
 SimpleCov.start
 
-require_relative "../lib/universalid"
-require_relative "models"
+require_relative "../../lib/universalid"
+require_relative "../models"

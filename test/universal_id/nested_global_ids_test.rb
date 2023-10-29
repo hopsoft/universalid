@@ -15,12 +15,12 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
       },
       campaign: @campaign
     }.deep_symbolize_keys
-    @marshalable_hash = UniversalID::MarshalableHash.new(@hash)
+    @marshalable_hash = UniversalID::PackableHash.new(@hash)
     @expected = {test: true, example: "value", nested: {keep: "keep"}, campaign: @campaign}
 
-    @nested_marshalable_hash = UniversalID::MarshalableHash.new(
+    @nested_marshalable_hash = UniversalID::PackableHash.new(
       test: true,
-      nested: UniversalID::MarshalableHash.new(
+      nested: UniversalID::PackableHash.new(
         test: true,
         nested: @marshalable_hash
       )
@@ -54,32 +54,32 @@ class UniversalID::NestedGlobalIDsTest < ActiveSupport::TestCase
   end
 
   def test_find_by_marshalable_hash_id
-    actual = UniversalID::MarshalableHash.find(@marshalable_hash.id(except: %w[remove]))
+    actual = UniversalID::PackableHash.find(@marshalable_hash.id(except: %w[remove]))
     assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_find_by_gid_param
-    actual = UniversalID::MarshalableHash.find(@marshalable_hash.to_gid_param(uid: {except: %w[remove]}))
+    actual = UniversalID::PackableHash.find(@marshalable_hash.to_gid_param(uid: {except: %w[remove]}))
     assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_find_by_sgid_param
-    actual = UniversalID::MarshalableHash.find(@marshalable_hash.to_sgid_param(uid: {except: %w[remove]}))
+    actual = UniversalID::PackableHash.find(@marshalable_hash.to_sgid_param(uid: {except: %w[remove]}))
     assert_equal @expected, actual.deep_symbolize_keys
   end
 
   def test_nested_find_by_id
-    actual = UniversalID::MarshalableHash.find(@nested_marshalable_hash.id(except: %w[remove]))
+    actual = UniversalID::PackableHash.find(@nested_marshalable_hash.id(except: %w[remove]))
     assert_equal @nested_expected, actual.deep_symbolize_keys
   end
 
   def test_nested_find_by_gid
-    actual = UniversalID::MarshalableHash.find(@nested_marshalable_hash.to_gid_param(uid: {except: %w[remove]}))
+    actual = UniversalID::PackableHash.find(@nested_marshalable_hash.to_gid_param(uid: {except: %w[remove]}))
     assert_equal @nested_expected, actual.deep_symbolize_keys
   end
 
   def test_nested_find_by_sgid
-    actual = UniversalID::MarshalableHash.find(@nested_marshalable_hash.to_sgid_param(uid: {except: %w[remove]}))
+    actual = UniversalID::PackableHash.find(@nested_marshalable_hash.to_sgid_param(uid: {except: %w[remove]}))
     assert_equal @nested_expected, actual.deep_symbolize_keys
   end
 end

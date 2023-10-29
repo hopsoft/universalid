@@ -53,7 +53,7 @@ class UniversalID::CampaignDemoTest < ActiveSupport::TestCase
     copy = Campaign.from_packable(signed_param, for: "Promotion 123")
 
     # 3. Let the product expire (wait 30 seconds) ............................................................
-    # gid = UniversalID::MarshalableHash.parse_gid(signed_param, for: "Promotion 123")
+    # gid = UniversalID::PackableHash.parse_gid(signed_param, for: "Promotion 123")
     invalid_copy = Campaign.from_packable(signed_param, for: "Promotion 123")
   end
 end

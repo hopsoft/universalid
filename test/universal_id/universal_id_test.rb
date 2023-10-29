@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
+require_relative "test_helper"
 
 class UniversalIDTest < ActiveSupport::TestCase
   def test_config
     expected = {
       app: "UniversalID",
-      packable: {
-        hash: {
-          pack_options: {
-            allow_blank: false,
-            only: [],
-            except: []
-          }
+      packable_hash: {
+        pack_options: {
+          allow_blank: false,
+          only: [],
+          except: []
         }
       }
     }
