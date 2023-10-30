@@ -6,7 +6,7 @@ require_relative "../../test_helper"
 
 module UniversalID::MessagePack::Types
   class FoundationalObjectsTest < ActiveSupport::TestCase
-    PRIMITIVES = {
+    SCALARS = {
       Complex: Complex(1, 2),
       Date: Date.today,
       DateTime: DateTime.now,
@@ -23,46 +23,46 @@ module UniversalID::MessagePack::Types
       TrueClass: true
     }
 
-    PrimitiveStruct = Struct.new(*PRIMITIVES.keys)
+    PrimitiveStruct = Struct.new(*SCALARS.keys)
 
     def test_array_with_primitive_values
-      expected = PRIMITIVES.values
+      expected = SCALARS.values
       actual = MessagePack.unpack(MessagePack.pack(expected))
       assert_equal expected, actual
     end
 
     def test_hash_with_symbol_keys
-      expected = PRIMITIVES
+      expected = SCALARS
       actual = MessagePack.unpack(MessagePack.pack(expected))
       assert_equal expected, actual
     end
 
     def test_hash_with_integer_keys
-      expected = PRIMITIVES.values.each_with_index.to_h { |value, index| [index, value] }
+      expected = SCALARS.values.each_with_index.to_h { |value, index| [index, value] }
       actual = MessagePack.unpack(MessagePack.pack(expected))
       assert_equal expected, actual
     end
 
     def test_hash_with_string_keys
-      expected = PRIMITIVES.deep_symbolize_keys
+      expected = SCALARS.deep_symbolize_keys
       actual = MessagePack.unpack(MessagePack.pack(expected))
       assert_equal expected, actual
     end
 
     def test_struct
-      expected = PrimitiveStruct.new(*PRIMITIVES.values)
+      expected = PrimitiveStruct.new(*SCALARS.values)
       actual = MessagePack.unpack(MessagePack.pack(expected))
       assert_equal expected, actual
     end
 
     def test_open_struct
-      expected = OpenStruct.new(PRIMITIVES)
+      expected = OpenStruct.new(SCALARS)
       actual = MessagePack.unpack(MessagePack.pack(expected))
       assert_equal expected, actual
     end
 
     def test_set
-      expected = Set.new(PRIMITIVES.values)
+      expected = Set.new(SCALARS.values)
       actual = MessagePack.unpack(MessagePack.pack(expected))
       assert_equal expected, actual
     end

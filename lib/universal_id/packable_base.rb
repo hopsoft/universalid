@@ -4,8 +4,7 @@ require_relative "packable_rigger"
 require_relative "global_id_object"
 
 class UniversalID::PackableBase
-  def self.unpack(...)
-    UniversalID::PackableRigger.unpack(...)
+  def self.from_msgpack_value
   end
 
   attr_reader :object
@@ -14,8 +13,7 @@ class UniversalID::PackableBase
     @object = object
   end
 
-  def pack(options = {})
-    UniversalID::PackableRigger.pack object
+  def to_msgpack_value(options = {})
   end
 
   def to_uri(options = {})

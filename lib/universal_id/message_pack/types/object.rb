@@ -1,55 +1,52 @@
 # frozen_string_literal: true
 
-# This is where we register msgpack support for all Object types
+using UniversalID::Extensions::KernelRefinements
+
+# Fallback / catch-all for anything not already covered by another registered type
 #
-# Reference:
+# Also, handles Structs and Custom defined Structs
+# - Struct.new(:foo, :bar).new(foo: "foo", bar: "bar")
+# - MyStruct = Struct.new(:foo, :bar); MyStruct.new(foo: "foo", bar: "bar")
 #
-#   MessagePack::Factory.register_type(
-#    # an Integer that identifies the type entry in MessagePack's registry
-#    type, # an Integer that identifies the type entry in MessagePack's registry
-#
-#    # the Ruby class we're registering and extension for
-#    class,
-#
-#    options = {
-#        # customizes how instances of the class are packed i.e. marshaled/serialized
-#        packer: :to_msgpack_ext,
-#
-#        # customizes how instances of the class are unpacked i.e. unmarshaled/deserialized
-#        unpacker: :from_msgpack_ext
-#      }
-#    )
+# NOTE: Comment this logic if you want to test the other registered types in isolation
+# NOTE: Ojects that can't be marshaled will return nil
 #
 UniversalID::MessagePack.register_type Object,
   # to_msgpack_ext
   packer: ->(object) do
-    ## if value.respond_to? :to_gid_param
-    ## value.to_gid_param.b
-    # if object.respond_to? :to_msgpack_ext
-    #  object.to_msgpack_ext
-    # else
-    #  object.to_msgpack # NOTE: triggers a recursive call
-    # end
-
-    # fallback/defalut default behavior
-    MessagePack.pack Marshal.dump(object)
+    begin
+      case object
+      when Struct
+        MessagePack.pack [
+          object.class.name, # class name
+          object.to_h        # data
+        ]
+      else
+        MessagePack.pack [
+          object.class.name,   # class name
+          Marshal.dump(object) # data
+        ]
+      end
+    rescue
+      MessagePack.pack nil
+    end
   end,
 
   # from_msgpack_ext
   unpacker: ->(string) do
-    ## value = value.encode("UTF-8")
+    payload = MessagePack.unpack(string)
 
-    ## gid = if UniversalID.possible_gid_string?(value)
-    ## GlobalID.parse(value) || SignedGlobalID.parse(value)
-    ## end
+    if payload.nil?
+      nil
+    else
+      class_name = payload.first
+      data = payload.last
 
-    ## gid ? gid.find : MessagePack.unpack(value)
-
-    # if object.respond_to? :from_msgpack_ext
-    #  object.from_msgpack_ext
-    # else
-    #  binding.pry
-    # end
-
-    Marshal.load MessagePack.unpack(string)
+      klass = const_find(class_name)
+      if klass.ancestors.include?(Struct)
+        klass.new(**data)
+      else
+        Marshal.load data
+      end
+    end
   end
