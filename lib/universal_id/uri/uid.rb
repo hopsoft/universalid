@@ -2,8 +2,8 @@
 
 module UniversalID::URI
   class UID < URI::Generic
-    using UniversalID::Extensions::ObjectRefinement
-    using UniversalID::Extensions::StringRefinement
+    using UniversalID::Extensions::KernelRefinements
+    using UniversalID::Extensions::StringRefinements
 
     class << self
       def parse(value)
@@ -11,9 +11,9 @@ module UniversalID::URI
         new(*components)
       end
 
-      def create(packable, app_name: UniversalID.app, **options)
-        host = app_name.componentize
-        path = "/#{packable.class.name.componentize}/#{packable.pack(options)}"
+      def create(packable, options = {})
+        host = UniversalID.app.componentize
+        path = "/#{packable.pack(options)}"
         parse "uid://#{host}#{path}"
       end
 
@@ -22,8 +22,7 @@ module UniversalID::URI
           if uri.invalid?
             raise URI::InvalidURIError, "Scheme must be `uid`" if uri.scheme != "uid"
             raise URI::InvalidURIError, "Unable to parse `app_name`" if uri.app_name.blank?
-            raise URI::InvalidURIError, "Unable to parse `packable_class_name`" if uri.packable_class_name.blank?
-            raise URI::InvalidURIError, "Unable to parse `packed`" if uri.packed.blank?
+            raise URI::InvalidURIError, "Unable to parse `package`" if uri.package.blank?
           end
         end
       end
@@ -38,29 +37,25 @@ module UniversalID::URI
     end
 
     def app
-      Object.const_find app_name
+      const_find app_name
     end
 
-    def packable_class_name
-      _, class_name, _ = path.split("/", 3)
-      class_name.to_s.decomponentize
+    def package
+      path[1..]
     end
 
-    def packable_class
-      Object.const_find packable_class_name
-    end
-
-    def packed
-      _, _, value = path.split("/", 3)
-      value.to_s
-    end
-
+    # Indicates if the package can be unpacked or opened (also aliased as `openable?`)
+    # @return [Boolean]
     def unpackable?
-      packable_class.respond_to?(:unpack) && packed.present?
+      app && package.present?
     end
+
+    # Indicates if the package can be unpacked or opened (alias for `unpackable?`)
+    # @return [Boolean]
+    alias_method :openable?, :unpackable?
 
     def valid?
-      scheme == "uid" && app_name.present? && packable_class_name.present?
+      scheme == "uid" && app_name.present? && package.present?
     end
 
     def invalid?
@@ -69,11 +64,8 @@ module UniversalID::URI
 
     def deconstruct_keys(_keys)
       {
-        app_name: app_name,
         app: app,
-        packable_class_name: packable_class_name,
-        packable: packable,
-        packed_value: packed_value
+        package: package
       }
     end
   end

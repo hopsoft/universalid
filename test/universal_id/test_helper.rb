@@ -11,28 +11,10 @@ require "simplecov"
 require "minitest/reporters"
 Minitest::Reporters.use!
 
-require "globalid"
-
-GlobalID.app = "UniversalID"
-SignedGlobalID.app = "UniversalID"
-SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
-
-class Object
-  @@debug = false
-
-  def debug?
-    !!@@debug
-  end
-
-  def debug
-    @@debug = true
-    yield
-  ensure
-    @@debug = false
-  end
-end
-
 SimpleCov.start
 
 require_relative "../../lib/universalid"
 require_relative "../models"
+
+GlobalID.app = SignedGlobalID.app = UniversalID.app = "uid-test"
+SignedGlobalID.verifier = GlobalID::Verifier.new("4ae705a3f0f0c675236cc7067d49123d")

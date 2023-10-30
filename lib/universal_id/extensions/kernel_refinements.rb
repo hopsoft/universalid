@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-module UniversalID::Extensions::ObjectRefinement
-  refine ::Object.singleton_class do
+module UniversalID::Extensions::KernelRefinements
+  refine Kernel do
     def const_find(name)
       names = name.split("::")
-      constant = ::Object
+      constant = Object
 
       while names.any?
         value = names.shift

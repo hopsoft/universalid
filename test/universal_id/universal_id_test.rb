@@ -5,7 +5,7 @@ require_relative "test_helper"
 class UniversalIDTest < ActiveSupport::TestCase
   def test_config
     expected = {
-      app: "UniversalID",
+      app: "uid-test",
       packable_hash: {
         pack_options: {
           allow_blank: false,

@@ -2,36 +2,28 @@
 
 require_relative "packable_base"
 
+# Provide UniversalID (UID) packing capabilities for Hashes
 class UniversalID::PackableHash < UniversalID::PackableBase
   class << self
-    # Returns the default default configuration for UniversalID::PackableHash
+    # Returns the configured default default pack options for UniversalID::PackableHash
     #
     # @return [HashWithIndifferentAccess] the default configuration
-    def config
-      @config ||= UniversalID.config[:packable_hash].with_indifferent_access
-    end
-
-    # Default options for UniversalID::PackableHash#pack
-    # These defaults can be overridden when calling #pack
-    #
-    # @return [HashWithIndifferentAccess]
     def default_pack_options
-      @default_pack_options ||= config.dig(:pack_options).tap do |c|
+      @config ||= UniversalID.config.dig(:packable_hash, :pack_options).tap do |c|
         c[:only] = (c[:only] || []).map(&:to_s)
         c[:except] = (c[:except] || []).map(&:to_s)
-      end
+      end.with_indifferent_access
     end
   end
 
   delegate :default_pack_options, to: :"self.class"
-  delegate_missing_to :@hash
 
   # Initializes a new instance of UniversalID::PackableHash
   #
   # @param hash [Hash] (default: {}) the Hash to wrap
   # @return [void]
   def initialize(hash = {})
-    @hash = hash.with_indifferent_access
+    super hash.with_indifferent_access
   end
 
   # Packs the Hash into a compact URL safe String
@@ -43,8 +35,7 @@ class UniversalID::PackableHash < UniversalID::PackableBase
   # @option options [Array] (default: []) :except keys to exclude (recursive)
   # @return [UniversalID::PackableObject]
   def pack(options = {})
-    value = packable_value(@hash, normalize_options(options)).deep_stringify_keys
-    UniversalID::Marshal.dump value
+    super packable_value(object, normalize_options(options))
   end
 
   private

@@ -2,6 +2,9 @@
 
 require "msgpack"
 
+# Ensure that pack/unpack preserves symbols
+MessagePack::DefaultFactory.register_type(0, Symbol)
+
 module UniversalID::MessagePack
   class << self
     def next_type_id

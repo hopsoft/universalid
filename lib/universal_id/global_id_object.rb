@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "uri/uid"
-
 module UniversalID::Packable
   class GlobalIDObject
     include GlobalID::Identification
@@ -14,8 +12,8 @@ module UniversalID::Packable
 
     attr_reader :id
 
-    def initialize(uid)
-      @id = uid.to_s
+    def initialize(id)
+      @id = id.to_s
     end
   end
 end

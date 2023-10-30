@@ -13,6 +13,7 @@ require "zlib"
 require_relative "universal_id/version"
 require_relative "universal_id/config"
 require_relative "universal_id/extensions"
+require_relative "universal_id/uri/uid"
 require_relative "universal_id/message_pack"
 
 path = File.join(File.dirname(__FILE__), "universal_id/packable*.rb")
@@ -21,13 +22,15 @@ Dir.glob(path).each { |file| require file }
 require_relative "universal_id/active_model_serializer"
 
 module UniversalID
+  using UniversalID::Extensions::StringRefinements
+
   class << self
     def app=(name)
-      @app = CGI.escape(name.to_s)
+      @app = name.to_s.componentize
     end
 
     def app
-      @app ||= GlobalID.app || CGI.escape(UniversalID.config.app)
+      @app ||= GlobalID.app || UniversalID.config.app
     end
 
     # Sets the logger
