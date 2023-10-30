@@ -5,7 +5,7 @@ require "bigdecimal"
 require_relative "../../test_helper"
 
 module UniversalID::MessagePack::Types
-  class FoundationalObjectsTest < ActiveSupport::TestCase
+  class CoreTest < ActiveSupport::TestCase
     SCALARS = {
       Complex: Complex(1, 2),
       Date: Date.today,
@@ -25,7 +25,7 @@ module UniversalID::MessagePack::Types
 
     PrimitiveStruct = Struct.new(*SCALARS.keys)
 
-    def test_array_with_primitive_values
+    def test_array
       expected = SCALARS.values
       actual = MessagePack.unpack(MessagePack.pack(expected))
       assert_equal expected, actual

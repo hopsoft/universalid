@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
-require_relative "packable_rigger"
+require_relative "encoder"
 require_relative "global_id_object"
 
-class UniversalID::PackableBase
-  def self.from_msgpack_value
+class UniversalID::EncodableObject
+  def self.decode(object, options = {})
+    decoded = Base64.urlsafe_decode64(value)
+    inflated = Zlib::Inflate.inflate(decoded)
+    MessagePack.unpack inflated
   end
 
   attr_reader :object
@@ -13,7 +16,7 @@ class UniversalID::PackableBase
     @object = object
   end
 
-  def to_msgpack_value(options = {})
+  def encode(options = {})
   end
 
   def to_uri(options = {})

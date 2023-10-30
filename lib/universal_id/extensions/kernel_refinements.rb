@@ -4,7 +4,7 @@ module UniversalID::Extensions::KernelRefinements
   refine Kernel do
     def const_find(name)
       return nil unless name.is_a?(String)
-      names = name.force_encoding("UTF-8").split("::")
+      names = name.encode(Encoding::UTF_8).split("::")
       constant = Object
 
       while names.any?

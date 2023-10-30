@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "packable_base"
+require_relative "encodable_object"
 
 # Provide UniversalID (UID) packing capabilities for Hashes
-class UniversalID::PackableHash < UniversalID::PackableBase
+class UniversalID::PackableHash < UniversalID::EncodableObject
   class << self
     # Returns the configured default default pack options for UniversalID::PackableHash
     #
