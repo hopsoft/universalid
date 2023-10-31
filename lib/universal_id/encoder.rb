@@ -6,9 +6,15 @@ module UniversalID::Encoder
   class << self
     # Encodes the passed object into a UniversalID string
     #
-    # 1. pack
-    # 2. deflate
-    # 3. encode
+    # Uses MessagePack, Brotli, and Base64 to encode.
+    #
+    # NOTE: The combination of MessagePack + Brotli is 25% faster than Protobuf
+    #       and is within 5% of Protobuf's compression size
+    #
+    # Steps to encode:
+    #   1. pack (with MessagePack)
+    #   2. deflate (with Brotli)
+    #   3. encode (with Base64)
     #
     # @param packable [Object] The object to encode
     # @param active_record [Hash] options for any ActiveRecord instances being encoded
@@ -21,9 +27,13 @@ module UniversalID::Encoder
 
     # Decodes a UniversalID string and returns the object it represents
     #
-    # 1. decode
-    # 2. inflate
-    # 3. unpack
+    # NOTE: The combination of MessagePack + Brotli is 25% faster than Protobuf
+    #       and is within 5% of Protobuf's compression size
+    #
+    # Steps to decode:
+    #   1. decode (from Base64)
+    #   2. inflate (with Brotli)
+    #   3. unpack (with MessagePack)
     #
     # @param value [Object]
     # @return [Object, nil] the unpacked object
