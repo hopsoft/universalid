@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "activemodel", ">= 6.0"
   s.add_dependency "activesupport", ">= 6.0"
+  s.add_dependency "brotli", ">= 0.4.0"
   s.add_dependency "globalid", ">= 1.1"
   s.add_dependency "msgpack", ">= 1.7"
   s.add_dependency "refinements"

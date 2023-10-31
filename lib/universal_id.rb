@@ -3,23 +3,24 @@
 require "active_model"
 require "active_support/all"
 require "base64"
+require "brotli"
 require "cgi"
 require "digest/md5"
 require "globalid"
-require "global_id/uri/gid"
+require "msgpack"
 require "uri"
 require "zlib"
 
 require_relative "universal_id/version"
 require_relative "universal_id/config"
-require_relative "universal_id/extensions"
-require_relative "universal_id/uri/uid"
+require_relative "universal_id/extensions/kernel_refinements"
+require_relative "universal_id/extensions/string_refinements"
 require_relative "universal_id/message_pack"
-
-path = File.join(File.dirname(__FILE__), "universal_id/packable*.rb")
-Dir.glob(path).each { |file| require file }
-
+require_relative "universal_id/encoder"
+require_relative "universal_id/uri/uid"
 require_relative "universal_id/active_model_serializer"
+
+URI.register_scheme "UID", UniversalID::URI::UID unless URI.scheme_list.include?("UID")
 
 module UniversalID
   using UniversalID::Extensions::StringRefinements

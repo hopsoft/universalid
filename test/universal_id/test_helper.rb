@@ -18,3 +18,4 @@ require_relative "../models"
 
 GlobalID.app = SignedGlobalID.app = UniversalID.app = "uid-test"
 SignedGlobalID.verifier = GlobalID::Verifier.new("4ae705a3f0f0c675236cc7067d49123d")
+UniversalID::MessagePack.register_all_types!

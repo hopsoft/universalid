@@ -1,21 +1,30 @@
 # frozen_string_literal: true
 
-require "msgpack"
-
 # Ensure that pack/unpack preserves symbols
 MessagePack::DefaultFactory.register_type(0, Symbol)
 
 module UniversalID::MessagePack
   using UniversalID::Extensions::KernelRefinements
+
+  class TypeIDError < StandardError; end
+
   class << self
     def next_type_id
-      MessagePack::DefaultFactory.registered_types
-        .map { |entry| entry[:type] }
-        .max.to_i + 1
+      id = 0
+      id += 1 while id <= 127 && MessagePack::DefaultFactory.type_registered?(id)
+      id
     end
 
     def register_type(...)
-      MessagePack::DefaultFactory.register_type(next_type_id, ...)
+      id = next_type_id
+      raise TypeIDError, "Unable to register MessagePack Type with id: #{id}" if MessagePack::DefaultFactory.type_registered?(id)
+      MessagePack::DefaultFactory.register_type(id, ...)
+    end
+
+    # TODO: add support for individual type registration
+    def register_all_types!
+      path = File.join(File.dirname(__FILE__), "message_pack", "types", "**", "*.rb")
+      Dir.glob(path).each { |file| require file }
     end
 
     # Prepares a generic payload for MessagePack.pack
@@ -26,7 +35,7 @@ module UniversalID::MessagePack
     #   * Struct.new(:foo, :bar).new(foo: "foo", bar: "bar")
     #   * MyStruct = Struct.new(:foo, :bar); MyStruct.new(foo: "foo", bar: "bar")
     #
-    # - Objects that impelement the GlobalID::Identification interface and respond to #to_gid_param
+    # - Objects that impelement the GlobalID::Identification interface (i.e. respond to #to_signed_global_id)
     # - Any other objects that can be marshaled with Marshal.dump
     #
     # @param object [Object] The object to be packed
@@ -35,14 +44,17 @@ module UniversalID::MessagePack
       # the payload is an array that will be packed with MessagePack
       # [
       #   CLASS_NAME,
-      #   DATA,
-      #   EXTRA (optional, indicates if there is extra work to be done to unpack the object)
+      #   DATA
       # ]
       payload = case object
       when Struct then [object.class.name, object.to_h]
-      when ->(o) { o.respond_to?(:to_gid_param) }
-        gid = object.to_gid
-        [gid.class.name, gid.to_param, true]
+      when ->(o) { o.respond_to?(:to_signed_global_id) }
+        if object.persisted?
+          sgid = object.to_signed_global_id
+          [sgid.class.name, sgid.to_param, true]
+        else
+          [object.class.name, object.as_json.compact]
+        end
       else [object.class.name, Marshal.dump(object)]
       end
       MessagePack.pack payload
@@ -56,23 +68,17 @@ module UniversalID::MessagePack
     # @return [Object, nil] The unpacked object
     def unpack_generic_object(string)
       payload = MessagePack.unpack(string)
+      return nil if payload.nil?
 
-      nil if payload.nil?
-
-      class_name, data, extra = payload
+      class_name, data = payload
       klass = const_find(class_name)
 
-      if klass.ancestors.include?(Struct)
-        klass.new(**data)
-      elsif klass == GlobalID
-        gid = klass.parse(data)
-        extra ? gid.find : gid
-      else
-        Marshal.load(data)
+      case klass
+      when ->(k) { k.descends_from? Struct } then klass.new(**data)
+      when ->(k) { k.descends_from? SignedGlobalID } then klass.parse(data)&.find
+      when ->(k) { k.descends_from? ActiveRecord::Base } then klass.new(data)
+      else Marshal.load(data)
       end
     end
   end
 end
-
-path = File.join(File.dirname(__FILE__), "message_pack", "types", "**", "*.rb")
-Dir.glob(path).each { |file| require file }
