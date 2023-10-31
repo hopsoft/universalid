@@ -16,7 +16,7 @@ module UniversalID::URI
       alias_method :find, :parse
 
       def create(object)
-        host = UniversalID.app.componentize
+        host = UniversalID.app.hostify
         path = "/#{UniversalID::Encoder.encode(object)}"
         parse "uid://#{host}#{path}"
       end
@@ -35,7 +35,7 @@ module UniversalID::URI
     alias_method :id, :to_s
 
     def app_name
-      host.to_s.decomponentize
+      host.to_s.dehostify
     end
 
     def app

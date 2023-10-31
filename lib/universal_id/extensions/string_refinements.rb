@@ -3,12 +3,12 @@
 module UniversalID::Extensions
   module StringRefinements
     refine String do
-      def componentize
-        CGI.escape split("::").map(&:underscore).join("-")
+      def hostify
+        CGI.escape split("::").map(&:dasherize).join("--")
       end
 
-      def decomponentize
-        CGI.unescape(self).tr("-", "/").classify.gsub(/\AUniversalId/, "UniversalID")
+      def dehostify
+        CGI.unescape gsub("--", "/").tr("-", "_").classify.gsub(/\AUniversalId/, "UniversalID")
       end
     end
   end

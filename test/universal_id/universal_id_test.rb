@@ -5,7 +5,7 @@ require_relative "test_helper"
 class UniversalIDTest < ActiveSupport::TestCase
   def test_config
     expected = {
-      app: "uid-test"
+      app: "universal-id--test-suite"
     }
     assert_equal expected, UniversalID.config.to_h
   end

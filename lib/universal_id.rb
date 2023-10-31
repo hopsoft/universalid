@@ -33,7 +33,7 @@ module UniversalID
 
   class << self
     def app=(name)
-      @app = name.to_s.componentize
+      @app = name.to_s.hostify
     end
 
     def app
