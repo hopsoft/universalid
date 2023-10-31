@@ -75,8 +75,8 @@ module UniversalID::MessagePack
 
       case klass
       when ->(k) { k.descends_from? Struct }
-        # shenanigans to support Ruby 3.0.X
-        RUBY_VERSION.start_with?("3.0") ?
+        # shenanigans to support Ruby 3.0.X and 3.1.X
+        RUBY_VERSION.start_with?("3.0", "3.1") ?
           klass.new.tap { |struct| data.each { |key, val| struct[key] = data[key] } } :
           klass.new(**data)
       when ->(k) { k.descends_from? SignedGlobalID } then klass.parse(data)&.find
