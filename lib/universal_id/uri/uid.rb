@@ -5,7 +5,20 @@ module UniversalID::URI
     using UniversalID::Extensions::KernelRefinements
     using UniversalID::Extensions::StringRefinements
 
-    include GlobalID::Identification
+    class GlobalIDRecord
+      include ::GlobalID::Identification
+
+      def self.find(value)
+        new UniversalID::URI::UID.parse(value)
+      end
+
+      attr_reader :id, :uid
+
+      def initialize(uid)
+        @uid = uid
+        @id = uid.to_s
+      end
+    end
 
     class << self
       def parse(value)
@@ -31,8 +44,6 @@ module UniversalID::URI
         end
       end
     end
-
-    alias_method :id, :to_s
 
     def app_name
       host.to_s.dehostify
@@ -61,6 +72,14 @@ module UniversalID::URI
     def invalid?
       !valid?
     end
+
+    # Returns a GlobalIDRecord instance which implements the GlobalID::Identification interface/protocol
+    def to_global_id_record
+      GlobalIDRecord.new self
+    end
+
+    # Adds all GlobalID::Identification methods to UniversalID::URI::UID
+    delegate(*GlobalID::Identification.instance_methods(false), to: :to_global_id_record)
 
     def deconstruct_keys(_keys)
       {
