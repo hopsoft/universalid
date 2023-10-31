@@ -16,8 +16,8 @@ module UniversalID::Extensions
         (constant.name == name) ? constant : nil
       end
 
-      def descends_from?(klass)
-        ancestors.include? klass
+      def descends_from?(*klasses)
+        (ancestors & klasses).any?
       end
     end
   end

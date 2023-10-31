@@ -35,7 +35,7 @@ module UniversalID::MessagePack
     #   * Struct.new(:foo, :bar).new(foo: "foo", bar: "bar")
     #   * MyStruct = Struct.new(:foo, :bar); MyStruct.new(foo: "foo", bar: "bar")
     #
-    # - Objects that impelement the GlobalID::Identification interface (i.e. respond to #to_signed_global_id)
+    # - Objects that impelement the GlobalID::Identification interface (i.e. respond to #to_global_id)
     # - Any other objects that can be marshaled with Marshal.dump
     #
     # @param object [Object] The object to be packed
@@ -48,10 +48,10 @@ module UniversalID::MessagePack
       # ]
       payload = case object
       when Struct then [object.class.name, object.to_h]
-      when ->(o) { o.respond_to?(:to_signed_global_id) }
+      when ->(o) { o.respond_to?(:to_global_id) }
         if object.persisted?
-          sgid = object.to_signed_global_id
-          [sgid.class.name, sgid.to_param, true]
+          gid = object.to_global_id
+          [gid.class.name, gid.to_param, true]
         else
           [object.class.name, object.as_json.compact]
         end
@@ -79,7 +79,7 @@ module UniversalID::MessagePack
         RUBY_VERSION.start_with?("3.0", "3.1") ?
           klass.new.tap { |struct| data.each { |key, val| struct[key] = data[key] } } :
           klass.new(**data)
-      when ->(k) { k.descends_from? SignedGlobalID } then klass.parse(data)&.find
+      when ->(k) { k.descends_from? GlobalID, SignedGlobalID } then klass.parse(data)&.find
       when ->(k) { k.descends_from? ActiveRecord::Base } then klass.new(data)
       else Marshal.load(data)
       end
