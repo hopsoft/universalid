@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePack.register_type Time,
+UniversalID::MessagePackUtils.register_type Time,
   # to_msgpack_ext
   packer: ->(time) { time.iso8601(9).b },
 

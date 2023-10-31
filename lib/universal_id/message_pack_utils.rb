@@ -3,7 +3,7 @@
 # Ensure that pack/unpack preserves symbols
 MessagePack::DefaultFactory.register_type(0, Symbol)
 
-module UniversalID::MessagePack
+module UniversalID::MessagePackUtils
   using UniversalID::Extensions::KernelRefinements
 
   class TypeIDError < StandardError; end

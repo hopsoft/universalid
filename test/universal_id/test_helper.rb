@@ -20,7 +20,7 @@ module UniversalID::TestSuite; end
 
 GlobalID.app = SignedGlobalID.app = UniversalID.app = "universal-id--test-suite"
 SignedGlobalID.verifier = GlobalID::Verifier.new("4ae705a3f0f0c675236cc7067d49123d")
-UniversalID::MessagePack.register_all_types!
+UniversalID::MessagePackUtils.register_all_types!
 
 class ActiveSupport::TestCase
   def with_persisted_campaign

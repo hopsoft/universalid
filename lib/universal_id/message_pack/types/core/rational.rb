@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePack.register_type Rational,
+UniversalID::MessagePackUtils.register_type Rational,
   # to_msgpack_ext
   packer: ->(rational) { rational.to_s.b },
 

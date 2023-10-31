@@ -11,8 +11,9 @@ module UniversalID::Encoder
     # 3. encode
     #
     # @param packable [Object] The object to encode
+    # @param active_record [Hash] options for any ActiveRecord instances being encoded
     # @return [String] A URL safe representation of the object
-    def encode(object)
+    def encode(object, active_record: {keep_changes: false})
       packed = MessagePack.pack(object)
       deflated = Brotli.deflate(packed)
       Base64.urlsafe_encode64 deflated, padding: false

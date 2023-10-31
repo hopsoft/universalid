@@ -4,7 +4,7 @@ require "date"
 require "bigdecimal"
 require_relative "../../test_helper"
 
-module UniversalID::MessagePack::Types
+module UniversalID::MessagePackUtils::Types
   class CoreTest < ActiveSupport::TestCase
     SCALARS = {
       Complex: Complex(1, 2),

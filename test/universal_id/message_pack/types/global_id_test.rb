@@ -2,7 +2,7 @@
 
 require_relative "../../test_helper"
 
-module UniversalID::MessagePack::Types
+module UniversalID::MessagePackUtils::Types
   class GlobalIDTest < ActiveSupport::TestCase
     def test_global_id
       with_persisted_campaign do |campaign|

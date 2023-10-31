@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePack.register_type GlobalID,
+UniversalID::MessagePackUtils.register_type GlobalID,
   # to_msgpack_ext
   packer: ->(gid) { gid.to_param.b },
 

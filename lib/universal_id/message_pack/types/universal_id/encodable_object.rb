@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePack.register_type UniversalID::URI::UID,
+UniversalID::MessagePackUtils.register_type UniversalID::URI::UID,
   # to_msgpack_ext
   packer: ->(uid) { uid.to_s.b },
 
