@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.homepage = "https://github.com/hopsoft/universalid"
   s.license = "MIT"
-  s.required_ruby_version = ">= 2.7.5"
+  s.required_ruby_version = ">= 3.0"
 
   s.metadata["homepage_uri"] = s.homepage
   s.metadata["source_code_uri"] = s.homepage

@@ -74,7 +74,11 @@ module UniversalID::MessagePack
       klass = const_find(class_name)
 
       case klass
-      when ->(k) { k.descends_from? Struct } then klass.new(**data)
+      when ->(k) { k.descends_from? Struct }
+        # shenanigans to support Ruby 3.0.X
+        RUBY_VERSION.start_with?("3.0") ?
+          klass.new.tap { |struct| data.each { |key, val| struct[key] = data[key] } } :
+          klass.new(**data)
       when ->(k) { k.descends_from? SignedGlobalID } then klass.parse(data)&.find
       when ->(k) { k.descends_from? ActiveRecord::Base } then klass.new(data)
       else Marshal.load(data)
