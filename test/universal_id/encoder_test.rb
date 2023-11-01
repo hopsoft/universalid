@@ -19,13 +19,23 @@ class UniversalID::EncoderTest < ActiveSupport::TestCase
     end
   end
 
-  def test_persisted_model_with_changes
+  def test_persisted_model_with_changes_keep_changes
     with_persisted_campaign do |campaign|
       campaign.name = "Changed Name"
       assert campaign.changed?
       encoded = UniversalID::Encoder.encode(campaign, active_record: {keep_changes: true})
       decoded = UniversalID::Encoder.decode(encoded)
-      assert_equal campaign, decoded
+      assert_equal campaign.attributes, decoded.attributes
+    end
+  end
+
+  def test_persisted_model_with_changes_discard_changes
+    with_persisted_campaign do |campaign|
+      campaign.name = "Changed Name"
+      assert campaign.changed?
+      encoded = UniversalID::Encoder.encode(campaign, active_record: {keep_changes: false})
+      decoded = UniversalID::Encoder.decode(encoded)
+      refute_equal campaign.attributes, decoded.attributes
     end
   end
 end
