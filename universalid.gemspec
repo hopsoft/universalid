@@ -32,7 +32,6 @@ Gem::Specification.new do |s|
   s.add_dependency "brotli", ">= 0.4.0"
   s.add_dependency "globalid", ">= 1.1"
   s.add_dependency "msgpack", ">= 1.7"
-  s.add_dependency "refinements"
 
   s.add_development_dependency "activerecord"
   s.add_development_dependency "awesome_print"

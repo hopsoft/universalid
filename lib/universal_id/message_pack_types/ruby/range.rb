@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePackUtils.register_type Range,
+UniversalID::MessagePackTypes.register Range,
   # to_msgpack_ext
   packer: ->(range) do
     MessagePack.dump [

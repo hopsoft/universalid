@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePackUtils.register_type Set,
+UniversalID::MessagePackTypes.register Set,
   # to_msgpack_ext
   packer: ->(set) { MessagePack.pack set.to_a },
 

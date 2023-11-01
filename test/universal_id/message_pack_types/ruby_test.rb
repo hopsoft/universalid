@@ -2,10 +2,10 @@
 
 require "date"
 require "bigdecimal"
-require_relative "../../test_helper"
+require_relative "../test_helper"
 
-module UniversalID::MessagePackUtils::Types
-  class CoreTest < ActiveSupport::TestCase
+module UniversalID::MessagePackTypes
+  class RubyTest < ActiveSupport::TestCase
     SCALARS = {
       Complex: Complex(1, 2),
       Date: Date.today,

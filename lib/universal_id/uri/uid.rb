@@ -2,8 +2,8 @@
 
 module UniversalID::URI
   class UID < URI::Generic
-    using UniversalID::Extensions::KernelRefinements
-    using UniversalID::Extensions::StringRefinements
+    using UniversalID::Refinements::Kernel
+    using UniversalID::Refinements::String
 
     class GlobalIDRecord
       include ::GlobalID::Identification

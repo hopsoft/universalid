@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePackUtils.register_type Regexp,
+UniversalID::MessagePackTypes.register Regexp,
   # to_msgpack_ext
   packer: ->(regexp) {
     MessagePack.pack [
-      regexp.source.b, # pattern
-      regexp.options   # options
+      regexp.source, # pattern
+      regexp.options # options
     ]
   },
 

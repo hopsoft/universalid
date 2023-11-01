@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePackUtils.register_type OpenStruct,
+UniversalID::MessagePackTypes.register OpenStruct,
   # to_msgpack_ext
-  packer: ->(open_struct) { open_struct.to_h.to_msgpack },
+  packer: ->(open_struct) { MessagePack.pack open_struct.to_h },
 
   # from_msgpack_ext
   unpacker: ->(string) { OpenStruct.new MessagePack.unpack(string) }

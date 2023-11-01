@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-module UniversalID::Extensions
-  module KernelRefinements
-    refine Kernel do
+module UniversalID::Refinements
+  module Kernel
+    refine ::Kernel do
       def const_find(name)
-        return nil unless name.is_a?(String)
-        names = name.encode(Encoding::UTF_8).split("::")
-        constant = Object
+        return nil unless name.is_a?(::String)
+        names = name.split("::")
+        constant = ::Object
 
         while names.any?
           value = names.shift

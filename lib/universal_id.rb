@@ -13,9 +13,8 @@ require "zlib"
 
 require_relative "universal_id/version"
 require_relative "universal_id/config"
-require_relative "universal_id/extensions/kernel_refinements"
-require_relative "universal_id/extensions/string_refinements"
-require_relative "universal_id/message_pack_utils"
+require_relative "universal_id/refinements"
+require_relative "universal_id/message_pack_types"
 require_relative "universal_id/encoder"
 require_relative "universal_id/uri/uid"
 require_relative "universal_id/active_model_serializer"
@@ -29,7 +28,7 @@ else
 end
 
 module UniversalID
-  using UniversalID::Extensions::StringRefinements
+  using UniversalID::Refinements::String
 
   class << self
     def app=(name)
@@ -49,7 +48,7 @@ module UniversalID
     #
     # @return [Logger]
     def logger
-      @logger ||= config.logger
+      @logger ||= UniversalID.config.logger
     end
 
     # Returns an instance of ActiveSupport::Deprecation

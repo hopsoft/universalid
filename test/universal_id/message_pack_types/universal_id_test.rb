@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
+require_relative "../test_helper"
 
-module UniversalID::MessagePackUtils::Types
+module UniversalID::MessagePackTypes
   class UniversalIDTest < ActiveSupport::TestCase
     def test_universal_id
       with_persisted_campaign do |campaign|
