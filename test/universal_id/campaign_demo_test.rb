@@ -2,7 +2,7 @@
 
 require_relative "test_helper"
 
-# class UniversalID::CampaignDemoTest < ActiveSupport::TestCase
+# class UniversalID::CampaignDemoTest < Minitest::Test
 #   def test_campaign_demo
 #     # ........................................................................................................
 #     # Create a Campaign via multi-step form (wizard) running over HTTP

@@ -2,23 +2,10 @@
 
 module UniversalID::URI
   class UID < URI::Generic
-    using UniversalID::Refinements::Kernel
-    using UniversalID::Refinements::String
+    extend Forwardable
 
-    class GlobalIDRecord
-      include ::GlobalID::Identification
-
-      def self.find(value)
-        new UniversalID::URI::UID.parse(value)
-      end
-
-      attr_reader :id, :uid
-
-      def initialize(uid)
-        @uid = uid
-        @id = uid.to_s
-      end
-    end
+    SCHEME = "uid"
+    HOST = "universal-id"
 
     class << self
       def parse(value)
@@ -28,64 +15,61 @@ module UniversalID::URI
 
       alias_method :find, :parse
 
-      def create(object, options = UniversalID.config[:encode])
-        host = UniversalID.app.hostify
+      def create(object, options = UniversalID.config.encode)
         path = "/#{UniversalID::Encoder.encode(object, options)}"
-        parse "uid://#{host}#{path}"
+        parse "#{SCHEME}://#{HOST}#{path}"
       end
 
       def new(...)
         super.tap do |uri|
           if uri.invalid?
-            raise URI::InvalidURIError, "Scheme must be `uid`" if uri.scheme != "uid"
-            raise URI::InvalidURIError, "Unable to parse `app_name`" if uri.app_name.blank?
-            raise URI::InvalidURIError, "Unable to parse `payload`" if uri.payload.blank?
+            raise URI::InvalidURIError, "Scheme must be `#{SCHEME}`" if uri.scheme != SCHEME
+            raise URI::InvalidURIError, "Host must be `#{HOST}`" if uri.host != HOST
+            raise URI::InvalidURIError, "Unable to parse `payload`" if uri.payload.strip.empty?
           end
         end
       end
-    end
-
-    def app_name
-      host.to_s.dehostify
-    end
-
-    def app
-      const_find app_name
     end
 
     def payload
       path[1..]
     end
 
-    def decodable?
-      app && payload.present?
-    end
-
-    def decode
-      UniversalID::Encoder.decode(payload) if decodable?
-    end
-
     def valid?
-      scheme == "uid" && app_name.present? && payload.present?
+      scheme == SCHEME && host == HOST && !payload.strip.empty?
     end
 
     def invalid?
       !valid?
     end
 
-    # Returns a GlobalIDRecord instance which implements the GlobalID::Identification interface/protocol
-    def to_global_id_record
-      GlobalIDRecord.new self
+    def decode
+      UniversalID::Encoder.decode(payload) if valid?
     end
 
-    # Adds all GlobalID::Identification methods to UniversalID::URI::UID
-    delegate(*GlobalID::Identification.instance_methods(false), to: :to_global_id_record)
+    if defined? ::GlobalID::Identification
+      class GlobalIDRecord
+        include ::GlobalID::Identification
 
-    def deconstruct_keys(_keys)
-      {
-        app: app,
-        payload: payload
-      }
+        def self.find(value)
+          new UniversalID::URI::UID.parse(value)
+        end
+
+        attr_reader :id, :uid
+
+        def initialize(uid)
+          @uid = uid
+          @id = uid.to_s
+        end
+      end
+
+      # Returns a GlobalIDRecord instance which implements the GlobalID::Identification interface/protocol
+      def to_global_id_record
+        GlobalIDRecord.new self
+      end
+
+      # Adds all GlobalID::Identification methods to UniversalID::URI::UID
+      def_delegators(:to_global_id_record, *GlobalID::Identification.instance_methods(false))
     end
   end
 end

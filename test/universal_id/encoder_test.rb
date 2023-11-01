@@ -2,7 +2,7 @@
 
 require_relative "test_helper"
 
-class UniversalID::EncoderTest < ActiveSupport::TestCase
+class UniversalID::EncoderTest < Minitest::Test
   def test_new_model
     with_new_campaign do |campaign|
       encoded = UniversalID::Encoder.encode(campaign)

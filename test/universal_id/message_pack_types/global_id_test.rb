@@ -3,7 +3,7 @@
 require_relative "../test_helper"
 
 module UniversalID::MessagePackTypes
-  class GlobalIDTest < ActiveSupport::TestCase
+  class GlobalIDTest < Minitest::Test
     def test_global_id
       with_persisted_campaign do |campaign|
         expected = campaign.to_gid

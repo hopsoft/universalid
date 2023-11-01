@@ -2,7 +2,7 @@
 
 require_relative "../../test_helper"
 
-class UniversalID::URI::UID::GlobalIDRecordTest < ActiveSupport::TestCase
+class UniversalID::URI::UID::GlobalIDRecordTest < Minitest::Test
   def test_to_global_id_record
     with_persisted_campaign do |campaign|
       hash = {number: 123, string: "data", array: [1, 2, 3], hash: {model: campaign}}

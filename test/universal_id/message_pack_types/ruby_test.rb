@@ -5,7 +5,7 @@ require "bigdecimal"
 require_relative "../test_helper"
 
 module UniversalID::MessagePackTypes
-  class RubyTest < ActiveSupport::TestCase
+  class RubyTest < Minitest::Test
     SCALARS = {
       Complex: Complex(1, 2),
       Date: Date.today,

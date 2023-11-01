@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "monitor"
-
 # This module provides the ability to encode and decode objects into a compressed, URL-safe string
 #
 module UniversalID::Encoder
@@ -25,7 +23,7 @@ module UniversalID::Encoder
     # @option options [Hash] :active_record Options passed to the ActiveRecord encoder
     # @option options.active_record [Boolean] :keep_changes (false) Whether or not to preserve unsaved changes
     # @return [String] A URL safe representation of the object
-    def encode(object, options = UniversalID.config[:encode])
+    def encode(object, options = UniversalID.config.encode)
       synchronize do
         Thread.current[:universal_id] ||= {}
         Thread.current[:universal_id][:encode] = options

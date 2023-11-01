@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require "bundler"
+require "faker"
+require "minitest/autorun"
 require "pry-byebug"
 require "pry-doc"
-require "active_support"
-require "active_support/test_case"
-require "faker"
 require "simplecov"
 
 require "minitest/reporters"
@@ -13,16 +12,18 @@ Minitest::Reporters.use!
 
 SimpleCov.start
 
-require_relative "../../lib/universalid"
-require_relative "../models"
+# GlobalID must be loaded before UniversalID to use GID supported features of UID
+require "global_id"
+require_relative "../../lib/universal_id"
 
-module UniversalID::TestSuite; end
+# Bring in a minimal subset of Rails tooling for testing purposes
+# - GlobalID
+# - ActiveRecord
+require_relative "../rails_parts"
 
-GlobalID.app = SignedGlobalID.app = UniversalID.app = "universal-id--test-suite"
-SignedGlobalID.verifier = GlobalID::Verifier.new("4ae705a3f0f0c675236cc7067d49123d")
 UniversalID::MessagePackTypes.register_all
 
-class ActiveSupport::TestCase
+class Minitest::Test
   def with_persisted_campaign
     campaign = Campaign.create!(name: Faker::Movie.title)
     yield campaign

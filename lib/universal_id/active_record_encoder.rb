@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 module UniversalID::ActiveRecordEncoder
-  extend ActiveSupport::Concern
+  def self.included(subclass)
+    subclass.extend ClassMethods
+    subclass.include InstanceMethods
+  end
 
-  class_methods do
+  module ClassMethods
     def from_universal_id(uid)
       UniversalID::URI::UID.parse(uid)&.decode
     end
@@ -11,9 +14,11 @@ module UniversalID::ActiveRecordEncoder
     alias_method :from_uid, :from_universal_id
   end
 
-  def to_universal_id(options = {})
-    UniversalID::URI::UID.create self, options
-  end
+  module InstanceMethods
+    def to_universal_id(options = {})
+      UniversalID::URI::UID.create self, options
+    end
 
-  alias_method :to_uid, :to_universal_id
+    alias_method :to_uid, :to_universal_id
+  end
 end

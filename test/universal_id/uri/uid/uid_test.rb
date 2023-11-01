@@ -2,11 +2,11 @@
 
 require_relative "../../test_helper"
 
-class UniversalID::URI::UIDTest < ActiveSupport::TestCase
+class UniversalID::URI::UIDTest < Minitest::Test
   def test_create_with_model
     with_persisted_campaign do |campaign|
       uid = UniversalID::URI::UID.create(campaign)
-      assert_valid_uid uid
+      assert uid.valid?
       assert_equal campaign, uid.decode
     end
   end
@@ -25,14 +25,5 @@ class UniversalID::URI::UIDTest < ActiveSupport::TestCase
       uid = UniversalID::URI::UID.create(expected)
       assert_equal expected, uid.decode
     end
-  end
-
-  private
-
-  def assert_valid_uid(uid)
-    assert uid.valid?
-    assert uid.decodable?
-    assert_equal "UniversalID::TestSuite", uid.app_name
-    assert_equal ::UniversalID::TestSuite, uid.app
   end
 end

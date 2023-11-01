@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePackTypes.register Complex,
+::UniversalID::MessagePackTypes.register ::Complex,
   # to_msgpack_ext
-  packer: ->(complex) { MessagePack.pack complex.to_s },
+  packer: ->(complex) { ::MessagePack.pack complex.to_s },
 
   # from_msgpack_ext
-  unpacker: ->(string) { Complex MessagePack.unpack(string) }
+  unpacker: ->(string) { ::Kernel.Complex ::MessagePack.unpack(string) }

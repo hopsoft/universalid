@@ -4,8 +4,6 @@
 MessagePack::DefaultFactory.register_type(0, Symbol)
 
 module UniversalID::MessagePackTypes
-  using UniversalID::Refinements::Kernel
-
   class << self
     def register(...)
       factory.register_type(next_id, ...)
@@ -16,12 +14,15 @@ module UniversalID::MessagePackTypes
     end
 
     # A list of all MessagePack types in the preferred registration order (specific to general)
+    # NOTE: More specific type should be registered before more general types
+    #       because MessagePack will use the first registered type that matches
+    #       MessagePack scans registered type in linear order and first match wins
     def list
       %w[
         universal_id/uri/uid
-        rails/active_record/base
-        rails/global_id
-        rails/signed_global_id
+        rails/global_id/signed_global_id
+        rails/global_id/global_id
+        rails/global_id/identification
         ruby/complex
         ruby/rational
         ruby/date_time

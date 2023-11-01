@@ -1,23 +1,33 @@
 # frozen_string_literal: true
 
 module UniversalID
-  def self.config
-    @config ||= ActiveSupport::OrderedOptions.new.tap do |c|
-      # Default application name
-      c.app = GlobalID.app || "UniversalID"
+  class Config
+    extend Forwardable
+    include Singleton
+    include MonitorMixin
 
-      # Default logger
-      c.logger = defined?(Rails) ? Rails.logger : Logger.new(File::NULL)
+    attr_reader :logger, :encode
 
-      # Default encode options
-      c.encode = {
-        active_record: {
-          # Whether or not to preserve unsaved changes when encoding/decoding
-          # NOTE: Applies to all ActiveRecord models contained within the object being encoded
-          #       Default can be overridden when calling `UniversalID::Encoder.encode`
-          keep_changes: false
-        }
+    def logger=(value)
+      synchronize { @logger = value }
+    end
+
+    def encode=(value)
+      synchronize { @encode = value }
+    end
+
+    private
+
+    def initialize
+      super # Ensures MonitorMixin is initialized
+      @logger = defined?(Rails) ? Rails.logger : Logger.new(File::NULL)
+      @encode = {
+        active_record: {keep_changes: false}
       }
     end
+  end
+
+  def self.config
+    UniversalID::Config.instance
   end
 end

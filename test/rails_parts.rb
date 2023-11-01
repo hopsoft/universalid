@@ -3,9 +3,8 @@
 require "globalid"
 require "active_record"
 
-GlobalID.app = "UniversalID"
-SignedGlobalID.app = "UniversalID"
-SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
+GlobalID.app = SignedGlobalID.app = "universal-id"
+SignedGlobalID.verifier = GlobalID::Verifier.new("4ae705a3f0f0c675236cc7067d49123d")
 
 ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
 
