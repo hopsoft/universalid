@@ -41,6 +41,7 @@ class UniversalID::GlobalIDIdentificationPacker
   end
 
   def prepack
+    return {} if active_record? && reject_changes?
     object.public_send(prepack_method_name).tap do |hash|
       pattern = Regexp.union(regexp_filters) if regexp_filters.any?
       filters = string_filters
@@ -71,10 +72,9 @@ class UniversalID::GlobalIDIdentificationPacker
   end
 
   def keep_changes?
-    return true unless active_record?
-    return true if object.new_record?
+    return false unless active_record?
     return false unless object.changed?
-    return false unless prepack_method_name == :attributes
+    return true if object.new_record?
     !!options.dig(:active_record, :keep_changes)
   end
 
@@ -84,9 +84,9 @@ class UniversalID::GlobalIDIdentificationPacker
 
   def apply_changes!(hash)
     return unless active_record?
-    keep = keep_changes?
+    index = reject_changes? ? 0 : 1
     changes = object.changes_to_save.each_with_object({}) do |(attr, changeset), memo|
-      memo[attr.to_s] = keep ? changeset.last : changeset.first
+      memo[attr.to_s] = changeset[index]
     end
     hash.merge! changes
   end
