@@ -13,7 +13,6 @@ types = %w[
   ruby/rational
   ruby/date_time
   ruby/date
-  ruby/time
   ruby/range
   ruby/regexp
   ruby/set
