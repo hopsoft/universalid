@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-::UniversalID::MessagePackTypes.register ::Set,
-  # to_msgpack_ext
-  packer: ->(set) { ::MessagePack.pack set.to_a },
-
-  # from_msgpack_ext
-  unpacker: ->(string) { ::Set.new ::MessagePack.unpack(string) }
+::UniversalID::MessagePacker.register_type ::Set,
+  packer: ->(obj, packer) { packer.write obj.to_a },
+  unpacker: ->(unpacker) { ::Set.new unpacker.read },
+  recursive: true

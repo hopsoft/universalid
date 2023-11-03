@@ -1,37 +1,31 @@
 # frozen_string_literal: true
 
+require "benchmark"
 require "bundler"
 require "faker"
 require "minitest/autorun"
+require "minitest/parallel"
+require "minitest/reporters"
 require "pry-byebug"
 require "pry-doc"
 require "simplecov"
 
-require "minitest/reporters"
-Minitest::Reporters.use!
-
-SimpleCov.start
-
-# GlobalID must be loaded before UniversalID to use GID supported features of UID
-require "global_id"
-require_relative "../../lib/universal_id"
+# MiniTest setup
+Minitest.parallel_executor = Minitest::Parallel::Executor.new(8) # thread count
+Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 
 # Bring in a minimal subset of Rails tooling for testing purposes
-# - GlobalID
+# - GlobalID (must be loaded before UniversalID to use GID supported features of UID)
 # - ActiveRecord
-require_relative "../rails_parts"
+require_relative "../rails_kit/setup"
+require_relative "test_extension"
 
-UniversalID::MessagePackTypes.register_all
-
-class Minitest::Test
-  def with_persisted_campaign
-    campaign = Campaign.create!(name: Faker::Movie.title)
-    yield campaign
-  ensure
-    campaign&.destroy
-  end
-
-  def with_new_campaign
-    yield Campaign.new(name: Faker::Movie.title)
-  end
+SimpleCov.start do
+  project_name "UniversalID"
 end
+
+# Load UniversalID
+require_relative "../../lib/universal_id"
+
+# Initialize UniversalID for testing
+ApplicationRecord.send :include, UniversalID::ActiveRecordEncoder

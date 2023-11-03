@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "globalid"
+require "global_id"
 require "active_record"
 
 GlobalID.app = SignedGlobalID.app = "universal-id"
@@ -25,6 +25,6 @@ ActiveRecord::Schema.define do
   end
 end
 
-require_relative "../test/models/application_record"
-require_relative "../test/models/campaign"
-require_relative "../test/models/email"
+require_relative "models/application_record"
+require_relative "models/campaign"
+require_relative "models/email"

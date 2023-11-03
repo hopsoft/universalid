@@ -23,7 +23,15 @@ class UniversalID::ActiveRecordEncoderTest < Minitest::Test
     with_persisted_campaign do |campaign|
       campaign.name = "Changed Name"
       assert campaign.changed?
-      uid = campaign.to_uid(active_record: {keep_changes: true})
+
+      uid = begin
+        # TODO: Improve on the verbose options override semantics
+        UniversalID.config.message_packer[:global_id][:identification][:active_record][:keep_changes] = true
+        campaign.to_uid
+      ensure
+        # TODO: Improve on the verbose options override semantics
+        UniversalID.config.message_packer[:global_id][:identification][:active_record][:keep_changes] = false
+      end
       actual = Campaign.from_uid(uid)
       assert_equal campaign.attributes, actual.attributes
     end
@@ -33,7 +41,7 @@ class UniversalID::ActiveRecordEncoderTest < Minitest::Test
     with_persisted_campaign do |campaign|
       campaign.name = "Changed Name"
       assert campaign.changed?
-      uid = campaign.to_uid(active_record: {keep_changes: false})
+      uid = campaign.to_uid
       actual = Campaign.from_uid(uid)
       refute_equal campaign.attributes, actual.attributes
     end

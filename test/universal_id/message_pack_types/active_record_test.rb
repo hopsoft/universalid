@@ -6,15 +6,17 @@ module UniversalID::MessagePackTypes
   class ActiveRecordTest < Minitest::Test
     def test_persisted_model
       with_persisted_campaign do |campaign|
-        actual = MessagePack.unpack(MessagePack.pack(campaign))
-        assert_equal campaign.attributes, actual.attributes
+        packed = UniversalID::MessagePacker.pack(campaign)
+        unpacked = UniversalID::MessagePacker.unpack(packed)
+        assert_equal campaign.attributes, unpacked.attributes
       end
     end
 
     def test_new_model
       with_new_campaign do |campaign|
-        actual = MessagePack.unpack(MessagePack.pack(campaign))
-        assert_equal campaign.attributes, actual.attributes
+        packed = UniversalID::MessagePacker.pack(campaign)
+        unpacked = UniversalID::MessagePacker.unpack(packed)
+        assert_equal campaign.attributes, unpacked.attributes
       end
     end
   end

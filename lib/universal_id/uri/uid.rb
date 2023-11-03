@@ -15,8 +15,8 @@ module UniversalID::URI
 
       alias_method :find, :parse
 
-      def create(object, options = UniversalID.config.encode)
-        path = "/#{UniversalID::Encoder.encode(object, options)}"
+      def create(object)
+        path = "/#{UniversalID::Encoder.encode(object)}"
         parse "#{SCHEME}://#{HOST}#{path}"
       end
 

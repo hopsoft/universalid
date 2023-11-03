@@ -23,7 +23,15 @@ class UniversalID::EncoderTest < Minitest::Test
     with_persisted_campaign do |campaign|
       campaign.name = "Changed Name"
       assert campaign.changed?
-      encoded = UniversalID::Encoder.encode(campaign, active_record: {keep_changes: true})
+
+      encoded = begin
+        # TODO: Improve on the verbose options override semantics
+        UniversalID.config.message_packer[:global_id][:identification][:active_record][:keep_changes] = true
+        UniversalID::Encoder.encode(campaign)
+      ensure
+        # TODO: Improve on the verbose options override semantics
+        UniversalID.config.message_packer[:global_id][:identification][:active_record][:keep_changes] = false
+      end
       decoded = UniversalID::Encoder.decode(encoded)
       assert_equal campaign.attributes, decoded.attributes
     end
@@ -33,7 +41,7 @@ class UniversalID::EncoderTest < Minitest::Test
     with_persisted_campaign do |campaign|
       campaign.name = "Changed Name"
       assert campaign.changed?
-      encoded = UniversalID::Encoder.encode(campaign, active_record: {keep_changes: false})
+      encoded = UniversalID::Encoder.encode(campaign)
       decoded = UniversalID::Encoder.decode(encoded)
       refute_equal campaign.attributes, decoded.attributes
     end

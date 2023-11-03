@@ -15,8 +15,8 @@ module UniversalID::ActiveRecordEncoder
   end
 
   module InstanceMethods
-    def to_universal_id(options = {})
-      UniversalID::URI::UID.create self, options
+    def to_universal_id
+      UniversalID::URI::UID.create self
     end
 
     alias_method :to_uid, :to_universal_id

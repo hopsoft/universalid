@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-::UniversalID::MessagePackTypes.register ::UniversalID::URI::UID,
-  # to_msgpack_ext
-  packer: ->(uid) { ::MessagePack.pack uid.to_s },
-
-  # from_msgpack_ext
-  unpacker: ->(string) { ::UniversalID::URI::UID.parse ::MessagePack.unpack(string) }
+::UniversalID::MessagePacker.register_type ::UniversalID::URI::UID,
+  packer: ->(obj, packer) { packer.write obj.to_s },
+  unpacker: ->(unpacker) { ::UniversalID::URI::UID.parse unpacker.read },
+  recursive: true

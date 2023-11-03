@@ -6,11 +6,38 @@ require "minitest/test_task"
 task default: :test
 
 Minitest::TestTask.create(:test) do |t|
-  t.test_globs = if ARGV.size > 1
-    patterns = ARGV[1..].map { |arg| "test/**/#{arg}*_test.rb" }
-    ARGV.replace([ARGV[0]]) # Reset arguments to prevent rake from processing them further
-    patterns
+  globs = []
+  args = ARGV[1..] || []
+  ARGV.replace([ARGV[0]]) # Reset arguments to prevent rake from processing them further
+
+  puts "Args #{args.inspect}"
+  globs = args.each_with_object([]) do |arg, memo|
+    if arg.start_with?("test/") && arg.end_with?(".rb")
+      memo << arg
+      next
+    end
+
+    if arg.end_with?("_test.rb")
+      memo << "test/**/*#{arg}"
+      next
+    end
+
+    if arg.end_with?("_test")
+      memo << "test/**/*#{arg}.rb"
+      next
+    end
+
+    memo << "test/**/*#{arg}*_test.rb"
+  end
+
+  puts "Globs before filtering #{globs.inspect}"
+  globs.keep_if { |glob| Dir.glob(glob).any? }
+  globs << "test/**/*_test.rb" if args.none? && globs.none?
+
+  if globs.empty?
+    puts "No tests found for #{args.inspect}"
+    exit 1
   else
-    ["test/**/*_test.rb"]
+    t.test_globs = globs
   end
 end

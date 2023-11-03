@@ -14,14 +14,12 @@ require "brotli"
 require "msgpack"
 
 # internal
-module UniversalID; end
-
 require_relative "universal_id/refinements"
 require_relative "universal_id/version"
 require_relative "universal_id/config"
-require_relative "universal_id/message_pack_types"
 require_relative "universal_id/encoder"
 require_relative "universal_id/uri/uid"
+require_relative "universal_id/message_pack_factory"
 require_relative "universal_id/active_record_encoder"
 
 if URI.respond_to? :register_scheme

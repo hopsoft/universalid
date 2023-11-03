@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-::UniversalID::MessagePackTypes.register ::Date,
-  # to_msgpack_ext
-  packer: ->(date) { ::MessagePack.pack date.iso8601 },
-
-  # from_msgpack_ext
-  unpacker: ->(string) { ::Date.parse ::MessagePack.unpack(string) }
+::UniversalID::MessagePacker.register_type ::Date,
+  packer: ->(obj, packer) { packer.write obj.iso8601 },
+  unpacker: ->(unpacker) { ::Date.parse unpacker.read },
+  recursive: true

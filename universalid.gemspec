@@ -39,6 +39,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "model_probe"
   s.add_development_dependency "pry-byebug"
   s.add_development_dependency "pry-doc"
+  s.add_development_dependency "rainbow"
   s.add_development_dependency "rake"
   s.add_development_dependency "simplecov"
   s.add_development_dependency "sqlite3"

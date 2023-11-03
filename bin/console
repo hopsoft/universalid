@@ -5,16 +5,7 @@ require "bundler/setup"
 require "awesome_print"
 require "pry-byebug"
 require "pry-doc"
-
-require "globalid"
-GlobalID.app = "UniversalID"
-SignedGlobalID.app = "UniversalID"
-SignedGlobalID.verifier = GlobalID::Verifier.new("UniversalID")
-
-require "universalid"
-require_relative "../test/models"
-
-#require "irb"
-#IRB.start(__FILE__)
+require_relative "../test/rails_kit/setup"
+require "universal_id"
 
 Pry.start

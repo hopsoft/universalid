@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-::UniversalID::MessagePackTypes.register ::Complex,
-  # to_msgpack_ext
-  packer: ->(complex) { ::MessagePack.pack complex.to_s },
-
-  # from_msgpack_ext
-  unpacker: ->(string) { ::Kernel.Complex ::MessagePack.unpack(string) }
+::UniversalID::MessagePacker.register_type ::Complex,
+  packer: ->(obj, packer) { packer.write obj.to_s },
+  unpacker: ->(unpacker) { ::Kernel.Complex unpacker.read },
+  recursive: true

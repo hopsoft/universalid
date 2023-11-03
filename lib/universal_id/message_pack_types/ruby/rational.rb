@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-::UniversalID::MessagePackTypes.register ::Rational,
-  # to_msgpack_ext
-  packer: ->(rational) { ::MessagePack.pack rational.to_s },
-
-  # from_msgpack_ext
-  unpacker: ->(string) { ::Kernel.Rational ::MessagePack.unpack(string) }
+::UniversalID::MessagePacker.register_type ::Rational,
+  packer: ->(obj, packer) { packer.write obj.to_s },
+  unpacker: ->(unpacker) { ::Kernel.Rational unpacker.read },
+  recursive: true
