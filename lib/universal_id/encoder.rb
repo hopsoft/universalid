@@ -5,7 +5,7 @@
 module UniversalID::Encoder
   class << self
     def encode(object)
-      packed = UniversalID::MessagePacker.pack(object)
+      packed = UniversalID::MessagePackFactory.pack(object)
       deflated = Brotli.deflate(packed)
       Base64.urlsafe_encode64 deflated, padding: false
     end
@@ -13,7 +13,7 @@ module UniversalID::Encoder
     def decode(string)
       decoded = Base64.urlsafe_decode64(string)
       inflated = Brotli.inflate(decoded)
-      UniversalID::MessagePacker.unpack inflated
+      UniversalID::MessagePackFactory.unpack inflated
     end
   end
 end

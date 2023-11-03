@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-::UniversalID::MessagePacker.register_type ::Regexp,
+::UniversalID::MessagePackFactory.register_next_type ::Regexp,
   packer: ->(obj, packer) do
     packer.write obj.source
     packer.write obj.options

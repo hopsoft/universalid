@@ -11,7 +11,7 @@ module UniversalID
     def initialize
       @logger = defined?(Rails) ? Rails.logger : Logger.new(File::NULL)
 
-      # Default configuration applied by UniversalID::MessagePacker when packing objects with msgpack
+      # Default configuration applied by UniversalID::MessagePackFactory when packing objects with msgpack
       # ------------------------------------------------------------------------------------------------------
       # For an example of how these defaults are applied,
       # SEE: lib/universal_id/message_pack_types/rails/global_id/identification_packer.rb

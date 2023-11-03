@@ -7,8 +7,8 @@ module UniversalID::MessagePackTypes
     def test_global_id
       with_persisted_campaign do |campaign|
         expected = campaign.to_gid
-        packed = UniversalID::MessagePacker.pack(campaign.to_gid)
-        unpacked = UniversalID::MessagePacker.unpack(packed)
+        packed = UniversalID::MessagePackFactory.pack(campaign.to_gid)
+        unpacked = UniversalID::MessagePackFactory.unpack(packed)
         assert_equal expected, unpacked
       end
     end
@@ -16,16 +16,16 @@ module UniversalID::MessagePackTypes
     def test_signed_global_id
       with_persisted_campaign do |campaign|
         expected = campaign.to_sgid
-        packed = UniversalID::MessagePacker.pack(campaign.to_sgid)
-        unpacked = UniversalID::MessagePacker.unpack(packed)
+        packed = UniversalID::MessagePackFactory.pack(campaign.to_sgid)
+        unpacked = UniversalID::MessagePackFactory.unpack(packed)
         assert_equal expected, unpacked
       end
     end
 
     def test_implicit_global_id
       with_persisted_campaign do |campaign|
-        packed = UniversalID::MessagePacker.pack(campaign)
-        unpacked = UniversalID::MessagePacker.unpack(packed)
+        packed = UniversalID::MessagePackFactory.pack(campaign)
+        unpacked = UniversalID::MessagePackFactory.unpack(packed)
         assert_equal campaign, unpacked
       end
     end

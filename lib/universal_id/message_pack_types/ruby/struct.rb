@@ -2,7 +2,7 @@
 
 using ::UniversalID::Refinements::Kernel
 
-::UniversalID::MessagePacker.register_type ::Struct,
+::UniversalID::MessagePackFactory.register_next_type ::Struct,
   packer: ->(obj, packer) do
     packer.write obj.class.name
     packer.write obj.to_h

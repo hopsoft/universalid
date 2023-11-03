@@ -27,50 +27,50 @@ module UniversalID::MessagePackTypes
 
     def test_array
       expected = SCALARS.values
-      packed = UniversalID::MessagePacker.pack(expected)
-      unpacked = UniversalID::MessagePacker.unpack(packed)
+      packed = UniversalID::MessagePackFactory.pack(expected)
+      unpacked = UniversalID::MessagePackFactory.unpack(packed)
       assert_equal expected, unpacked
     end
 
     def test_hash_with_symbol_keys
       expected = SCALARS
-      packed = UniversalID::MessagePacker.pack(expected)
-      unpacked = UniversalID::MessagePacker.unpack(packed)
+      packed = UniversalID::MessagePackFactory.pack(expected)
+      unpacked = UniversalID::MessagePackFactory.unpack(packed)
       assert_equal expected, unpacked
     end
 
     def test_hash_with_integer_keys
       expected = SCALARS.values.each_with_index.to_h { |value, index| [index, value] }
-      packed = UniversalID::MessagePacker.pack(expected)
-      unpacked = UniversalID::MessagePacker.unpack(packed)
+      packed = UniversalID::MessagePackFactory.pack(expected)
+      unpacked = UniversalID::MessagePackFactory.unpack(packed)
       assert_equal expected, unpacked
     end
 
     def test_hash_with_string_keys
       expected = SCALARS.deep_symbolize_keys
-      packed = UniversalID::MessagePacker.pack(expected)
-      unpacked = UniversalID::MessagePacker.unpack(packed)
+      packed = UniversalID::MessagePackFactory.pack(expected)
+      unpacked = UniversalID::MessagePackFactory.unpack(packed)
       assert_equal expected, unpacked
     end
 
     def test_struct
       expected = PrimitiveStruct.new(*SCALARS.values)
-      packed = UniversalID::MessagePacker.pack(expected)
-      unpacked = UniversalID::MessagePacker.unpack(packed)
+      packed = UniversalID::MessagePackFactory.pack(expected)
+      unpacked = UniversalID::MessagePackFactory.unpack(packed)
       assert_equal expected, unpacked
     end
 
     def test_open_struct
       expected = OpenStruct.new(SCALARS)
-      packed = UniversalID::MessagePacker.pack(expected)
-      unpacked = UniversalID::MessagePacker.unpack(packed)
+      packed = UniversalID::MessagePackFactory.pack(expected)
+      unpacked = UniversalID::MessagePackFactory.unpack(packed)
       assert_equal expected, unpacked
     end
 
     def test_set
       expected = Set.new(SCALARS.values)
-      packed = UniversalID::MessagePacker.pack(expected)
-      unpacked = UniversalID::MessagePacker.unpack(packed)
+      packed = UniversalID::MessagePackFactory.pack(expected)
+      unpacked = UniversalID::MessagePackFactory.unpack(packed)
       assert_equal expected, unpacked
     end
   end

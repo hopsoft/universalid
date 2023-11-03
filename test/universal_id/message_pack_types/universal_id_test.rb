@@ -9,8 +9,8 @@ module UniversalID::MessagePackTypes
         payload = {number: 123, string: "data", array: [1, 2, 3], hash: {model: campaign}}
         uid = UniversalID::URI::UID.create(payload)
         assert uid.valid?
-        packed = UniversalID::MessagePacker.pack(uid)
-        unpacked = UniversalID::MessagePacker.unpack(packed)
+        packed = UniversalID::MessagePackFactory.pack(uid)
+        unpacked = UniversalID::MessagePackFactory.unpack(packed)
         assert_equal uid, unpacked
       end
     end
