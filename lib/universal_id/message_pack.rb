@@ -8,6 +8,7 @@ types = %w[
   universal_id/uri/uid
   global_id/signed_global_id
   global_id/global_id
+  active_record/active_record
   global_id/identification
   ruby/complex
   ruby/rational

@@ -2,13 +2,8 @@
 
 class UniversalID::GlobalIDIdentificationUnpacker
   using ::UniversalID::Refinements::Kernel
-  extend Forwardable
 
   class << self
-    def config
-      @config ||= ::UniversalID.config.message_pack.global_id
-    end
-
     # Unpacks the object using a MessagePack::Unpacker
     def unpack_with(unpacker)
       class_name = unpacker.read

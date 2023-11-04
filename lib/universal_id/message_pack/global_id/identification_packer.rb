@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class UniversalID::GlobalIDIdentificationPacker
-  using ::UniversalID::Refinements::Kernel
   extend Forwardable
 
   class << self
@@ -13,15 +12,15 @@ class UniversalID::GlobalIDIdentificationPacker
   def_delegators :"self.class", :config
   attr_reader :object
 
-  # NOTE: The object is not passed to the constructor when unpacking
   def initialize(object = nil)
     @object = object
   end
 
   # Packs the object using a MessagePack::Packer
   def pack_with(packer)
+    hash = object.public_send(config.prepack_method)
     packer.write object.class.name
-    packer.write prepare_for_packing(object.public_send(config.prepack_method))
+    packer.write prepare_for_packing(hash)
   end
 
   private

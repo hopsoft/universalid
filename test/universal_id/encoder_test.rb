@@ -19,7 +19,7 @@ class UniversalID::EncoderTest < Minitest::Test
     end
   end
 
-  def test_persisted_model_with_changes_keep_changes
+  def test_persisted_model_with_changes_preserve_unsaved_changes
     with_persisted_campaign do |campaign|
       campaign.name = "Changed Name"
       assert campaign.changed?
@@ -33,7 +33,7 @@ class UniversalID::EncoderTest < Minitest::Test
     end
   end
 
-  def test_persisted_model_with_changes_discard_changes
+  def test_persisted_model_with_changes_discard_unsaved_changes
     with_persisted_campaign do |campaign|
       campaign.name = "Changed Name"
       assert campaign.changed?
