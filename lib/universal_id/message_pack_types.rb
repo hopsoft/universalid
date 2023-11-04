@@ -20,4 +20,4 @@ types = %w[
   ruby/struct
 ]
 
-types.each { |type| require_relative "message_pack/#{type}.rb" }
+types.each { |type| require_relative "message_pack/types/#{type}.rb" }

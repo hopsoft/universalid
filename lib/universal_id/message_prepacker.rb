@@ -1,19 +1,14 @@
 # frozen_string_literal: true
 
-require "monitor"
 require_relative "refinements"
 
 class UniversalID::MessagePrepacker
   using ::UniversalID::Refinements::ArrayRefinement
   using ::UniversalID::Refinements::HashRefinement
 
-  include MonitorMixin
-
   attr_reader :object
 
   def initialize(object)
-    super() # MonitorMixin#initialize
-
     @object = case object
     when Array, Hash then object
     else raise ArgumentError, "Object must be a Hash or Array!"

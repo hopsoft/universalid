@@ -36,10 +36,10 @@ UniversalID::MessagePackFactory.register_type MessagePack::Timestamp::TYPE, ::Ti
   packer: MessagePack::Time::Packer,
   unpacker: MessagePack::Time::Unpacker
 
+# Setup a pool of pre-initialized packers/unpackers for marshaling operations
+UniversalID::MessagePackFactory.workers = [Etc.nprocessors, 1].max
+
 UniversalID::MessagePackFactory.register_next_type(::Symbol) # preserves Ruby symbols
 
 # Register custom/extension types
-require_relative "message_pack"
-
-# Setup a pool of pre-initialized packers/unpackers for marshaling operations
-UniversalID::MessagePackFactory.workers = [Etc.nprocessors, 1].max
+require_relative "message_pack_types"
