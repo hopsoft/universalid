@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
+require_relative "configurable"
+
 class UniversalID::GlobalIDIdentificationPacker
   extend Forwardable
+  include UniversalID::GlobalIDConfigurable
 
   class << self
     def config
@@ -24,30 +27,6 @@ class UniversalID::GlobalIDIdentificationPacker
   end
 
   private
-
-  # Indicates if the key should be excluded before packing
-  def exclude?(key)
-    @excludes ||= config.exclude.to_h { |key| [key, true] }
-    @excludes[key]
-  end
-
-  # Indicates if the key should be included before packing
-  def includes?(key)
-    @includes ||= config.include.to_h { |key| [key, true] }
-    return true if @includes[:include].empty?
-    @includes[:include][key]
-  end
-
-  # Indicates if we should remove blank values before packing
-  def include_blank?
-    return @include_blank[:include_blank] if @include_blank
-    @include_blank ||= {include_blank: !!config.include_blank}
-  end
-
-  # Indicates if we should exclude blank values before packing
-  def exclude_blank?
-    !include_blank?
-  end
 
   # Prepares a hash representation of the object for packing
   def prepare_for_packing(hash = {})
