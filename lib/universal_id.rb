@@ -25,17 +25,17 @@ require_relative "universal_id/active_record_encoder"
 module UniversalID
   extend MonitorMixin
 
+  CONFIG_FILE_PATH = File.expand_path("../universal_id/message_pack/config.yml", __FILE__)
+
   class << self
     attr_writer :logger
 
     def logger
-      @logger = defined?(Rails) ? Rails.logger : Logger.new(File::NULL)
+      @logger ||= defined?(Rails) ? Rails.logger : Logger.new(File::NULL)
     end
 
     def config
-      synchronize do
-        @config ||= Config.load_files(File.expand_path("../universal_id/message_pack/config.yml", __FILE__))
-      end
+      @config ||= Config.load_files(CONFIG_FILE_PATH)
     end
 
     # Yields a deep copy of the current config
@@ -45,7 +45,7 @@ module UniversalID
       synchronize do
         orig_config = config
         temp_config = Marshal.load(Marshal.dump(config))
-        yield temp_config
+        yield temp_config if block_given?
       ensure
         @config = orig_config
       end

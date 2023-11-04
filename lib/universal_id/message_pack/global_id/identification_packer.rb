@@ -5,8 +5,6 @@ class UniversalID::GlobalIDIdentificationPacker
   extend Forwardable
 
   class << self
-    attr_writer :config
-
     def config
       @config ||= ::UniversalID.config.message_pack.global_id
     end
@@ -24,13 +22,6 @@ class UniversalID::GlobalIDIdentificationPacker
   def pack_with(packer)
     packer.write object.class.name
     packer.write prepare_for_packing(object.public_send(config.prepack_method))
-  end
-
-  # Unpacks the object using a MessagePack::Unpacker
-  def unpack_with(unpacker)
-    class_name = unpacker.read
-    hash = unpacker.read || {}
-    create_instance class_name, hash
   end
 
   private
@@ -67,33 +58,6 @@ class UniversalID::GlobalIDIdentificationPacker
       next if !includes.empty? && includes[key]
       next if exclude_blank? && val.nil? || val.respond_to?(:empty?) && val.empty?
       memo[key] = val.is_a?(::Hash) ? prepare_for_packing(val) : val
-    end
-  end
-
-  # Attempts to create unpacked data into an object instance
-  def create_instance(klass, hash = {})
-    return nil unless klass
-    return hash if klass == ::Hash
-    (klass.instance_method(:initialize).arity > 0) ?
-      create_instance_with_initializer(klass, hash) :
-      create_instance_with_setters(klass, hash)
-  end
-
-  # Attempts to reconstruct unpacked data into an object via initializer (falls back to setters on error)
-  def create_instance_with_initializer(klass, hash = {})
-    klass.new hash
-  rescue
-    begin
-      create_instance_with_setters(klass, **hash)
-    rescue ArgumentError
-      create_instance_with_setters klass, hash
-    end
-  end
-
-  # Attempts to reconstruct unpacked data into an object via setters
-  def create_instance_with_setters(klass, hash = {})
-    klass.new.tap do |o|
-      hash.each { |key, val| o.public_send "#{key}=", val if o.respond_to?("#{key}=") }
     end
   end
 end
