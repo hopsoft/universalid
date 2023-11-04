@@ -24,13 +24,9 @@ class UniversalID::EncoderTest < Minitest::Test
       campaign.name = "Changed Name"
       assert campaign.changed?
 
-      encoded = begin
-        # TODO: Improve on the verbose options override semantics
-        UniversalID.config.message_packer[:global_id][:identification][:active_record][:keep_changes] = true
-        UniversalID::Encoder.encode(campaign)
-      ensure
-        # TODO: Improve on the verbose options override semantics
-        UniversalID.config.message_packer[:global_id][:identification][:active_record][:keep_changes] = false
+      encoded = UniversalID.with_config do |config|
+        config.message_pack.active_record.preserve_unsaved_changes = true
+        UniversalID::Encoder.encode campaign
       end
       decoded = UniversalID::Encoder.decode(encoded)
       assert_equal campaign.attributes, decoded.attributes

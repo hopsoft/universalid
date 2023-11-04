@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "brotli", ">= 0.4.0"
   s.add_dependency "msgpack", ">= 1.7"
+  s.add_dependency "config", ">= 5.0"
 
   s.add_development_dependency "activerecord"
   s.add_development_dependency "awesome_print"

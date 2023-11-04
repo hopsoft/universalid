@@ -1,0 +1,44 @@
+# Configuration used when packing/unpacking with MessagePack
+message_pack:
+  global_id: &global_id
+    # The method name to use for pre-packing (i.e. trasforming Object → Hash)
+    # --------------------------------------------------------------------------------------------------------
+    # NOTE: This method must return a Ruby Hash
+    # --------------------------------------------------------------------------------------------------------
+    prepack_method: to_h
+
+    # A list of attributes to exclude (default includes all attributes)
+    # --------------------------------------------------------------------------------------------------------
+    # NOTE: The exclude list takes prescedence over the include list
+    # --------------------------------------------------------------------------------------------------------
+    exclude: []
+
+    # A list of attributes to include (default includes all attributes)
+    include: []
+
+    # Whether or not to omit blank values when packing (nil, {}, [])
+    # --------------------------------------------------------------------------------------------------------
+    include_blank: true
+
+
+  active_record:
+    # NOTE: ActiveRecord packing is based on record attributes
+    #       i.e. prepack_method_name is ignored
+    <<: *global_id
+
+    # Whether or not to preserve unsaved ActiveRecord changes when packing
+    # --------------------------------------------------------------------------------------------------------
+    # NOTE: Only honored when: prepack_method_name == "attributes"
+    #       New record changes are always preserved regardless of this setting
+    # --------------------------------------------------------------------------------------------------------
+    preserve_unsaved_changes: false
+
+    # Whether or not to include associations
+    # and the depth of loaded associations to include when packing
+    # --------------------------------------------------------------------------------------------------------
+    # NOTE: Associations must already be loaded (unloaded associations are excluded)
+    # --------------------------------------------------------------------------------------------------------
+    # For example, a value of (3) would include the following: Parent > Child > Grandchild
+    #
+    include_loaded_associations: false
+    max_association_depth: 0

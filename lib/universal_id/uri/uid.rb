@@ -73,3 +73,12 @@ module UniversalID::URI
     end
   end
 end
+
+# Register the URI scheme
+if URI.respond_to? :register_scheme
+  URI.register_scheme "UID", UniversalID::URI::UID unless URI.scheme_list.include?("UID")
+else
+  # shenanigans to support Ruby 3.0.X
+  URI::UID = UniversalID::URI::UID
+  URI.scheme_list["UID"] = URI::UID
+end
