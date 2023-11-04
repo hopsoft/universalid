@@ -2,7 +2,7 @@
 
 require "date"
 require "bigdecimal"
-require_relative "../test_helper"
+require_relative "../../test_helper"
 
 module UniversalID::MessagePackTypes
   class RubyTest < Minitest::Test

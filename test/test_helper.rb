@@ -18,7 +18,7 @@ Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 # Bring in a minimal subset of Rails tooling for testing purposes
 # - GlobalID (must be loaded before UniversalID to use GID supported features of UID)
 # - ActiveRecord
-require_relative "../rails_kit/setup"
+require_relative "rails_kit/setup"
 require_relative "test_extension"
 
 SimpleCov.start do
@@ -26,7 +26,7 @@ SimpleCov.start do
 end
 
 # Load UniversalID
-require_relative "../../lib/universal_id"
+require_relative "../lib/universal_id"
 
 # Initialize UniversalID for testing
 ApplicationRecord.send :include, UniversalID::ActiveRecordEncoder

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UniversalID::GlobalIDIdentificationUnpacker
-  using ::UniversalID::Refinements::Kernel
+  using ::UniversalID::Refinements::KernelRefinement
 
   class << self
     # Unpacks the object using a MessagePack::Unpacker

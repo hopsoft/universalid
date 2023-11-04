@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-using ::UniversalID::Refinements::Kernel
+using ::UniversalID::Refinements::KernelRefinement
 
 ::UniversalID::MessagePackFactory.register_next_type ::Struct,
   packer: ->(obj, packer) do

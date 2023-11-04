@@ -5,11 +5,10 @@
 #       because MessagePack will use the first registered type that matches
 #       MessagePack scans registered type in linear order and first match wins
 types = %w[
-  universal_id/uri/uid
-  signed_global_id
-  global_id
-  active_record/base
-  global_id/identification
+  uri/uid/type
+  signed_global_id/type
+  global_id/type
+  active_record/base/type
   ruby/complex
   ruby/rational
   ruby/date_time

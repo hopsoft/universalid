@@ -8,7 +8,7 @@ module UniversalID::ActiveRecordEncoder
 
   module ClassMethods
     def from_universal_id(uid)
-      UniversalID::URI::UID.parse(uid)&.decode
+      URI::UID.parse(uid)&.decode
     end
 
     alias_method :from_uid, :from_universal_id
@@ -16,7 +16,7 @@ module UniversalID::ActiveRecordEncoder
 
   module InstanceMethods
     def to_universal_id
-      UniversalID::URI::UID.create self
+      URI::UID.create self
     end
 
     alias_method :to_uid, :to_universal_id

@@ -2,7 +2,7 @@
 
 module UniversalID
   module Refinements
-    module Kernel
+    module KernelRefinement
       refine ::Kernel do
         # Finds a constant by name, starting at the root namespace (i.e. ::Object)
         def const_find(name)

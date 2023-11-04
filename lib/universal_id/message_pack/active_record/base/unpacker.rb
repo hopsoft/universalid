@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UniversalID::ActiveRecordBaseUnpacker
-  using ::UniversalID::Refinements::Kernel
+  using ::UniversalID::Refinements::KernelRefinement
 
   class << self
     # Unpacks the record using a MessagePack::Unpacker

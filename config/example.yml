@@ -10,10 +10,6 @@
 ##############################################################################################################
 message_pack: &message_pack
   # ..........................................................................................................
-  # The method to use for pre-packing - trasforming the object being packed into a Hash
-  prepack: to_h
-
-  # ..........................................................................................................
   # A list of attributes to exclude (default includes all keys)
   # Takes prescedence over the`include` list
   exclude: []
@@ -34,7 +30,7 @@ message_pack: &message_pack
 
   # ==========================================================================================================
   # ActiveRecord::Base instances/models
-  # NOTE: The `prepack_method_name` option is ignored
+  # NOTE: The `prepack` option is ignored
   active_record:
     base:
       <<: *message_pack
@@ -50,8 +46,7 @@ message_pack: &message_pack
 
       # ......................................................................................................
       # Whether or not to preserve unsaved ActiveRecord changes when packing
-      # NOTE: Only honored when: prepack_method_name == "attributes"
-      #       New record changes are always preserved regardless of this setting
+      # NOTE: New record changes are always preserved regardless of this setting
       include_unsaved_changes: false
 
       # ......................................................................................................

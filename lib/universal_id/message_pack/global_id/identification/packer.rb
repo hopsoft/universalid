@@ -1,18 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../abstractions/configurable"
-
 class UniversalID::GlobalIDIdentificationPacker
-  extend Forwardable
-  include UniversalID::GlobalIDConfigurable
-
-  class << self
-    def config
-      @config ||= ::UniversalID.config.message_pack.global_id
-    end
-  end
-
-  def_delegators :"self.class", :config
   attr_reader :object
 
   def initialize(object = nil)
@@ -21,7 +9,7 @@ class UniversalID::GlobalIDIdentificationPacker
 
   # Packs the object using a MessagePack::Packer
   def pack_with(packer)
-    hash = object.public_send(config.prepack_method)
+    hash = object.public_send(config.prepack)
     packer.write object.class.name
     packer.write prepare_for_packing(hash)
   end

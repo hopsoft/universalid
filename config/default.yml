@@ -1,6 +1,5 @@
 ---
 message_pack: &message_pack
-  prepack: to_h
   exclude: []
   include: []
   include_blank: true
