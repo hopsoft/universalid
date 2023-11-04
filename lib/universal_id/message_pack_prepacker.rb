@@ -2,7 +2,7 @@
 
 require_relative "refinements"
 
-class UniversalID::MessagePrepacker
+class UniversalID::MessagePackPrepacker
   using ::UniversalID::Refinements::ArrayRefinement
   using ::UniversalID::Refinements::HashRefinement
 
@@ -26,6 +26,7 @@ class UniversalID::MessagePrepacker
     attr_reader :config
 
     def initialize(config = UniversalID.config)
+      # TODO: add Config dry-schema, dry-validations, etc.
       raise ArgumentError, "Config must be a Config::Options!" unless config.is_a?(Config::Options)
       raise ArgumentError, "Config must include the `message_pack` key!" unless config.message_pack&.is_a?(Config::Options)
       @config = config.message_pack
@@ -38,8 +39,6 @@ class UniversalID::MessagePrepacker
       return false if exclude_blank? && blank?(value)
       @include[key] || @include.empty?
     end
-
-    private
 
     def blank?(value)
       return true if value.nil?
