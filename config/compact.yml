@@ -1,0 +1,3 @@
+---
+message_pack: &message_pack
+  include_blank: false

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UniversalID::ActiveRecordUnpacker
+class UniversalID::ActiveRecordBaseUnpacker
   using ::UniversalID::Refinements::Kernel
 
   class << self

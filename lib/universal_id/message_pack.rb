@@ -6,9 +6,9 @@
 #       MessagePack scans registered type in linear order and first match wins
 types = %w[
   universal_id/uri/uid
-  global_id/signed_global_id
-  global_id/global_id
-  active_record/active_record
+  signed_global_id
+  global_id
+  active_record/base
   global_id/identification
   ruby/complex
   ruby/rational

@@ -17,38 +17,18 @@ require "msgpack"
 # internal
 require_relative "universal_id/refinements/kernel"
 require_relative "universal_id/version"
+require_relative "universal_id/config"
 require_relative "universal_id/encoder"
 require_relative "universal_id/uri/uid"
 require_relative "universal_id/message_pack_factory"
 require_relative "universal_id/active_record_encoder"
 
 module UniversalID
-  extend MonitorMixin
-
-  CONFIG_FILE_PATH = File.expand_path("../universal_id/message_pack/config.yml", __FILE__)
-
   class << self
     attr_writer :logger
 
     def logger
       @logger ||= defined?(Rails) ? Rails.logger : Logger.new(File::NULL)
-    end
-
-    def config
-      @config ||= Config.load_files(CONFIG_FILE_PATH)
-    end
-
-    # Yields a deep copy of the current config
-    # Use with UniversalID::Encoder#Encode and MessagePack#pack
-    # when you want to change how an object is encoded or packed
-    def with_config
-      synchronize do
-        orig_config = config
-        temp_config = Marshal.load(Marshal.dump(config))
-        yield temp_config if block_given?
-      ensure
-        @config = orig_config
-      end
     end
   end
 end

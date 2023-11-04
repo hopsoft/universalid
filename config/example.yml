@@ -1,0 +1,65 @@
+---
+##############################################################################################################
+# MessagePack options used for packing/unpacking objects
+#
+# Configurable objects include:
+# 1. Hash
+# 2. GlobalID::Identification
+# 3. ActiveRecord::Base
+#
+##############################################################################################################
+message_pack: &message_pack
+  # ..........................................................................................................
+  # The method to use for pre-packing - trasforming the object being packed into a Hash
+  prepack: to_h
+
+  # ..........................................................................................................
+  # A list of attributes to exclude (default includes all keys)
+  # Takes prescedence over the`include` list
+  exclude: []
+
+  # ..........................................................................................................
+  # A list of attributes to include (default includes all keys)
+  include: []
+
+  # ..........................................................................................................
+  # Whether or not to omit blank values when packing (nil, {}, [])
+  include_blank: true
+
+  # ==========================================================================================================
+  # Objects that implement the GlobalID::Identification interface/protocol and mix-in the concern
+  gloabal_id:
+    identification:
+      <<: *message_pack
+
+  # ==========================================================================================================
+  # ActiveRecord::Base instances/models
+  # NOTE: The `prepack_method_name` option is ignored
+  active_record:
+    base:
+      <<: *message_pack
+      # ......................................................................................................
+      # Whether or not to omit primary/foreign keys
+      # Setting this to `true` can be useful when you want to make a copy of a persisted record
+      exclude_keys: false
+
+      # ......................................................................................................
+      # Whether or not to omit date/time attributes
+      # Setting this to `true` can be useful when you want to make a copy of a persisted record
+      exclude_timestamps: false
+
+      # ......................................................................................................
+      # Whether or not to preserve unsaved ActiveRecord changes when packing
+      # NOTE: Only honored when: prepack_method_name == "attributes"
+      #       New record changes are always preserved regardless of this setting
+      include_unsaved_changes: false
+
+      # ......................................................................................................
+      # Whether or not to include associations
+      # NOTE: Associations must already be loaded (unloaded associations are excluded)
+      include_loaded_associations: false
+
+      # ......................................................................................................
+      # The max depth (number) of loaded associations to include if `include_loaded_associations == true`
+      # Example: a value of (3) would include the following: Parent > Child > Grandchild
+      max_association_depth: 0

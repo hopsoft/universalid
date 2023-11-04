@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "../global_id/configurable"
+require_relative "../abstractions/configurable"
 
-class UniversalID::ActiveRecordPacker
+class UniversalID::ActiveRecordBasePacker
   extend Forwardable
   include UniversalID::GlobalIDConfigurable
 

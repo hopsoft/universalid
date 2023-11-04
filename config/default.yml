@@ -1,0 +1,19 @@
+---
+message_pack: &message_pack
+  prepack: to_h
+  exclude: []
+  include: []
+  include_blank: true
+
+  gloabal_id:
+    identification:
+      <<: *message_pack
+
+  active_record:
+    base:
+      <<: *message_pack
+      exclude_keys: false
+      exclude_timestamps: false
+      include_unsaved_changes: false
+      include_loaded_associations: false
+      max_association_depth: 0

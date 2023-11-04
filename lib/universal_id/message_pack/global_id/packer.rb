@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "configurable"
+require_relative "../abstractions/configurable"
 
 class UniversalID::GlobalIDIdentificationPacker
   extend Forwardable

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "identification_packer"
-require_relative "identification_unpacker"
+require_relative "packer"
+require_relative "unpacker"
 
 if defined? ::GlobalID::Identification
 
