@@ -20,7 +20,8 @@ module UniversalID
 
         # Indicates if the current Class or Module is a descendant of the passed list of Classes or Modules
         def descends_from?(*klasses)
-          (ancestors & klasses).any?
+          klass = is_a?(::Class) ? self : self.class
+          (klass.ancestors & klasses).any?
         end
       end
     end

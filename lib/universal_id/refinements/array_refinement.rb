@@ -7,12 +7,12 @@ module UniversalID
         def prepack
           config = ::Thread.current[:prepack_config]
 
-          copy = select do |item|
-            item = item.respond_to?(:prepack) ? item.prepack : item
-            config.keep? item
+          copy = select do |val|
+            val = val.respond_to?(:prepack) ? val.prepack : val
+            config.keep_value? val
           end
 
-          config.keep?(copy) ? copy : nil
+          config.keep_value?(copy) ? copy : nil
         end
       end
     end

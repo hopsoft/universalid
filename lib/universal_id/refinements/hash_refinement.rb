@@ -11,11 +11,11 @@ module UniversalID
 
           copy = each_with_object({}) do |(key, val), memo|
             key = key.to_s
-            next unless config.include?(key, val)
+            next unless config.keep_keypair?(key, val)
             memo[key] = val.respond_to?(:prepack) ? val.prepack : val
           end
 
-          config.keep?(copy) ? copy : nil
+          config.keep_value?(copy) ? copy : nil
         end
       end
     end

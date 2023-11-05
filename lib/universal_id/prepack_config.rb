@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-# TODO: Refactor the predicate helper methods to be more explicit
-#       i.e. keep_kepair?-vs-include?, keep_value?-vs-keep? etc.
 class UniversalID::PrepackConfig
+  using UniversalID::Refinements::KernelRefinement
   attr_reader :config
 
   def initialize(config = UniversalID.config)
@@ -12,38 +11,7 @@ class UniversalID::PrepackConfig
     @config = config.prepack
   end
 
-  def exclude?(key)
-    @exclude ||= config.exclude.to_h { |key| [key, true] }
-    @exclude[key]
-  end
-
-  def include?(key, value)
-    @include ||= config.include.to_h { |key| [key, true] }
-    return false if exclude?(key)
-    return false if discard?(value)
-    @include[key] || @include.empty?
-  end
-
-  def blank?(value)
-    return true if value.nil?
-    return true if value.respond_to?(:blank?) && value.blank?
-    return true if value.respond_to?(:empty?) && value.empty?
-    return true if value.is_a?(String) && value.strip.empty?
-    false
-  end
-
-  def present?(value)
-    !blank? value
-  end
-
-  def keep?(value)
-    include_blank? || present?(value)
-  end
-
-  def discard?(value)
-    !keep? value
-  end
-
+  # config settings ..........................................................................................
   def include_blank?
     return @include_blank[:include_blank] if @include_blank
     @include_blank ||= {include_blank: !!config.include_blank}
@@ -51,5 +19,55 @@ class UniversalID::PrepackConfig
 
   def exclude_blank?
     !include_blank?
+  end
+
+  def includes
+    @includes ||= config.include.to_h { |key| [key, true] }
+  end
+
+  def excludes
+    @excludes ||= config.exclude.to_h { |key| [key, true] }
+  end
+
+  # kepy/value assessments ...................................................................................
+  def keep_key?(key)
+    includes[key] || !excludes[key]
+  end
+
+  def discard_key?(key)
+    excludes[key]
+  end
+
+  def keep_value?(value)
+    include_blank? || value_present?(value)
+  end
+
+  def discard_value?(value)
+    !keep_value?(value)
+  end
+
+  def keep_keypair?(key, value)
+    keep_key?(key) && keep_value?(value)
+  end
+
+  def discard_keypair?(key, value)
+    discard_key?(key) || discard_value?(value)
+  end
+
+  # key/value information ....................................................................................
+  def value_blank?(value)
+    return true if value.nil?
+    return false if !!value == value # booleans
+
+    result = false
+    result ||= value.empty? if value.respond_to?(:empty?)
+    result ||= value.blank? if value.respond_to?(:blank?)
+    result ||= value.strip.empty? if value.is_a?(String)
+    result ||= value.compact.empty? if value.is_a?(Array) || value.is_a?(Hash)
+    result
+  end
+
+  def value_present?(value)
+    !value_blank?(value)
   end
 end
