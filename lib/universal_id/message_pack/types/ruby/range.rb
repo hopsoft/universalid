@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-::UniversalID::MessagePackFactory.register_next_type ::Range,
+UniversalID::MessagePackFactory.register_next_type Range,
   packer: ->(obj, packer) do
     packer.write obj.first
     packer.write obj.to_s.scan(/\.{2,3}/).first

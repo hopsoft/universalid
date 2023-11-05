@@ -7,7 +7,6 @@ class UniversalID::ActiveRecordBasePacker
     @record = record
   end
 
-  # Packs the object using a MessagePack::Packer
   def pack_with(packer)
     packer.write record.class.name
     packer.write prepare_for_packing(record)
@@ -27,7 +26,7 @@ class UniversalID::ActiveRecordBasePacker
       next if exclude_blank? && val.nil? || val.respond_to?(:empty?) && val.empty?
 
       val = record.changes_to_save[key].first if discard_unsaved_changes?
-      memo[key] = val.is_a?(::Hash) ? prepare_for_packing(val) : val
+      memo[key] = val.is_a?(Hash) ? prepare_for_packing(val) : val
     end
   end
 end

@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
-  s.add_dependency "brotli", ">= 0.4.0"
+  s.add_dependency "brotli", ">= 0.4"
   s.add_dependency "msgpack", ">= 1.7"
   s.add_dependency "config", ">= 5.0"
 
