@@ -23,6 +23,8 @@ require_relative "test_extension"
 
 SimpleCov.start do
   project_name "UniversalID"
+  add_filter "lib/universal_id/message_pack/types"
+  add_filter "test"
 end
 
 # Load UniversalID

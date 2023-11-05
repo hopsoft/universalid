@@ -27,14 +27,24 @@ class UniversalID::MessagePackRubyScalarsTest < Minitest::Test
       value = SCALARS[klass]
       packed = UniversalID::MessagePackFactory.pack(value)
       unpacked = UniversalID::MessagePackFactory.unpack(packed)
-      assert_equal value, unpacked
+
+      if value.nil?
+        assert_nil unpacked
+      else
+        assert_equal value, unpacked
+      end
     end
 
     define_method :"test_#{klass.name}_with_factory_pool" do
       value = SCALARS[klass]
       packed = UniversalID::MessagePackFactoryPool.dump(value)
       unpacked = UniversalID::MessagePackFactoryPool.load(packed)
-      assert_equal value, unpacked
+
+      if value.nil?
+        assert_nil unpacked
+      else
+        assert_equal value, unpacked
+      end
     end
   end
 end
