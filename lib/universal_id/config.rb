@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "config"
+
 module UniversalID
   DEFAULT_CONFIG_PATH = File.expand_path("../../../config/default.yml", __FILE__)
   COMPACT_CONFIG_PATH = File.expand_path("../../../config/compact.yml", __FILE__)

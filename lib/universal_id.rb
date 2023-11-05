@@ -1,18 +1,5 @@
 # frozen_string_literal: true
 
-# stdlib
-require "base64"
-require "cgi"
-require "config"
-require "digest/md5"
-require "forwardable"
-require "uri"
-
-# 3rd party gems
-require "brotli"
-require "msgpack"
-
-# internal
 require_relative "universal_id/version"
 require_relative "universal_id/config"
 require_relative "universal_id/encoder"
