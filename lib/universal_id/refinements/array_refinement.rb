@@ -4,15 +4,15 @@ module UniversalID
   module Refinements
     module ArrayRefinement
       refine ::Array do
-        def to_message_prepack
-          config = Thread.current[:universal_id_message_pack_config]
+        def prepack
+          config = ::Thread.current[:prepack_config]
 
-          # TODO: NATE: remove blanks if config.exclude_blank?
-          map do |entry|
-            entry.respond_to?(:to_message_prepack) ?
-              entry.to_message_prepack :
-              entry
+          copy = select do |item|
+            item = item.respond_to?(:prepack) ? item.prepack : item
+            config.keep? item
           end
+
+          config.keep?(copy) ? copy : nil
         end
       end
     end

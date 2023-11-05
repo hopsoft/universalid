@@ -17,7 +17,7 @@ require_relative "universal_id/version"
 require_relative "universal_id/config"
 require_relative "universal_id/encoder"
 require_relative "uri/uid"
-require_relative "universal_id/message_pack_prepacker"
+require_relative "universal_id/prepacker"
 require_relative "universal_id/message_pack_factory"
 require_relative "universal_id/active_record_encoder"
 

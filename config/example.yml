@@ -1,14 +1,8 @@
 ---
 ##############################################################################################################
-# MessagePack options used for packing/unpacking objects
-#
-# Configurable objects include:
-# 1. Hash
-# 2. GlobalID::Identification
-# 3. ActiveRecord::Base
-#
+# Prepack options applied before packing with MessagePack
 ##############################################################################################################
-message_pack: &message_pack
+prepack: &prepack
   # ..........................................................................................................
   # A list of attributes to exclude (default includes all keys)
   # Takes prescedence over the`include` list
@@ -23,17 +17,11 @@ message_pack: &message_pack
   include_blank: true
 
   # ==========================================================================================================
-  # Objects that implement the GlobalID::Identification interface/protocol and mix-in the concern
-  gloabal_id:
-    identification:
-      <<: *message_pack
-
-  # ==========================================================================================================
   # ActiveRecord::Base instances/models
   # NOTE: The `prepack` option is ignored
   active_record:
     base:
-      <<: *message_pack
+      <<: *prepack
       # ......................................................................................................
       # Whether or not to omit primary/foreign keys
       # Setting this to `true` can be useful when you want to make a copy of a persisted record
