@@ -16,13 +16,13 @@ class UniversalID::Prepacker
     end
   end
 
-  def prepack(config = UniversalID.config)
+  def prepack(config = nil)
     with_prepack_config(config) { object.prepack }
   end
 
   private
 
-  def with_prepack_config(config)
+  def with_prepack_config(config = nil)
     Thread.current[:prepack_config] = UniversalID::PrepackConfig.new(config)
     yield
   ensure

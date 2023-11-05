@@ -4,11 +4,13 @@ class UniversalID::PrepackConfig
   using UniversalID::Refinements::KernelRefinement
   attr_reader :config
 
-  def initialize(config = UniversalID.config)
+  def initialize(config = nil)
+    config ||= UniversalID::Configs.default.prepack
+
     # TODO: add Config dry-schema, dry-validations, etc.
     raise ArgumentError, "Config must be an instance of Config::Options!" unless config.is_a?(Config::Options)
-    raise ArgumentError, "Config must include the `prepack` key!" unless config.prepack&.is_a?(Config::Options)
-    @config = config.prepack
+
+    @config = config
   end
 
   # config settings ..........................................................................................

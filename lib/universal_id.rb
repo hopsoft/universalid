@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "universal_id/version"
-require_relative "universal_id/config"
+require_relative "universal_id/configs"
 require_relative "universal_id/encoder"
 require_relative "uri/uid"
 require_relative "universal_id/prepacker"

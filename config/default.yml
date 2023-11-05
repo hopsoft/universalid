@@ -4,10 +4,6 @@ prepack: &prepack
   include: []
   include_blank: true
 
-  gloabal_id:
-    identification:
-      <<: *prepack
-
   active_record:
     base:
       <<: *prepack
