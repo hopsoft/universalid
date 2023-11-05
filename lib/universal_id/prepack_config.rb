@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# TODO: Refactor the predicate helper methods to be more explicit
+#       i.e. keep_kepair?-vs-include?, keep_value?-vs-keep? etc.
 class UniversalID::PrepackConfig
   attr_reader :config
 
