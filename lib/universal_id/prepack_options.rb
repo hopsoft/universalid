@@ -62,7 +62,7 @@ module UniversalID
     end
 
     def keep_keypair?(key, value)
-      keep_key?(key) && keep_value?(value)
+      keep_key?(key.to_s) && keep_value?(value)
     end
 
     def discard_keypair?(key, value)
