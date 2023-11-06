@@ -1,14 +1,12 @@
 ---
-prepack: &prepack
+prepack:
   exclude: []
   include: []
   include_blank: true
 
   active_record:
-    base:
-      <<: *prepack
-      exclude_database_keys: false
-      exclude_timestamps: false
-      include_unsaved_changes: false
-      include_loaded_associations: false
-      max_association_depth: 0
+    exclude_database_keys: false
+    exclude_timestamps: false
+    include_unsaved_changes: false
+    include_loaded_associations: false
+    max_association_depth: 0

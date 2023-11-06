@@ -2,7 +2,7 @@
 
 require_relative "../../test_helper"
 
-class UniversalID::ActiveRecordEncoderTest < Minitest::Test
+class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   # def test_new_model
   # with_new_campaign do |campaign|
   # uid = campaign.to_uid

@@ -33,12 +33,12 @@ class UniversalID::Prepacker::HashTest < Minitest::Test
   end
 
   def test_prepack_hash_with_default_config
-    prepacked = UniversalID::Prepacker.prepack(@hash, UniversalID::Configs.default.prepack)
+    prepacked = UniversalID::Prepacker.prepack(@hash, UniversalID::Settings.default.prepack)
     assert_equal @hash, prepacked
   end
 
   def test_prepack_hash_with_squish_config
-    prepacked = UniversalID::Prepacker.prepack(@hash, UniversalID::Configs.squish)
+    prepacked = UniversalID::Prepacker.prepack(@hash, UniversalID::Settings.squish)
     expected = {
       one: Date.today,
       nine: "string",
@@ -57,12 +57,12 @@ class UniversalID::Prepacker::HashTest < Minitest::Test
   end
 
   def test_prepack_deep_hash_with_default_config
-    prepacked = UniversalID::Prepacker.prepack(@deep_hash, UniversalID::Configs.default.prepack)
+    prepacked = UniversalID::Prepacker.prepack(@deep_hash, UniversalID::Settings.default.prepack)
     assert_equal @deep_hash, prepacked
   end
 
   def test_prepack_deep_hash_with_squish_config
-    prepacked = UniversalID::Prepacker.prepack(@deep_hash, UniversalID::Configs.squish)
+    prepacked = UniversalID::Prepacker.prepack(@deep_hash, UniversalID::Settings.squish)
     expected = {
       one: Date.today,
       nine: "string",

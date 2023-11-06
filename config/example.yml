@@ -2,7 +2,7 @@
 ##############################################################################################################
 # Prepack options applied before packing with MessagePack
 ##############################################################################################################
-prepack: &prepack
+prepack:
   # ..........................................................................................................
   # A list of attributes to exclude (default includes all keys)
   # Takes prescedence over the`include` list
@@ -20,29 +20,27 @@ prepack: &prepack
   # ActiveRecord::Base instances/models
   # NOTE: The `prepack` option is ignored
   active_record:
-    base:
-      <<: *prepack
-      # ......................................................................................................
-      # Whether or not to omit primary/foreign keys
-      # Setting this to `true` can be useful when you want to make a copy of a persisted record
-      exclude_database_keys: false
+    # ......................................................................................................
+    # Whether or not to omit primary/foreign keys
+    # Setting this to `true` can be useful when you want to make a copy of a persisted record
+    exclude_database_keys: false
 
-      # ......................................................................................................
-      # Whether or not to omit date/time timestamp attributes (created_at, updated_at)
-      # Setting this to `true` can be useful when you want to make a copy of a persisted record
-      exclude_timestamps: false
+    # ......................................................................................................
+    # Whether or not to omit date/time timestamp attributes (created_at, updated_at)
+    # Setting this to `true` can be useful when you want to make a copy of a persisted record
+    exclude_timestamps: false
 
-      # ......................................................................................................
-      # Whether or not to preserve unsaved ActiveRecord changes when packing
-      # NOTE: New record changes are always preserved regardless of this setting
-      include_unsaved_changes: false
+    # ......................................................................................................
+    # Whether or not to preserve unsaved ActiveRecord changes when packing
+    # NOTE: New record changes are always preserved regardless of this setting
+    include_unsaved_changes: false
 
-      # ......................................................................................................
-      # Whether or not to include associations
-      # NOTE: Associations must already be loaded (unloaded associations are excluded)
-      include_loaded_associations: false
+    # ......................................................................................................
+    # Whether or not to include associations
+    # NOTE: Associations must already be loaded (unloaded associations are excluded)
+    include_loaded_associations: false
 
-      # ......................................................................................................
-      # The max depth (number) of loaded associations to include if `include_loaded_associations == true`
-      # Example: a value of (3) would include the following: Parent > Child > Grandchild
-      max_association_depth: 0
+    # ......................................................................................................
+    # The max depth (number) of loaded associations to include if `include_loaded_associations == true`
+    # Example: a value of (3) would include the following: Parent > Child > Grandchild
+    max_association_depth: 0

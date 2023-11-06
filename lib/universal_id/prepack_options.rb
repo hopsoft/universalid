@@ -9,13 +9,24 @@ module UniversalID
     end
   end
 
+  # prepack: &prepack
+  #   exclude: []
+  #   include: []
+  #   include_blank: true
+  #
+  #   active_record:
+  #     <<: *prepack
+  #     exclude_database_keys: false
+  #     exclude_timestamps: false
+  #     include_unsaved_changes: false
+  #     include_loaded_associations: false
+  #     max_association_depth: 0
   class PrepackOptions
     using UniversalID::Refinements::KernelRefinement
     attr_reader :options
 
-    def initialize(options = UniversalID::Configs.default.prepack)
-      @options = Marshal.load(Marshal.dump(options)) # deep copy of options
-      @options = Config::Options.new(@options) unless @options.is_a?(Config::Options)
+    def initialize(options = UniversalID::Settings.default.prepack)
+      @options = UniversalID::Settings.copy(options)
       @options = @options.prepack if @options.respond_to?(:prepack)
       @options.seen = Set.new
     end

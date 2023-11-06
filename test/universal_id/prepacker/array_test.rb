@@ -19,12 +19,12 @@ class UniversalID::Prepacker::ArrayTest < Minitest::Test
   end
 
   def test_prepack_array_with_default_config
-    prepacked = UniversalID::Prepacker.prepack(@array, UniversalID::Configs.default.prepack)
+    prepacked = UniversalID::Prepacker.prepack(@array, UniversalID::Settings.default.prepack)
     assert_equal @array, prepacked
   end
 
   def test_prepack_array_with_squish_config
-    prepacked = UniversalID::Prepacker.prepack(@array, UniversalID::Configs.squish)
+    prepacked = UniversalID::Prepacker.prepack(@array, UniversalID::Settings.squish)
     expected = [Date.today, "string", true, false, 123, ["string", true, false, 123], {a: 1}]
     assert_equal expected, prepacked
   end
@@ -35,12 +35,12 @@ class UniversalID::Prepacker::ArrayTest < Minitest::Test
   end
 
   def test_prepack_deep_array_with_default_config
-    prepacked = UniversalID::Prepacker.prepack(@deep_array, UniversalID::Configs.default.prepack)
+    prepacked = UniversalID::Prepacker.prepack(@deep_array, UniversalID::Settings.default.prepack)
     assert_equal @deep_array, prepacked
   end
 
   def test_prepack_deep_array_with_squish_config
-    prepacked = UniversalID::Prepacker.prepack(@deep_array, UniversalID::Configs.squish)
+    prepacked = UniversalID::Prepacker.prepack(@deep_array, UniversalID::Settings.squish)
     expected = [
       Date.today, "string", true, false, 123, ["string", true, false, 123], {a: 1},
       [Date.today, "string", true, false, 123, ["string", true, false, 123], {a: 1},
