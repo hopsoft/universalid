@@ -30,5 +30,4 @@ UniversalID::MessagePackFactory.register_next_type(::Symbol)
 require_relative "message_pack_types"
 
 # Setup a pool of pre-initialized packers/unpackers for marshaling operations
-pool_size = [Etc.nprocessors, 1].max
-UniversalID::MessagePackFactoryPool = UniversalID::MessagePackFactory.pool(pool_size)
+UniversalID::MessagePackFactoryPool = UniversalID::MessagePackFactory.pool([Etc.nprocessors.to_i, 1].max)
