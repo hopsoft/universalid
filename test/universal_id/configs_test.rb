@@ -3,6 +3,11 @@
 require_relative "../test_helper"
 
 class UniversalID::ConfigsTest < Minitest::Test
+  def test_all_configs
+    assert UniversalID::Configs.all.include?(UniversalID::Configs.default)
+    assert UniversalID::Configs.all.include?(UniversalID::Configs.squish)
+  end
+
   def test_default_config
     expected = {
       prepack: {
@@ -27,7 +32,7 @@ class UniversalID::ConfigsTest < Minitest::Test
     assert_equal expected, UniversalID::Configs.default.to_h
   end
 
-  def test_compact_config
+  def test_squish_config
     refute UniversalID::Configs.squish.prepack.include_blank
   end
 end
