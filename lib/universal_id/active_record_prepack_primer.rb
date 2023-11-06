@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# prepack: &prepack
+# prepack:
 #   [x] exclude: []
 #   [x] include: []
 #   [x] include_blank: true

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "refinements"
-require_relative "prepack_options"
+require_relative "prepacker/options"
 require_relative "active_record_prepack_primer"
 
 class UniversalID::Prepacker
@@ -14,7 +14,7 @@ class UniversalID::Prepacker
 
   class << self
     def prepack(object, options = UniversalID::Settings.default.prepack)
-      options = UniversalID::PrepackOptions.new(options)
+      options = UniversalID::Prepacker::Options.new(options)
       object = UniversalID::ActiveRecordPrepackPrimer.new(object, options.options).to_h if active_record?(object)
       raise ArgumentError, "#{object.class} does not respond to `prepack`!" unless prepackable?(object)
       object.prepack options

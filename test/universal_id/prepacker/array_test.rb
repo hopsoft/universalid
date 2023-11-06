@@ -55,7 +55,7 @@ class UniversalID::Prepacker::ArrayTest < Minitest::Test
     array << array.dup
     array.last << array.dup
 
-    assert_raises(UniversalID::Prepack::SelfReferenceError) do
+    assert_raises(UniversalID::Prepacker::SelfReferenceError) do
       UniversalID::Prepacker.prepack array
     end
   end

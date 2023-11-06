@@ -1,15 +1,13 @@
 # frozen_string_literal: true
 
-module UniversalID
-  module Prepack
-    class SelfReferenceError < StandardError
-      def initialize(message = "Cannot prepack objects that contain self references!")
-        super
-      end
+class UniversalID::Prepacker
+  class SelfReferenceError < StandardError
+    def initialize(message = "Cannot prepack objects that contain self references!")
+      super
     end
   end
 
-  # prepack: &prepack
+  # prepack:
   #   exclude: []
   #   include: []
   #   include_blank: true
@@ -20,7 +18,7 @@ module UniversalID
   #     include_unsaved_changes: false
   #     include_descendants: false
   #     max_descendant_depth: 0
-  class PrepackOptions
+  class Options
     using UniversalID::Refinements::KernelRefinement
     attr_reader :options
 
@@ -32,7 +30,7 @@ module UniversalID
 
     # track self references ....................................................................................
     def prevent_self_reference!(object)
-      raise UniversalID::Prepack::SelfReferenceError if options.seen.include?(object.object_id)
+      raise UniversalID::Prepacker::SelfReferenceError if options.seen.include?(object.object_id)
       options.seen << object.object_id
     end
 

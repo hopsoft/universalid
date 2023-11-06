@@ -107,7 +107,7 @@ class UniversalID::Prepacker::HashTest < Minitest::Test
     hash[:seventeen] = hash.dup
     hash[:seventeen][:eighteen] = hash.dup
 
-    assert_raises(UniversalID::Prepack::SelfReferenceError) do
+    assert_raises(UniversalID::Prepacker::SelfReferenceError) do
       UniversalID::Prepacker.prepack hash
     end
   end
