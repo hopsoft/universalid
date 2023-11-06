@@ -37,5 +37,16 @@ class UniversalID::Encoder::RubyCompositesTest < Minitest::Test
       decoded = UniversalID::Encoder.decode(encoded)
       assert_equal value, decoded
     end
+
+    # We don't really need to test prepack here but doing so led to
+    # creating more refinemenments to expand prepack coverage
+    if klass != Struct
+      define_method :"test_#{klass.name}_with_prepack" do
+        value = COMPOSITES[klass]
+        encoded = UniversalID::Encoder.encode(value)
+        decoded = UniversalID::Encoder.decode(encoded)
+        assert_equal value, decoded
+      end
+    end
   end
 end
