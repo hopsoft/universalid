@@ -15,7 +15,7 @@ class UniversalID::ConfigsTest < Minitest::Test
             exclude: [],
             include: [],
             include_blank: true,
-            exclude_keys: false,
+            exclude_database_keys: false,
             exclude_timestamps: false,
             include_unsaved_changes: false,
             include_loaded_associations: false,

@@ -7,7 +7,7 @@ prepack: &prepack
   active_record:
     base:
       <<: *prepack
-      exclude_keys: false
+      exclude_database_keys: false
       exclude_timestamps: false
       include_unsaved_changes: false
       include_loaded_associations: false

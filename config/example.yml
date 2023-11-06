@@ -25,10 +25,10 @@ prepack: &prepack
       # ......................................................................................................
       # Whether or not to omit primary/foreign keys
       # Setting this to `true` can be useful when you want to make a copy of a persisted record
-      exclude_keys: false
+      exclude_database_keys: false
 
       # ......................................................................................................
-      # Whether or not to omit date/time attributes
+      # Whether or not to omit date/time timestamp attributes (created_at, updated_at)
       # Setting this to `true` can be useful when you want to make a copy of a persisted record
       exclude_timestamps: false
 

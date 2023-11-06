@@ -4,16 +4,17 @@ module UniversalID::Refinements::HashRefinement
   refine Hash do
     using UniversalID::Refinements::ArrayRefinement
 
-    def prepack
-      config = Thread.current[:prepack_config]
+    def prepack(options)
+      options.prevent_self_reference! self
 
       copy = each_with_object({}) do |(key, val), memo|
         key = key.to_s
-        next unless config.keep_keypair?(key, val)
-        memo[key] = val.respond_to?(:prepack) ? val.prepack : val
+        next unless options.keep_keypair?(key, val)
+        memo[key] = val.respond_to?(:prepack) ? val.prepack(options) : val
       end
 
-      config.keep_value?(copy) ? copy : nil
+      copy.compact! if options.exclude_blank?
+      copy
     end
   end
 end

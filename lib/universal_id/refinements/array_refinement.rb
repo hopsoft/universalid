@@ -2,15 +2,16 @@
 
 module UniversalID::Refinements::ArrayRefinement
   refine Array do
-    def prepack
-      config = Thread.current[:prepack_config]
+    def prepack(options)
+      options.prevent_self_reference! self
 
-      copy = select do |val|
-        val = val.respond_to?(:prepack) ? val.prepack : val
-        config.keep_value? val
+      copy = each_with_object([]) do |val, memo|
+        val = val.respond_to?(:prepack) ? val.prepack(options) : val
+        memo << val if options.keep_value?(val)
       end
 
-      config.keep_value?(copy) ? copy : nil
+      copy.compact! if options.exclude_blank?
+      copy
     end
   end
 end

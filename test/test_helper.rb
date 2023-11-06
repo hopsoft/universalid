@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "awesome_print"
 require "benchmark"
 require "bundler"
 require "etc"
