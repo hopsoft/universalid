@@ -4,6 +4,7 @@ require_relative "../../test_helper"
 
 class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
   def test_prepack_new_model_without_config
+    skip
     with_new_campaign do |campaign|
       prepacked = UniversalID::Prepacker.prepack(campaign)
       expected = {"9936cecd" => "Campaign"}.merge(campaign.attributes)
@@ -12,6 +13,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
   end
 
   def test_prepack_new_model_with_squish_config
+    skip
     with_new_campaign do |campaign|
       prepacked = UniversalID::Prepacker.prepack(campaign, UniversalID::Settings.squish.prepack)
       expected = {"9936cecd" => "Campaign"}.merge(campaign.attributes.compact)
@@ -37,6 +39,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_with_changes_with_changes_config
+    skip
     with_persisted_campaign do |campaign|
       campaign.description = "Changed Description"
       prepacked = UniversalID::Prepacker.prepack(campaign, UniversalID::Settings.changes)

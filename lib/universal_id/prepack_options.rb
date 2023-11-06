@@ -14,13 +14,12 @@ module UniversalID
   #   include: []
   #   include_blank: true
   #
-  #   active_record:
-  #     <<: *prepack
-  #     exclude_database_keys: false
-  #     exclude_timestamps: false
+  #   database:
+  #     include_keys: false
+  #     include_timestamps: false
   #     include_unsaved_changes: false
-  #     include_loaded_associations: false
-  #     max_association_depth: 0
+  #     include_descendants: false
+  #     max_descendant_depth: 0
   class PrepackOptions
     using UniversalID::Refinements::KernelRefinement
     attr_reader :options

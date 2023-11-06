@@ -10,12 +10,12 @@ class UniversalID::SettingsTest < Minitest::Test
         include: [],
         include_blank: true,
 
-        active_record: {
-          exclude_database_keys: false,
-          exclude_timestamps: false,
+        database: {
+          include_keys: true,
+          include_timestamps: true,
           include_unsaved_changes: false,
-          include_loaded_associations: false,
-          max_association_depth: 0
+          include_descendants: false,
+          descendant_depth: 0
         }
       }
     }

@@ -1,12 +1,17 @@
 ---
+# A note on semantics
+#
+# Configuration options apply the same semantics as Ruby.
+# For example, we use `exclude` and `include` to denote a condition or preference.
+# Words like `keep` and `reject` are action items that apply the preference.
 prepack:
   exclude: []
   include: []
   include_blank: true
 
-  active_record:
-    exclude_database_keys: false
-    exclude_timestamps: false
+  database:
+    include_keys: true
+    include_timestamps: true
     include_unsaved_changes: false
-    include_loaded_associations: false
-    max_association_depth: 0
+    include_descendants: false
+    descendant_depth: 0

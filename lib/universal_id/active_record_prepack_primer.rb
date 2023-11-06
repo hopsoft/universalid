@@ -5,13 +5,12 @@
 #   [x] include: []
 #   [x] include_blank: true
 #
-#   active_record:
-#     <<: *prepack
-#     [x] exclude_database_keys: false
-#     [x] exclude_timestamps: false
+#   database:
+#     [x] include_keys: true
+#     [x] include_timestamps: true
 #     [x] include_unsaved_changes: false
-#     [ ] include_loaded_associations: false # TODO: Implement this!
-#     [ ] max_association_depth: 0 # TODO: Implement this!
+#     [ ] include_descendants: false # TODO: Implement this!
+#     [ ] descendant_depth: 0 # TODO: Implement this!
 class UniversalID::ActiveRecordPrepackPrimer
   MESSAGE_PACK_KEY = Digest::SHA1.hexdigest(name)[0, 8]
 
@@ -29,8 +28,8 @@ class UniversalID::ActiveRecordPrepackPrimer
     return hash.merge(id_attributes) if id_only?
 
     hash.merge! record.attributes
-    discard_database_keys! hash if exclude_database_keys?
-    discard_timestamps! hash if exclude_timestamps?
+    reject_database_keys! hash if exclude_database_keys?
+    reject_timestamps! hash if exclude_timestamps?
     discard_unsaved_changes! hash if exclude_unsaved_changes?
 
     hash
@@ -38,44 +37,52 @@ class UniversalID::ActiveRecordPrepackPrimer
 
   private
 
-  # config helpers ...........................................................................................
+  # options/preferences helpers ..............................................................................
+
+  def include_database_keys?
+    !!options.database.include_keys
+  end
+
   def exclude_database_keys?
-    !!options.active_record.exclude_database_keys
+    !include_database_keys?
+  end
+
+  def include_timestamps?
+    !!options.database.include_timestamps
   end
 
   def exclude_timestamps?
-    !!options.active_record.exclude_timestamps
+    !include_timestamps?
   end
 
   def include_unsaved_changes?
-    return true if record.new_record?
-    !!options.active_record.include_unsaved_changes
+    !!options.database.include_unsaved_changes
   end
 
   def exclude_unsaved_changes?
     !include_unsaved_changes?
   end
 
-  def include_loaded_associations?
-    !!options.active_record.include_loaded_associations
+  def include_descendants?
+    !!options.database.include_descendants
   end
 
-  def exclude_loaded_associations?
-    !include_loaded_associations?
+  def exclude_descentants?
+    !include_descendants?
   end
 
-  def max_association_depth
-    options.active_record.max_association_depth.to_i
+  def descendant_depth
+    options.database.descendant_depth.to_i
   end
 
   # attribute mutators .......................................................................................
 
-  def discard_database_keys!(hash)
+  def reject_database_keys!(hash)
     hash.delete primary_key_name
     foreign_key_column_names.each { |key| hash.delete key }
   end
 
-  def discard_timestamps!(hash)
+  def reject_timestamps!(hash)
     timestamp_column_names.each { |key| hash.delete key }
   end
 
@@ -104,7 +111,7 @@ class UniversalID::ActiveRecordPrepackPrimer
 
   def id_only?
     return false if record.new_record?
-    return false if include_loaded_associations?
+    return false if include_descendants?
     exclude_unsaved_changes?
   end
 
