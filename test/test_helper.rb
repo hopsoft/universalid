@@ -2,7 +2,9 @@
 
 require "awesome_print"
 require "benchmark"
+require "bigdecimal"
 require "bundler"
+require "date"
 require "etc"
 require "faker"
 require "minitest/autorun"

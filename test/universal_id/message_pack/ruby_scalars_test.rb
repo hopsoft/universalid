@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "date"
-require "bigdecimal"
 require_relative "../../test_helper"
 
 class UniversalID::MessagePackRubyScalarsTest < Minitest::Test

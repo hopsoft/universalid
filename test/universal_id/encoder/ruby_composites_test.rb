@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require "date"
-require "bigdecimal"
 require_relative "../../test_helper"
 
-class UniversalID::MessagePackRubyCompositesTest < Minitest::Test
+class UniversalID::Encoder::RubyCompositesTest < Minitest::Test
   SCALARS = {
     complex: Complex(1, 2),
     date: Date.today,
