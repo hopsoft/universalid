@@ -3,22 +3,18 @@
 require_relative "prepack_database_options"
 
 class UniversalID::PrepackOptions
+  attr_reader :excludes, :includes, :database_options
+
   def initialize(options = {})
-    @options = UniversalID::Settings.default_copy.prepack
-    @options.merge! options.to_h.slice(*@options.keys)
-
+    @settings = UniversalID::Settings.build(**options).prepack
+    @database_options = UniversalID::PrepackDatabaseOptions.new(@settings.database)
     @references = Set.new
-    @database_options = UniversalID::PrepackDatabaseOptions.new(@options.database, options)
-
-    @excludes ||= @options.exclude.to_h { |key| [key.to_s, true] }
-    @includes ||= @options.include.to_h { |key| [key.to_s, true] }
-    @include_blank = !!@options.include_blank
+    @excludes ||= @settings.exclude.to_h { |key| [key.to_s, true] }
+    @includes ||= @settings.include.to_h { |key| [key.to_s, true] }
   end
 
-  attr_reader :database_options
-
   def to_h
-    @options.to_h.merge database: database_options.to_h
+    @settings.to_h
   end
 
   def prevent_self_reference!(object)
@@ -27,7 +23,7 @@ class UniversalID::PrepackOptions
   end
 
   def include_blank?
-    @include_blank
+    !!@settings.include_blank
   end
 
   def exclude_blank?
@@ -35,15 +31,15 @@ class UniversalID::PrepackOptions
   end
 
   def keep_key?(key)
-    @includes[key.to_s] || !@excludes[key.to_s]
+    includes[key.to_s] || !excludes[key.to_s]
   end
 
   def reject_key?(key)
-    @excludes[key.to_s]
+    excludes[key.to_s]
   end
 
   def keep_value?(value)
-    @include_blank || present?(value)
+    include_blank? || present?(value)
   end
 
   def reject_value?(value)

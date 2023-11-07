@@ -1,0 +1,45 @@
+---
+##############################################################################################################
+# Prepack options applied before packing with MessagePack
+##############################################################################################################
+prepack:
+  # ..........................................................................................................
+  # A list of attributes to exclude (default includes all keys)
+  # Takes prescedence over the`include` list
+  exclude: []
+
+  # ..........................................................................................................
+  # A list of attributes to include (default includes all keys)
+  include: []
+
+  # ..........................................................................................................
+  # Whether or not to omit blank values when packing (nil, {}, [])
+  include_blank: true
+
+  # ==========================================================================================================
+  # Database records
+  database:
+    # ......................................................................................................
+    # Whether or not to include primary/foreign keys
+    # Setting this to `false` can be used to make a copy of an existing record
+    include_keys: true
+
+    # ......................................................................................................
+    # Whether or not to include date/time timestamps (created_at, updated_at, etc.)
+    # Setting this to `false` can be used to make a copy of an existing record
+    include_timestamps: true
+
+    # ......................................................................................................
+    # Whether or not to include unsaved changes
+    # Assign to `true` when packing new records
+    include_unsaved_changes: false
+
+    # ......................................................................................................
+    # Whether or not to include loaded in-memory descendants (i.e. child associations)
+    include_descendants: false
+
+    # ......................................................................................................
+    # The max depth (number) of loaded in-memory descendants to include when `include_descendants == true`
+    # For example, a value of (3) would include the following:
+    #   Parent > Child > Grandchild
+    descendant_depth: 0
