@@ -13,23 +13,23 @@ class UniversalID::Prepacker::ArrayTest < Minitest::Test
     ]
   end
 
-  def test_prepack_array_without_override
+  def test_array_without_override
     prepacked = UniversalID::Prepacker.prepack(@array)
     assert_equal @array, prepacked
   end
 
-  def test_prepack_array_with_override
+  def test_array_with_override
     prepacked = UniversalID::Prepacker.prepack(@array, include_blank: false)
     expected = [Date.today, "string", true, false, 123, ["string", true, false, 123], {a: 1}]
     assert_equal expected, prepacked
   end
 
-  def test_prepack_deep_array_without_override
+  def test_deep_array_without_override
     prepacked = UniversalID::Prepacker.prepack(@deep_array)
     assert_equal @deep_array, prepacked
   end
 
-  def test_prepack_deep_array_with_override
+  def test_deep_array_with_override
     prepacked = UniversalID::Prepacker.prepack(@deep_array, include_blank: false)
     expected = [
       Date.today, "string", true, false, 123, ["string", true, false, 123], {a: 1},

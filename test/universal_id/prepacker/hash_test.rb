@@ -27,12 +27,12 @@ class UniversalID::Prepacker::HashTest < Minitest::Test
     @deep_hash[:seventeen][:eighteen] = Marshal.load(Marshal.dump(@deep_hash.dup))
   end
 
-  def test_prepack_hash_without_override
+  def test_hash_without_override
     prepacked = UniversalID::Prepacker.prepack(@hash)
     assert_equal @hash, prepacked
   end
 
-  def test_prepack_hash_with_override
+  def test_hash_with_override
     prepacked = UniversalID::Prepacker.prepack(@hash, include_blank: false)
     expected = {
       one: Date.today,
@@ -46,12 +46,12 @@ class UniversalID::Prepacker::HashTest < Minitest::Test
     assert_equal expected, prepacked
   end
 
-  def test_prepack_deep_hash_without_override
+  def test_deep_hash_without_override
     prepacked = UniversalID::Prepacker.prepack(@deep_hash)
     assert_equal @deep_hash, prepacked
   end
 
-  def test_prepack_deep_hash_with_override
+  def test_deep_hash_with_override
     prepacked = UniversalID::Prepacker.prepack(@deep_hash, include_blank: false)
     expected = {
       one: Date.today,

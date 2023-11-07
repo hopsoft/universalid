@@ -3,15 +3,23 @@
 require_relative "../../test_helper"
 
 class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
-  def test_prepack_new_model_without_override
+  def test_new_model
     with_new_campaign do |campaign|
-      prepacked = UniversalID::Prepacker.prepack(campaign, include_unsaved_changes: true)
-      expected = {"9936cecd" => "Campaign"}.merge(campaign.attributes)
+      prepacked = UniversalID::Prepacker.prepack(campaign)
+      expected = {"9936cecd" => "Campaign", "id" => nil, "name" => nil, "description" => nil, "trigger" => nil, "created_at" => nil, "updated_at" => nil}
       assert_equal expected, prepacked
     end
   end
 
-  def test_prepack_new_model_with_squish_override
+  def test_new_model_include_unsaved_changes
+    with_new_campaign do |campaign|
+      prepacked = UniversalID::Prepacker.prepack(campaign, include_unsaved_changes: true)
+      expected = {"9936cecd" => "Campaign", "id" => nil, "name" => campaign.name, "description" => nil, "trigger" => nil, "created_at" => nil, "updated_at" => nil}
+      assert_equal expected, prepacked
+    end
+  end
+
+  def test_new_model_include_unsaved_changes_exclude_blanks
     with_new_campaign do |campaign|
       prepacked = UniversalID::Prepacker.prepack(campaign, include_unsaved_changes: true, include_blank: false)
       expected = {"9936cecd" => "Campaign", "name" => campaign.name}
@@ -19,7 +27,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
     end
   end
 
-  def test_persisted_model_without_changes_without_override
+  def test_persisted_model
     with_persisted_campaign do |campaign|
       prepacked = UniversalID::Prepacker.prepack(campaign)
       expected = {"9936cecd" => "Campaign", "id" => campaign.id}
@@ -27,7 +35,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
     end
   end
 
-  def test_persisted_model_with_changes_without_override
+  def test_changed_persisted_model
     with_persisted_campaign do |campaign|
       campaign.description = "Changed Description"
       prepacked = UniversalID::Prepacker.prepack(campaign)
@@ -36,7 +44,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
     end
   end
 
-  def test_persisted_model_with_changes_with_changes_override
+  def test_changed_persisted_model_include_unsaved_changes
     with_persisted_campaign do |campaign|
       campaign.description = "Changed Description"
       prepacked = UniversalID::Prepacker.prepack(campaign, include_unsaved_changes: true)
@@ -53,7 +61,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
     end
   end
 
-  def test_persisted_model_with_changes_with_registered_config
+  def test_changed_persisted_model_with_registered_custom_config
     yaml = <<~YAML
       prepack:
         exclude:
@@ -66,41 +74,16 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
           include_timestamps: false
     YAML
 
-    UniversalID::Settings.register :my_test_settings, YAML.safe_load(yaml)
+    _, settings = UniversalID::Settings.register("test_#{SecureRandom.alphanumeric(8)}", YAML.safe_load(yaml))
 
     with_persisted_campaign do |campaign|
       campaign.name = "Changed Name"
       campaign.description = "Changed Description"
       campaign.trigger = "Changed Trigger"
 
-      prepacked = UniversalID::Prepacker.prepack(campaign, UniversalID::Settings.my_test_settings.prepack)
+      prepacked = UniversalID::Prepacker.prepack(campaign, settings)
       expected = {"9936cecd" => "Campaign", "id" => campaign.id, "name" => "Changed Name"}
-
       assert_equal expected, prepacked
     end
   end
-
-  # def test_persisted_model_with_preserve_unsaved_changes
-  # with_persisted_campaign do |campaign|
-  # campaign.name = "Changed Name"
-  # assert campaign.changed?
-
-  # uid = UniversalID.with_override do |config|
-  # config.message_pack.active_record.preserve_unsaved_changes = true
-  # campaign.to_uid
-  # end
-  # actual = Campaign.from_uid(uid)
-  # assert_equal campaign.attributes, actual.attributes
-  # end
-  # end
-
-  # def test_persisted_model_with_changes_discard_unsaved_changes
-  # with_persisted_campaign do |campaign|
-  # campaign.name = "Changed Name"
-  # assert campaign.changed?
-  # uid = campaign.to_uid
-  # actual = Campaign.from_uid(uid)
-  # refute_equal campaign.attributes, actual.attributes
-  # end
-  # end
 end

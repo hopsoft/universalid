@@ -6,6 +6,7 @@ class UniversalID::PrepackOptions
   attr_reader :excludes, :includes, :database_options
 
   def initialize(options = {})
+    options ||= {}
     @settings = UniversalID::Settings.build(**options).prepack
     @database_options = UniversalID::PrepackDatabaseOptions.new(@settings.database)
     @references = Set.new

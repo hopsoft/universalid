@@ -12,14 +12,18 @@ class UniversalID::Settings
   DEFAULT_FILE_PATH = File.expand_path("../../../config/default.yml", __FILE__)
 
   class << self
-    def register(...)
-      instance.register(...)
-    end
-
     def build(**options)
       instance.default_copy.tap do |settings|
         options.each { |key, val| assign key, val, to: settings }
       end
+    end
+
+    def register(...)
+      instance.register(...)
+    end
+
+    def [](key)
+      instance[key]
     end
 
     private
@@ -58,7 +62,12 @@ class UniversalID::Settings
       self.class.define_method(key) { config }
       self.class.define_method("#{key}_copy") { Marshal.load Marshal.dump(config) }
       self.class.define_singleton_method(key) { instance.public_send key }
+      [key, config]
     end
+  end
+
+  def [](key)
+    registry[key.to_sym]
   end
 
   private

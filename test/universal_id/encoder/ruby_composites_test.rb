@@ -33,7 +33,7 @@ class UniversalID::Encoder::RubyCompositesTest < Minitest::Test
   COMPOSITES.each do |klass, value|
     define_method :"test_#{klass.name}" do
       value = COMPOSITES[klass]
-      encoded = UniversalID::Encoder.encode(value, prepack: false)
+      encoded = UniversalID::Encoder.encode(value, without: :prepack)
       decoded = UniversalID::Encoder.decode(encoded)
       assert_equal value, decoded
     end
