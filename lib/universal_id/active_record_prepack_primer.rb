@@ -16,7 +16,7 @@ class UniversalID::ActiveRecordPrepackPrimer
 
   attr_reader :model, :record, :options
 
-  def initialize(record, options = UniversalID::Settings.default.prepack)
+  def initialize(record, options = {})
     @model = record.class
     @record = record
     @options = options
@@ -28,52 +28,14 @@ class UniversalID::ActiveRecordPrepackPrimer
     return hash.merge(id_attributes) if id_only?
 
     hash.merge! record.attributes
-    reject_database_keys! hash if exclude_database_keys?
-    reject_timestamps! hash if exclude_timestamps?
-    discard_unsaved_changes! hash if exclude_unsaved_changes?
+    reject_database_keys! hash if options.exclude_keys?
+    reject_timestamps! hash if options.exclude_timestamps?
+    discard_unsaved_changes! hash if options.exclude_unsaved_changes?
 
     hash
   end
 
   private
-
-  # options/preferences helpers ..............................................................................
-
-  def include_database_keys?
-    !!options.database.include_keys
-  end
-
-  def exclude_database_keys?
-    !include_database_keys?
-  end
-
-  def include_timestamps?
-    !!options.database.include_timestamps
-  end
-
-  def exclude_timestamps?
-    !include_timestamps?
-  end
-
-  def include_unsaved_changes?
-    !!options.database.include_unsaved_changes
-  end
-
-  def exclude_unsaved_changes?
-    !include_unsaved_changes?
-  end
-
-  def include_descendants?
-    !!options.database.include_descendants
-  end
-
-  def exclude_descentants?
-    !include_descendants?
-  end
-
-  def descendant_depth
-    options.database.descendant_depth.to_i
-  end
 
   # attribute mutators .......................................................................................
 
@@ -111,8 +73,8 @@ class UniversalID::ActiveRecordPrepackPrimer
 
   def id_only?
     return false if record.new_record?
-    return false if include_descendants?
-    exclude_unsaved_changes?
+    return false if options.include_descendants?
+    options.exclude_unsaved_changes?
   end
 
   def id_attributes

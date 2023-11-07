@@ -27,18 +27,13 @@ class UniversalID::Prepacker::HashTest < Minitest::Test
     @deep_hash[:seventeen][:eighteen] = Marshal.load(Marshal.dump(@deep_hash.dup))
   end
 
-  def test_prepack_hash_without_config
+  def test_prepack_hash_without_override
     prepacked = UniversalID::Prepacker.prepack(@hash)
     assert_equal @hash, prepacked
   end
 
-  def test_prepack_hash_with_default_config
-    prepacked = UniversalID::Prepacker.prepack(@hash, UniversalID::Settings.default.prepack)
-    assert_equal @hash, prepacked
-  end
-
-  def test_prepack_hash_with_squish_config
-    prepacked = UniversalID::Prepacker.prepack(@hash, UniversalID::Settings.squish)
+  def test_prepack_hash_with_override
+    prepacked = UniversalID::Prepacker.prepack(@hash, include_blank: false)
     expected = {
       one: Date.today,
       nine: "string",
@@ -51,18 +46,13 @@ class UniversalID::Prepacker::HashTest < Minitest::Test
     assert_equal expected, prepacked
   end
 
-  def test_prepack_deep_hash_without_config
+  def test_prepack_deep_hash_without_override
     prepacked = UniversalID::Prepacker.prepack(@deep_hash)
     assert_equal @deep_hash, prepacked
   end
 
-  def test_prepack_deep_hash_with_default_config
-    prepacked = UniversalID::Prepacker.prepack(@deep_hash, UniversalID::Settings.default.prepack)
-    assert_equal @deep_hash, prepacked
-  end
-
-  def test_prepack_deep_hash_with_squish_config
-    prepacked = UniversalID::Prepacker.prepack(@deep_hash, UniversalID::Settings.squish)
+  def test_prepack_deep_hash_with_override
+    prepacked = UniversalID::Prepacker.prepack(@deep_hash, include_blank: false)
     expected = {
       one: Date.today,
       nine: "string",
@@ -107,7 +97,7 @@ class UniversalID::Prepacker::HashTest < Minitest::Test
     hash[:seventeen] = hash.dup
     hash[:seventeen][:eighteen] = hash.dup
 
-    assert_raises(UniversalID::Prepacker::SelfReferenceError) do
+    assert_raises(UniversalID::Prepacker::CircularReferenceError) do
       UniversalID::Prepacker.prepack hash
     end
   end

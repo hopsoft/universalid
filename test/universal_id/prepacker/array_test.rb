@@ -13,34 +13,24 @@ class UniversalID::Prepacker::ArrayTest < Minitest::Test
     ]
   end
 
-  def test_prepack_array_without_config
+  def test_prepack_array_without_override
     prepacked = UniversalID::Prepacker.prepack(@array)
     assert_equal @array, prepacked
   end
 
-  def test_prepack_array_with_default_config
-    prepacked = UniversalID::Prepacker.prepack(@array, UniversalID::Settings.default.prepack)
-    assert_equal @array, prepacked
-  end
-
-  def test_prepack_array_with_squish_config
-    prepacked = UniversalID::Prepacker.prepack(@array, UniversalID::Settings.squish)
+  def test_prepack_array_with_squish_override
+    prepacked = UniversalID::Prepacker.prepack(@array, include_blank: false)
     expected = [Date.today, "string", true, false, 123, ["string", true, false, 123], {a: 1}]
     assert_equal expected, prepacked
   end
 
-  def test_prepack_deep_array_without_config
+  def test_prepack_deep_array_without_override
     prepacked = UniversalID::Prepacker.prepack(@deep_array)
     assert_equal @deep_array, prepacked
   end
 
-  def test_prepack_deep_array_with_default_config
-    prepacked = UniversalID::Prepacker.prepack(@deep_array, UniversalID::Settings.default.prepack)
-    assert_equal @deep_array, prepacked
-  end
-
-  def test_prepack_deep_array_with_squish_config
-    prepacked = UniversalID::Prepacker.prepack(@deep_array, UniversalID::Settings.squish)
+  def test_prepack_deep_array_with_squish_override
+    prepacked = UniversalID::Prepacker.prepack(@deep_array, include_blank: false)
     expected = [
       Date.today, "string", true, false, 123, ["string", true, false, 123], {a: 1},
       [Date.today, "string", true, false, 123, ["string", true, false, 123], {a: 1},
@@ -55,7 +45,7 @@ class UniversalID::Prepacker::ArrayTest < Minitest::Test
     array << array.dup
     array.last << array.dup
 
-    assert_raises(UniversalID::Prepacker::SelfReferenceError) do
+    assert_raises(UniversalID::Prepacker::CircularReferenceError) do
       UniversalID::Prepacker.prepack array
     end
   end

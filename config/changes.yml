@@ -1,4 +1,0 @@
----
-prepack:
-  active_record:
-    include_unsaved_changes: true

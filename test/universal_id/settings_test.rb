@@ -21,8 +21,4 @@ class UniversalID::SettingsTest < Minitest::Test
     }
     assert_equal expected, UniversalID::Settings.default.to_h
   end
-
-  def test_squish_settings
-    refute UniversalID::Settings.squish.prepack.include_blank
-  end
 end
