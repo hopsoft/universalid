@@ -1,4 +1,3 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 
-DIR="$(dirname "$0")"
-"$DIR/console"
+exec File.expand_path("./console", __dir__), *ARGV

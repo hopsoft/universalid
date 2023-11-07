@@ -19,8 +19,8 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
         alias_method :find, :parse
 
-        def create(object)
-          path = "/#{UniversalID::Encoder.encode(object)}"
+        def create(object, options = {})
+          path = "/#{UniversalID::Encoder.encode(object, **options)}"
           parse "#{SCHEME}://#{HOST}#{path}"
         end
 
@@ -40,7 +40,10 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       end
 
       def valid?
-        scheme == SCHEME && host == HOST && !payload.strip.empty?
+        case self
+        in scheme: SCHEME, host: HOST, path: p if p.size >= 8 then return true
+        else false
+        end
       end
 
       def invalid?
@@ -49,6 +52,11 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
       def decode
         UniversalID::Encoder.decode(payload) if valid?
+      end
+
+      # pattern matching support
+      def deconstruct_keys(_keys)
+        {scheme: scheme, host: host, path: path}
       end
 
       if defined? ::GlobalID::Identification

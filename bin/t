@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+
+exec File.expand_path("./test", __dir__), *ARGV

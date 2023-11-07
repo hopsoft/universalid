@@ -9,7 +9,7 @@ class UniversalID::Settings
   include MonitorMixin
   include Singleton
 
-  DEFAULT_FILE_PATH = File.expand_path("../../../config/default.yml", __FILE__)
+  DEFAULT_FILE_PATH = File.expand_path("../../config/default.yml", __dir__)
 
   class << self
     def build(**options)
