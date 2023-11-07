@@ -33,17 +33,23 @@ class URI::UID::RubyCompositesTest < Minitest::Test
   COMPOSITES.each do |klass, value|
     define_method :"test_#{klass.name}_with_factory" do
       value = COMPOSITES[klass]
-      uid = URI::UID.create(value, without: :prepack)
+      uid = (klass == Struct) ?
+        URI::UID.create(value.values, without: :prepack) :
+        URI::UID.create(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
+      decoded = NamedStruct.new(*decoded) if klass == Struct
       assert_equal value, decoded
     end
 
     define_method :"test_#{klass.name}_with_factory_pool" do
       value = COMPOSITES[klass]
-      uid = URI::UID.create(value, without: :prepack)
+      uid = (klass == Struct) ?
+        URI::UID.create(value.values, without: :prepack) :
+        URI::UID.create(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
+      decoded = NamedStruct.new(*decoded) if klass == Struct
       assert_equal value, decoded
     end
   end
