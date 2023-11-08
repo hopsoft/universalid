@@ -59,9 +59,9 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         {scheme: scheme, host: host, path: path}
       end
 
-      if defined? ::GlobalID::Identification
+      if defined? GlobalID::Identification
         class GlobalIDRecord
-          include ::GlobalID::Identification
+          include GlobalID::Identification
 
           def self.find(value)
             new UID.parse(value)
