@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# TODO: move prepacking logic to a MessagePack type
 # prepack:
 #   [x] exclude: []
 #   [x] include: []
@@ -30,9 +31,21 @@ class UniversalID::ActiveRecordPrepacker
       const_find TARGET
     end
 
-    def restore(attributes)
-      # TODO: instantiate the target and apply the rules
-      attributes
+    # TODO: add error handling
+    def restore(model_name, attributes)
+      model = const_find(model_name)
+
+      record = if attributes[model.primary_key]
+        model.find_by(id: attributes[model.primary_key])
+      else
+        model.new
+      end
+
+      attributes.each do |key, value|
+        record.public_send "#{key}=", value if record.respond_to? "#{key}="
+      end
+
+      record
     end
   end
 

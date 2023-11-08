@@ -9,6 +9,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
       expected = [
         UniversalID::Prepacker::ID,
         UniversalID::ActiveRecordPrepacker::ID,
+        campaign.class.name,
         {"id" => nil, "name" => nil, "description" => nil, "trigger" => nil, "created_at" => nil, "updated_at" => nil}
       ]
       assert_equal expected, prepacked
@@ -21,6 +22,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
       expected = [
         UniversalID::Prepacker::ID,
         UniversalID::ActiveRecordPrepacker::ID,
+        campaign.class.name,
         {"id" => nil, "name" => campaign.name, "description" => nil, "trigger" => nil, "created_at" => nil, "updated_at" => nil}
       ]
       assert_equal expected, prepacked
@@ -33,6 +35,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
       expected = [
         UniversalID::Prepacker::ID,
         UniversalID::ActiveRecordPrepacker::ID,
+        campaign.class.name,
         {"name" => campaign.name}
       ]
       assert_equal expected, prepacked
@@ -45,6 +48,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
       expected = [
         UniversalID::Prepacker::ID,
         UniversalID::ActiveRecordPrepacker::ID,
+        campaign.class.name,
         {"id" => campaign.id}
       ]
       assert_equal expected, prepacked
@@ -58,6 +62,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
       expected = [
         UniversalID::Prepacker::ID,
         UniversalID::ActiveRecordPrepacker::ID,
+        campaign.class.name,
         {"id" => campaign.id}
       ]
       assert_equal expected, prepacked
@@ -71,6 +76,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
       expected = [
         UniversalID::Prepacker::ID,
         UniversalID::ActiveRecordPrepacker::ID,
+        campaign.class.name,
         {
           "id" => campaign.id,
           "name" => campaign.name,
@@ -108,6 +114,7 @@ class UniversalID::Prepacker::ActiveRecordTest < Minitest::Test
       expected = [
         UniversalID::Prepacker::ID,
         UniversalID::ActiveRecordPrepacker::ID,
+        campaign.class.name,
         {"id" => campaign.id, "name" => "Changed Name"}
       ]
       assert_equal expected, prepacked

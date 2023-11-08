@@ -32,18 +32,30 @@ class UniversalID::Prepacker
       # prepacker is the object itself
       return prepacker.prepack(options) if prepacker == object
 
-      # using a specialized prepacker, so we wrap the result
-      [ID, prepacker.class.const_get(:ID), prepacker.prepack(options)]
+      # using a specialized prepacker, so we wrap the payload
+      [ID, prepacker.class.const_get(:ID), object.class.name, prepacker.prepack(options)]
+      # |              |                           |                      |
+      # |              |                           |                      |- the prepack
+      # |              |                           |
+      # |              |                           |- the class name of the prepacked object
+      # |              |
+      # |              |- identifies the specialized prepacker
+      # |
+      # |- identifies the prepack as a wrapped prepack
     end
 
     def restore(object)
       return object unless object.is_a?(Array)
-      return object unless object.first == ID
 
-      # prepacked with a specialized prepacker
-      # attempt to unwrap the result and restore it with the specialized prepacker
-      match = @prepackers.find { |(id, _)| id == object[1] }
-      match&.last&.restore(object[2]) || object
+      id, prepacker_id, class_name, prepack = object
+      return object unless id == ID
+
+      match = @prepackers.find { |(id, _)| id == prepacker_id }
+      prepacker = match&.last
+
+      return object unless prepacker
+
+      prepacker.restore class_name, prepack
     end
   end
 
