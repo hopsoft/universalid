@@ -6,7 +6,7 @@ module UniversalID::Refinements::ArrayRefinement
       options.prevent_self_reference! self
 
       copy = each_with_object([]) do |val, memo|
-        val = val.respond_to?(:prepack) ? val.prepack(options) : val
+        val = UniversalID::Prepacker.prepack(val, options)
         memo << val if options.keep_value?(val)
       end
 

@@ -17,7 +17,7 @@ class UniversalID::Prepacker
 
   class << self
     def prepack(object, options = {})
-      options = UniversalID::PrepackOptions.new(options)
+      options = UniversalID::PrepackOptions.new(options) unless options.is_a?(UniversalID::PrepackOptions)
 
       return object.prepack(options) if object.respond_to?(:prepack)
 

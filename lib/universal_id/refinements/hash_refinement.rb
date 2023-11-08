@@ -9,7 +9,7 @@ module UniversalID::Refinements::HashRefinement
 
       copy = each_with_object({}) do |(key, val), memo|
         next unless options.keep_keypair?(key, val)
-        memo[key] = val.respond_to?(:prepack) ? val.prepack(options) : val
+        memo[key] = UniversalID::Prepacker.prepack(val, options)
       end
 
       copy.compact! if options.exclude_blank?
