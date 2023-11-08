@@ -11,28 +11,50 @@
 #     [x] include_unsaved_changes: false
 #     [ ] include_descendants: false # TODO: Implement this!
 #     [ ] descendant_depth: 0 # TODO: Implement this!
-class UniversalID::ActiveRecordPrepackPrimer
-  MESSAGE_PACK_KEY = Digest::SHA1.hexdigest(name)[0, 8]
+class UniversalID::ActiveRecordPrepacker
+  using UniversalID::Refinements::KernelRefinement
+  using UniversalID::Refinements::ArrayRefinement
+  using UniversalID::Refinements::HashRefinement
+  using UniversalID::Refinements::SetRefinement
+  using UniversalID::Refinements::OpenStructRefinement
 
-  attr_reader :model, :record, :options
+  ID = "9T9fl6" # DO NOT CHANGE THIS VALUE!
+  TARGET = "ActiveRecord::Base"
 
-  def initialize(record, options = {})
-    @model = record.class
-    @record = record
-    @options = options
+  class << self
+    def id
+      ID
+    end
+
+    def target
+      const_find TARGET
+    end
+
+    def restore(attributes)
+      # TODO: instantiate the target and apply the rules
+      attributes
+    end
   end
 
-  def to_h
-    hash = {MESSAGE_PACK_KEY => model.name}
+  UniversalID::Prepacker.register self
 
-    return hash.merge(id_attributes) if id_only?
+  attr_reader :model, :record
 
-    hash.merge! record.attributes
-    reject_database_keys! hash if options.exclude_keys?
-    reject_timestamps! hash if options.exclude_timestamps?
-    discard_unsaved_changes! hash if options.exclude_unsaved_changes?
+  def initialize(record)
+    @model = record.class
+    @record = record
+  end
 
-    hash
+  def prepack(options = {})
+    database_options = options.database_options
+    return id_attributes if id_only?(database_options)
+
+    hash = record.attributes
+    reject_database_keys! hash if database_options.exclude_keys?
+    reject_timestamps! hash if database_options.exclude_timestamps?
+    discard_unsaved_changes! hash if database_options.exclude_unsaved_changes?
+
+    hash.prepack options
   end
 
   private
@@ -71,10 +93,10 @@ class UniversalID::ActiveRecordPrepackPrimer
       end
   end
 
-  def id_only?
+  def id_only?(database_options)
     return false if record.new_record?
-    return false if options.include_descendants?
-    options.exclude_unsaved_changes?
+    return false if database_options.include_descendants?
+    database_options.exclude_unsaved_changes?
   end
 
   def id_attributes

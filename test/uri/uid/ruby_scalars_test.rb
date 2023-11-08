@@ -26,7 +26,11 @@ class URI::UID::ScalarsTest < Minitest::Test
       uid = URI::UID.create(value, without: :prepack)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
-      assert_equal value, decoded
+      if value.nil?
+        assert_nil decoded
+      else
+        assert_equal value, decoded
+      end
     end
 
     define_method :"test_#{klass.name}_with_factory_pool" do
@@ -34,7 +38,12 @@ class URI::UID::ScalarsTest < Minitest::Test
       uid = URI::UID.create(value, without: :prepack)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
-      assert_equal value, decoded
+
+      if value.nil?
+        assert_nil decoded
+      else
+        assert_equal value, decoded
+      end
     end
   end
 end

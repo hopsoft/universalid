@@ -6,11 +6,11 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   def test_new_model
     with_new_campaign do |campaign|
       encoded = UniversalID::Encoder.encode(campaign)
-      expected = "G0oAwIzURjlXsihz6g51czUItiriDDbDYzqHy1_KwCFHdlD7FnBGKdWexYf1PYhGBuYP1F3gMZefkHdSPiDmK2oA"
+      expected = "G0cAaCwO7MafifyuxzXGEkcom51aQmESJdXWVu3hn-hRrnOI9ExVjmiTnqquSqMww_agEkywkqNF6fwrYxOy6eVgm8BCeIpA1o13HA"
       assert_equal expected, encoded
 
       decoded = UniversalID::Encoder.decode(encoded)
-      expected = {"9936cecd" => "Campaign", "id" => nil, "name" => nil, "description" => nil, "trigger" => nil, "created_at" => nil, "updated_at" => nil}
+      expected = {"id" => nil, "name" => nil, "description" => nil, "trigger" => nil, "created_at" => nil, "updated_at" => nil}
       assert_equal expected, decoded
     end
   end
@@ -19,7 +19,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     with_new_campaign do |campaign|
       encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true)
       decoded = UniversalID::Encoder.decode(encoded)
-      expected = {"9936cecd" => "Campaign", "id" => nil, "name" => campaign.name, "description" => nil, "trigger" => nil, "created_at" => nil, "updated_at" => nil}
+      expected = {"id" => nil, "name" => campaign.name, "description" => nil, "trigger" => nil, "created_at" => nil, "updated_at" => nil}
       assert_equal expected, decoded
     end
   end
@@ -28,7 +28,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     with_new_campaign do |campaign|
       encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true, include_blank: false)
       decoded = UniversalID::Encoder.decode(encoded)
-      expected = {"9936cecd" => "Campaign", "name" => campaign.name}
+      expected = {"name" => campaign.name}
       assert_equal expected, decoded
     end
   end
@@ -37,7 +37,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     with_persisted_campaign do |campaign|
       encoded = UniversalID::Encoder.encode(campaign)
       decoded = UniversalID::Encoder.decode(encoded)
-      expected = {"9936cecd" => "Campaign", "id" => campaign.id}
+      expected = {"id" => campaign.id}
       assert_equal expected, decoded
     end
   end
@@ -47,7 +47,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
       campaign.description = "Changed Description"
       encoded = UniversalID::Encoder.encode(campaign)
       decoded = UniversalID::Encoder.decode(encoded)
-      expected = {"9936cecd" => "Campaign", "id" => campaign.id}
+      expected = {"id" => campaign.id}
       assert_equal expected, decoded
     end
   end
@@ -58,7 +58,6 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
       encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true)
       decoded = UniversalID::Encoder.decode(encoded)
       expected = {
-        "9936cecd" => "Campaign",
         "id" => campaign.id,
         "name" => campaign.name,
         "description" => "Changed Description",
@@ -92,7 +91,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
 
       encoded = UniversalID::Encoder.encode(campaign, **settings)
       decoded = UniversalID::Encoder.decode(encoded)
-      expected = {"9936cecd" => "Campaign", "id" => campaign.id, "name" => "Changed Name"}
+      expected = {"id" => campaign.id, "name" => "Changed Name"}
       assert_equal expected, decoded
     end
   end

@@ -21,7 +21,9 @@ module UniversalID::Encoder
       inflated = Brotli.inflate(decoded)
       # This is basically the same call as UniversalID::MessagePackFactory.unpack(object),
       # but it uses a pool of pre-initialized packers/unpackers instead of creating a new one each time
-      UniversalID::MessagePackFactoryPool.load inflated
+      object = UniversalID::MessagePackFactoryPool.load(inflated)
+
+      UniversalID::Prepacker.restore object
     end
   end
 end

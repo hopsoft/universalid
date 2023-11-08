@@ -1,33 +1,49 @@
 # frozen_string_literal: true
 
 require_relative "refinements"
-require_relative "active_record_prepack_primer"
 
 class UniversalID::Prepacker
+  using UniversalID::Refinements::KernelRefinement
   using UniversalID::Refinements::ArrayRefinement
   using UniversalID::Refinements::HashRefinement
   using UniversalID::Refinements::SetRefinement
   using UniversalID::Refinements::OpenStructRefinement
 
-  MESSAGE_PACK_KEY = Digest::SHA1.hexdigest(name)[0, 8]
+  ID = "YFDzLF" # DO NOT CHANGE THIS VALUE!
 
   class << self
+    def register(prepacker)
+      @prepackers ||= []
+      @prepackers << [prepacker.id, prepacker] if prepacker.target
+    end
+
     def prepack(object, options = {})
       options = UniversalID::PrepackOptions.new(options)
-      object = UniversalID::ActiveRecordPrepackPrimer.new(object, options.database_options).to_h if active_record?(object)
-      raise ArgumentError, "#{object.class} does not respond to `prepack`!" unless prepackable?(object)
-      object.prepack options
+
+      # find a prepacker for the object (it's most likely the object itself)
+      match = @prepackers.find { |(_id, prepacker)| object.is_a? prepacker.target }
+      prepacker = match&.last&.new(object) || object
+
+      # guard before continuing
+      unless prepacker.respond_to?(:prepack)
+        raise ArgumentError, "#{prepacker.class} does not respond to `prepack`!"
+      end
+
+      # prepacker is the object itself
+      return prepacker.prepack(options) if prepacker == object
+
+      # using a specialized prepacker, so we wrap the result
+      [ID, prepacker.class.const_get(:ID), prepacker.prepack(options)]
     end
 
-    private
+    def restore(object)
+      return object unless object.is_a?(Array)
+      return object unless object.first == ID
 
-    def prepackable?(object)
-      object.respond_to? :prepack
-    end
-
-    def active_record?(object)
-      return false unless defined?(ActiveRecord::Base)
-      object.is_a? ActiveRecord::Base
+      # prepacked with a specialized prepacker
+      # attempt to unwrap the result and restore it with the specialized prepacker
+      match = @prepackers.find { |(id, _)| id == object[1] }
+      match&.last&.restore(object[2]) || object
     end
   end
 
