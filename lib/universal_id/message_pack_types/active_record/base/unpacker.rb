@@ -4,7 +4,6 @@ class UniversalID::ActiveRecordBaseUnpacker
   using UniversalID::Refinements::KernelRefinement
 
   class << self
-    # Unpacks the record using a MessagePack::Unpacker
     def unpack_with(unpacker)
       class_name = unpacker.read
       attributes = unpacker.read || {}
