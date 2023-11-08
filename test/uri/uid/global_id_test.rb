@@ -4,7 +4,7 @@ require_relative "../../test_helper"
 
 class URI::UID::GlobalIDTest < Minitest::Test
   def test_changed_persisted_model_with_prepack_options
-    with_persisted_campaign do |campaign|
+    Campaign.test! do |campaign|
       campaign.description = "Changed Description"
 
       # SEE: config/defaults.yml

@@ -8,7 +8,7 @@ class Minitest::Test
     return if @@active_record_instance
 
     time = Benchmark.measure do
-      with_persisted_campaign do |campaign|
+      Campaign.test! do |campaign|
         self.class.class_variable_set(:@@active_record_instance, campaign)
       end
     end
@@ -19,17 +19,6 @@ class Minitest::Test
     message << Rainbow(")").yellow
     puts message
     puts
-  end
-
-  def with_persisted_campaign
-    campaign = Campaign.create!(name: Faker::Movie.title)
-    yield campaign
-  ensure
-    campaign&.destroy
-  end
-
-  def with_new_campaign
-    yield Campaign.new(name: Faker::Movie.title)
   end
 
   alias_method :original_run, :run
