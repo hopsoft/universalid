@@ -17,11 +17,17 @@ class UniversalID::ActiveRecordBaseUnpacker
       klass = const_find(class_name)
       return nil unless klass
 
-      if attributes.key? "id"
-        klass.find_by(id: attributes["id"])
+      record = if attributes[klass.primary_key]
+        klass.find_by(id: attributes[klass.primary_key])
       else
-        klass.new(attributes)
+        klass.new
       end
+
+      attributes.each do |key, value|
+        record.public_send "#{key}=", value if record.respond_to? "#{key}="
+      end
+
+      record
     end
   end
 end

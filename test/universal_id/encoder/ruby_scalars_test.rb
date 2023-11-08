@@ -23,7 +23,7 @@ class UniversalID::Encoder::ScalarsTest < Minitest::Test
   SCALARS.each do |klass, value|
     define_method :"test_#{klass.name}" do
       value = SCALARS[klass]
-      encoded = UniversalID::Encoder.encode(value, without: :prepack)
+      encoded = UniversalID::Encoder.encode(value)
       decoded = UniversalID::Encoder.decode(encoded)
 
       if value.nil?

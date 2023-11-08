@@ -7,7 +7,6 @@ require_relative "uri/uid"
 require_relative "universal_id/prepackers"
 require_relative "universal_id/prepack_options"
 require_relative "universal_id/message_pack_factory"
-require_relative "universal_id/active_record_encoder"
 
 UniversalID::Settings.instance # initialize settings
 

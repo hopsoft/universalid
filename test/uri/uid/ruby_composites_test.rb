@@ -34,7 +34,7 @@ class URI::UID::RubyCompositesTest < Minitest::Test
     define_method :"test_#{klass.name}_with_factory" do
       value = COMPOSITES[klass]
       uid = (klass == Struct) ?
-        URI::UID.create(value.values, without: :prepack) :
+        URI::UID.create(value.values) :
         URI::UID.create(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
@@ -45,7 +45,7 @@ class URI::UID::RubyCompositesTest < Minitest::Test
     define_method :"test_#{klass.name}_with_factory_pool" do
       value = COMPOSITES[klass]
       uid = (klass == Struct) ?
-        URI::UID.create(value.values, without: :prepack) :
+        URI::UID.create(value.values) :
         URI::UID.create(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode

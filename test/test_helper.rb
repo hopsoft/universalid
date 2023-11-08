@@ -36,6 +36,3 @@ end
 
 # Load UniversalID
 require_relative "../lib/universal_id"
-
-# Initialize UniversalID for testing
-ApplicationRecord.send :include, UniversalID::ActiveRecordEncoder

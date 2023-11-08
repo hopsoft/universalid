@@ -6,7 +6,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   def test_new_model
     with_new_campaign do |campaign|
       encoded = UniversalID::Encoder.encode(campaign)
-      expected = "G1AAgGW91WZ7tydRkcz22WyCQLEuJCGZnVHKwSFHdlD7lnBEMdWkRUn2Tnaou0EGCzGreweqsRLJNlc-oZxJ5QHxoUYrBA"
+      expected = "G0QAAIyUqtsjPVl5TlKzKZpALGZjpKCBvwzJgkOO7KD2LaDmEdXYkpn7hLkDzVNFme8I9aQWSOwRNg"
       assert_equal expected, encoded
 
       decoded = UniversalID::Encoder.decode(encoded)
