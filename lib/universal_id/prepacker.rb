@@ -21,9 +21,8 @@ class UniversalID::Prepacker
 
       return object.prepack(options) if object.respond_to?(:prepack)
 
-      object.tap do |o|
-        o.instance_variable_set(:@_uid_prepack_options, options) unless o.frozen?
-      end
+      object.instance_variable_set(:@_uid_prepack_options, options) unless object.frozen?
+      object
     end
   end
 end

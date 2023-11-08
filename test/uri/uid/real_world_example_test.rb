@@ -2,8 +2,8 @@
 
 require_relative "../../test_helper"
 
-class URI::UID::RealWorldExamplesTest < Minitest::Test
-  def test_hash_with_prepack_options
+class URI::UID::RealWorldExampleTest < Minitest::Test
+  def test_complex_data_structure
     # create some active record object
     campaign = Campaign.create!(name: "Demo 1", description: "Description 1")
     emails = [

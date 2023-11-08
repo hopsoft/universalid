@@ -27,7 +27,9 @@ class UniversalID::ActiveRecordBasePacker
   end
 
   def prepack_options
-    record.instance_variable_get(:@_uid_prepack_options) || UniversalID::PrepackOptions.new
+    options = record.instance_variable_get(:@_uid_prepack_options)
+    options = UniversalID::PrepackOptions.new unless options.is_a?(UniversalID::PrepackOptions)
+    options
   end
 
   def prepack_database_options
