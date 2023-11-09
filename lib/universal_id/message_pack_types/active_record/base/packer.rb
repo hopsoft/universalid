@@ -1,25 +1,17 @@
 # frozen_string_literal: true
 
-# TODO:
-#   prepack:
-#     [x] exclude: []
-#     [x] include: []
-#     [x] include_blank: true
-#
-#     database:
-#       [x] include_keys: true
-#       [x] include_timestamps: true
-#       [x] include_unsaved_changes: false
-#       [ ] include_descendants: false
-#       [ ] descendant_depth: 0
 class UniversalID::ActiveRecordBasePacker
   using UniversalID::Refinements::HashRefinement
 
+  # TODO: implement support for has_one
+  # ActiveRecord::Reflection::HasOneReflection
+  # TODO: implement support for has_and_belongs_to_many
+  # ActiveRecord::Reflection::HasAndBelongsToManyReflection
   HAS_MANY_ASSOCIATIONS = [
-    ActiveRecord::Reflection::HasOneReflection,
-    ActiveRecord::Reflection::HasManyReflection,
-    ActiveRecord::Reflection::HasAndBelongsToManyReflection
+    ActiveRecord::Reflection::HasManyReflection
   ]
+
+  DESCENDANTS_KEY = "uid:descendants"
 
   attr_reader :record
 
@@ -51,13 +43,7 @@ class UniversalID::ActiveRecordBasePacker
     reject_database_keys! hash if prepack_database_options.exclude_keys?
     reject_timestamps! hash if prepack_database_options.exclude_timestamps?
     discard_unsaved_changes! hash if prepack_database_options.exclude_unsaved_changes?
-
-    # TODO: move a helper method
-    if prepack_database_options.include_descendants?
-      loaded_descendants.each do |name, descendants|
-        binding.pry
-      end
-    end
+    add_descendants! hash if prepack_database_options.include_descendants?
 
     hash.prepack prepack_options
   end
@@ -86,6 +72,17 @@ class UniversalID::ActiveRecordBasePacker
     end
   end
 
+  def add_descendants!(hash)
+    prepack_database_options.increment_current_descendant_depth_count!
+    hash[DESCENDANTS_KEY] ||= {}
+
+    # has_many
+    loaded_has_many_relations_by_name.each do |name, relation|
+      descendants = relation.map { |record| UniversalID::Encoder.encode record, prepack_options }
+      hash[DESCENDANTS_KEY][name] = descendants
+    end
+  end
+
   # active record helpers ....................................................................................
 
   def timestamp_column_names
@@ -107,120 +104,11 @@ class UniversalID::ActiveRecordBasePacker
     associations.select { |a| HAS_MANY_ASSOCIATIONS.include? a.class }
   end
 
-  def loaded_has_many_associations
-    has_many_associations.select { |a| record.public_send(a.name)&.loaded? }
-  end
-
-  def loaded_has_many_association_names
-    loaded_has_many_associations.map(&:name)
-  end
-
-  def loaded_descendants
-    loaded_has_many_association_names.each_with_object({}) do |name, memo|
-      descendants = record.public_send(name).to_a
-      memo[name] = UniversalID::Prepacker.prepack(descendants, prepack_options)
+  def loaded_has_many_relations_by_name
+    has_many_associations.each_with_object({}) do |association, memo|
+      relation = record.public_send(association.name)
+      next unless relation.loaded?
+      memo[association.name] = relation
     end
   end
 end
-
-# ============================================================================================================
-# Example form submit payloads for HAS_MANY_ASSOCIATIONS
-# ============================================================================================================
-#
-# ------------------------------------------------------------------------------------------------------------
-# ActiveRecord::Reflection::HasManyReflection
-# ------------------------------------------------------------------------------------------------------------
-# class Campaign < ApplicationRecord
-#   has_many :emails, dependent: :destroy
-#   accepts_nested_attributes_for :emails
-# end
-# ------------------------------------------------------------------------------------------------------------
-# {
-#   "campaign" => {
-#     "name" => "Summer Sale Campaign",
-#     "description" => "Updated description for our big summer sale!",
-#     "trigger" => "summer_sale_start",
-#     "emails_attributes" => {
-#       "0" => {
-#         "id" => "1", # Assuming the ID of the existing email is 1
-#         "subject" => "Sale Starts Now - Updated",
-#         "body" => "Our Summer Sale is starting, don't miss out on new deals!",
-#         "wait" => "0"
-#       },
-#       "1" => {
-#         "id" => "2", # Assuming the ID of the existing email is 2
-#         "subject" => "Reminder: Sale Still On",
-#         "body" => "The Summer Sale is halfway through - check out what's left!",
-#         "wait" => "24"
-#       },
-#       "2" => {
-#         # No ID since this is a new email
-#         "subject" => "Final Call for Summer Sale",
-#         "body" => "Last chance to grab your favorites before the sale ends!",
-#         "wait" => "72"
-#       }
-#     }
-#   }
-# }
-#
-# ------------------------------------------------------------------------------------------------------------
-# ActiveRecord::Reflection::HasOneReflection
-# ------------------------------------------------------------------------------------------------------------
-# class Campaign < ApplicationRecord
-#   has_one :email, dependent: :destroy
-#   accepts_nested_attributes_for :email
-# end
-# ------------------------------------------------------------------------------------------------------------
-# {
-#   "campaign" => {
-#     "name" => "Summer Sale Campaign",
-#     "description" => "Description for our big summer sale!",
-#     "trigger" => "summer_sale_start",
-#     "email_attributes" => {
-#       "id" => "1", # Assuming the ID of the existing email is 1
-#       "subject" => "Sale Starts Now",
-#       "body" => "Our Summer Sale is starting, don't miss out on the deals!",
-#       "wait" => "0"
-#     }
-#   }
-# }
-#
-# ------------------------------------------------------------------------------------------------------------
-# ActiveRecord::Reflection::HasAndBelongsToManyReflection
-# ------------------------------------------------------------------------------------------------------------
-# class Campaign < ActiveRecord::Base
-#   has_and_belongs_to_many :emails
-# end
-# ------------------------------------------------------------------------------------------------------------
-# NOTE: habtm associations do not support `accepts_nested_attributes_for`,
-#       but here's one way this could be represented (i.e. matching the `has_many` example above)
-#       Implementation of handling this payload for HABTM associations would require
-#       custom implementation logic
-# ------------------------------------------------------------------------------------------------------------
-# {
-#   "campaign" => {
-#     "name" => "Summer Sale Campaign",
-#     "description" => "Our biggest sale of the year!",
-#     "trigger" => "summer_sale",
-#     "emails_attributes" => {
-#       "0" => {
-#         "id" => "1", # Assuming the ID of the existing email is 1
-#         "subject" => "Sale Starts Now - Updated",
-#         "body" => "Our Summer Sale is starting, don't miss out on new deals!",
-#         "wait" => "0"
-#       },
-#       "1" => {
-#         "id" => "2", # Assuming the ID of the existing email is 2
-#         "subject" => "Reminder: Sale Still On",
-#         "body" => "The Summer Sale is halfway through - check out what's left!",
-#         "wait" => "24"
-#       },
-#       "2" => {
-#         # No ID since this is a new email
-#         "subject" => "Final Call for Summer Sale",
-#         "body" => "Last chance to grab your favorites before the sale ends!",
-#         "wait" => "72"
-#       }
-#     }
-#   }
-# }

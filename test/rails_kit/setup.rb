@@ -37,3 +37,4 @@ end
 require_relative "models/application_record"
 require_relative "models/campaign"
 require_relative "models/email"
+require_relative "models/email_attachment"

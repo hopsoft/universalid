@@ -22,11 +22,31 @@ class UniversalID::ActiveRecordBaseUnpacker
         klass.new
       end
 
+      assign_attributes record, attributes
+      assign_descendants record, attributes
+
+      record
+    end
+
+    def assign_attributes(record, attributes)
       attributes.each do |key, value|
         record.public_send "#{key}=", value if record.respond_to? "#{key}="
       end
+    end
 
-      record
+    def assign_descendants(record, attributes)
+      descendants = attributes[UniversalID::ActiveRecordBasePacker::DESCENDANTS_KEY] || {}
+      descendants.each do |name, list|
+        next unless record.respond_to?(name) && record.respond_to?("#{name}=")
+
+        models = list.map { |encoded| UniversalID::Encoder.decode encoded }
+        models.compact!
+        next unless models.any?
+
+        # NOTE: ActiveRecord is smart enough to not re-create or re-add
+        #       existing records for has_many associations
+        record.public_send "#{name}=", models
+      end
     end
   end
 end

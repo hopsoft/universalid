@@ -34,14 +34,25 @@ class UniversalID::PrepackDatabaseOptions
   end
 
   def include_descendants?
-    !!@settings.include_descendants
+    depth = @settings.descendant_depth.to_i
+    depth_count = @settings.current_descendant_depth_count.to_i
+
+    return false unless !!@settings.include_descendants
+    return false unless depth > 0 && depth_count < depth
+
+    true
+  end
+
+  def current_descendant_depth_count
+    @settings.current_descendant_depth_count ||= -1
+  end
+
+  def increment_current_descendant_depth_count!
+    @settings.current_descendant_depth_count ||= -1
+    @settings.current_descendant_depth_count += 1
   end
 
   def exclude_descentants?
     !include_descendants?
-  end
-
-  def descendant_depth
-    @descendant_depth.to_i
   end
 end

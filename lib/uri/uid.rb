@@ -20,7 +20,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         alias_method :find, :parse
 
         def create(object, options = {})
-          path = "/#{UniversalID::Encoder.encode(object, **options)}"
+          path = "/#{UniversalID::Encoder.encode(object, options)}"
           parse "#{SCHEME}://#{HOST}#{path}"
         end
 

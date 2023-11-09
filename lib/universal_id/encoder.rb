@@ -6,7 +6,7 @@ require "brotli"
 # This module provides the ability to encode and decode objects into a compressed, URL-safe string
 module UniversalID::Encoder
   class << self
-    def encode(object, **options)
+    def encode(object, options = {})
       object = UniversalID::Prepacker.prepack(object, options)
 
       # This is basically the same call as UniversalID::MessagePackFactory.pack(object),
