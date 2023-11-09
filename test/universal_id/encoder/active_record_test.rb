@@ -97,4 +97,54 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     assert_equal description, decoded.description
     assert_equal trigger, decoded.trigger
   end
+
+  def test_persisted_model_deep_copy_customized
+    campaign = Campaign.create_for_test
+    campaign.emails = Email.create_for_test(3)
+    campaign.emails = Email.create_for_test(3) do |email|
+      email.attachments = Attachment.create_for_test(2)
+    end
+
+    options = {
+      include_blank: false,
+      exclude: [:description, :body, :file_data],
+      include_keys: false,
+      include_timestamps: false,
+      include_unsaved_changes: true,
+      include_descendants: true,
+      descendant_depth: 2
+    }
+
+    encoded = UniversalID::Encoder.encode(campaign, options)
+    decoded = UniversalID::Encoder.decode(encoded)
+
+    # verify decoded records also have changes
+    assert decoded.changed?
+    assert decoded.emails.map(&:changed?)
+    assert decoded.emails.map(&:attachments).flatten.map(&:changed?)
+
+    # verify that the in-memory and decoded records are different
+    refute_equal campaign, decoded
+    refute_equal campaign.emails, decoded.emails
+    refute_equal campaign.emails.map(&:attachments), decoded.emails.map(&:attachments)
+
+    # verify that the in-memory decoded records do not have keys or excluded fields
+    assert_nil decoded.id
+    assert_nil decoded.description
+    decoded.emails.each do |email|
+      assert_nil email.id
+      assert_nil email.campaign_id
+      assert_nil email.body
+      email.attachments.each do |attachment|
+        assert_nil attachment.id
+        assert_nil attachment.email_id
+        assert_nil attachment.file_data
+      end
+    end
+
+    # verify that we can save the new records
+    assert decoded.save
+    assert decoded.emails.map(&:persisted?)
+    assert decoded.emails.map(&:attachments).flatten.map(&:persisted?)
+  end
 end

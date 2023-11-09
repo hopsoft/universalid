@@ -40,9 +40,9 @@ class UniversalID::ActiveRecordBasePacker
     return record.attributes.slice(record.class.primary_key) if id_only?(prepack_database_options)
 
     hash = record.attributes
-    reject_database_keys! hash if prepack_database_options.exclude_keys?
+    reject_keys! hash if prepack_database_options.exclude_keys?
     reject_timestamps! hash if prepack_database_options.exclude_timestamps?
-    discard_unsaved_changes! hash if prepack_database_options.exclude_unsaved_changes?
+    reject_unsaved_changes! hash if prepack_database_options.exclude_unsaved_changes?
     add_descendants! hash if prepack_database_options.include_descendants?
 
     hash.prepack prepack_options
@@ -57,7 +57,7 @@ class UniversalID::ActiveRecordBasePacker
 
   # attribute mutators .......................................................................................
 
-  def reject_database_keys!(hash)
+  def reject_keys!(hash)
     hash.delete record.class.primary_key
     foreign_key_column_names.each { |key| hash.delete key }
   end
@@ -66,7 +66,7 @@ class UniversalID::ActiveRecordBasePacker
     timestamp_column_names.each { |key| hash.delete key }
   end
 
-  def discard_unsaved_changes!(hash)
+  def reject_unsaved_changes!(hash)
     record.changes_to_save.each do |key, (original_value, _)|
       hash[key] = original_value
     end

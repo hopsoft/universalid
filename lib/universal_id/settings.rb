@@ -42,6 +42,7 @@ class UniversalID::Settings
       in include_unsaved_changes: include_unsaved_changes then to.prepack.database.include_unsaved_changes = !!include_unsaved_changes
       in include_descendants: include_descendants then to.prepack.database.include_descendants = !!include_descendants
       in descendant_depth: descendant_depth then to.prepack.database.descendant_depth = descendant_depth
+      else # ignore key
       end
     end
   end

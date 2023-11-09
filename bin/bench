@@ -3,6 +3,7 @@
 
 require "pry"
 require "benchmark"
+require "awesome_print"
 
 require_relative "../test/rails_kit/setup"
 require_relative "../lib/universalid"
@@ -19,12 +20,14 @@ def run(label)
 end
 
 # seed data ..................................................................................................
-campaign = Campaign.new(name: "Example Campaign", description: "Example Description", trigger: "Sign Up")
-campaign.emails << campaign.emails.build(subject: "First Email", body: "Welcome", wait: 1.day)
-campaign.emails << campaign.emails.build(subject: "Second Email", body: "Follow Up", wait: 1.week)
-campaign.emails << campaign.emails.build(subject: "Third Email", body: "Hard Sell", wait: 2.days)
-campaign.save!
-hash = campaign.as_json(include: :emails)
+campaign = Campaign.create_for_test
+campaign.emails = Email.create_for_test(3) do |email|
+  email.attachments = Attachment.create_for_test(2)
+end
+hash = campaign.as_json(include: {emails: {include: :attachments}})
+puts "Benchmarking with the following ActiveRecord/Hash data..."
+puts "".ljust(@pad, "=")
+ap hash
 
 # pre/setup ......................................................................................................
 hash_uid = URI::UID.create(hash)
@@ -50,3 +53,11 @@ run("URI::UID.create ActiveRecord, exclude_blank") { URI::UID.create campaign, i
 run("URI::UID.create ActiveRecord, include_descendants") { URI::UID.create campaign, include_descendants: true, descendant_depth: 1 }
 run("URI::UID.parse ActiveRecord/UID") { URI::UID.parse active_record_uid_string }
 run("URI::UID.decode HASH/UID") { active_record_uid.decode }
+
+# Everything .................................................................................................
+run("UID.create.to_gid > GID.parse.find > UID.decode") do
+  GlobalID.parse(URI::UID.create(campaign).to_gid_param).find.uid.decode
+end
+run("UID.create.to_sgid > SGID.parse.find > UID.decode") do
+  SignedGlobalID.parse(URI::UID.create(campaign).to_sgid_param).find.uid.decode
+end

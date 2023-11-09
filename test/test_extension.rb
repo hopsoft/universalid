@@ -32,11 +32,11 @@ class Minitest::Test
     message = "  #{Rainbow("⬇").dimgray.faint} "
     message << Rainbow("Benchmark ").dimgray
     message << if time >= 0.03
-      Rainbow("> 30ms ").red.faint + Rainbow("(#{"%6.2fms" % time_in_ms})").red.bright
+      Rainbow("> 30ms ").red.faint + Rainbow("(#{"%1.3f sec" % time})").red + Rainbow("(#{"%6.2fms" % time_in_ms})").red.bright
     elsif time > 0.01
-      Rainbow("< 30ms ").yellow.faint + Rainbow("(#{"%6.2fms" % time_in_ms})").yellow.bright
+      Rainbow("< 30ms ").yellow.faint + Rainbow("(#{"%1.3f sec" % time})").yellow + Rainbow("(#{"%6.2fms" % time_in_ms})").yellow.bright
     else
-      Rainbow("< 10ms ").green.faint + Rainbow("(#{"%6.2fms" % time_in_ms})").green.bright
+      Rainbow("< 10ms ").green.faint + Rainbow("(#{"%1.3f sec" % time})").green + Rainbow("(#{"%6.2f ms" % time_in_ms})").green.bright
     end
     message << Rainbow("".ljust(55, ".")).dimgray.faint
     puts message
