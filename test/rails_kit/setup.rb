@@ -24,7 +24,7 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
-  create_table :email_attachments do |t|
+  create_table :attachments do |t|
     t.column :email_id, :integer
     t.column :file_name, :string
     t.column :content_type, :string
@@ -37,4 +37,4 @@ end
 require_relative "models/application_record"
 require_relative "models/campaign"
 require_relative "models/email"
-require_relative "models/email_attachment"
+require_relative "models/attachment"

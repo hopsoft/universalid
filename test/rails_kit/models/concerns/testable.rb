@@ -4,19 +4,28 @@ module Testable
   extend ActiveSupport::Concern
 
   class_methods do
-    def test(count = 1, **attributes)
+    def build_for_test(count = 1, **attributes)
       records = count.times.map { build generate_attributes.merge(attributes) }
-      (count == 1) ? yield(records.first) : yield(records)
+
+      records.each do |record|
+        yield record if block_given?
+      end
+
+      return records.first if count == 1
+      records
     end
 
-    def test!(count = 1, **attributes)
-      test(count, **attributes) do |records|
-        records = [records] unless records.is_a?(Array)
-        records.each(&:save!)
-        (count == 1) ? yield(records.first) : yield(records)
-      ensure
-        records.each(&:destroy)
+    def create_for_test(count = 1, **attributes)
+      records = build_for_test(count, **attributes)
+      records = [records] if count == 1
+
+      records.each do |record|
+        record.save!
+        yield record if block_given?
       end
+
+      return records.first if count == 1
+      records
     end
 
     private

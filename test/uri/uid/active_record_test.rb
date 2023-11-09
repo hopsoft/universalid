@@ -4,61 +4,55 @@ require_relative "../../test_helper"
 
 class URI::UID::ActiveRecordTest < Minitest::Test
   def test_new_model
-    Campaign.test do |campaign|
-      uid = URI::UID.create(campaign)
-      expected = "uid://universal-id/G0QAAIyUqtsjPVl5TlKzKZpALGZjpKCBvwzJgkOO7KD2LaDmEdXYkpn7hLkDzVNFme8I9aQWSOwRNg"
-      assert_equal expected, uid.to_s
+    campaign = Campaign.build_for_test
+    uid = URI::UID.create(campaign)
+    expected = "uid://universal-id/G0QAAIyUqtsjPVl5TlKzKZpALGZjpKCBvwzJgkOO7KD2LaDmEdXYkpn7hLkDzVNFme8I9aQWSOwRNg"
+    assert_equal expected, uid.to_s
 
-      decoded = URI::UID.parse(uid.to_s).decode
-      assert_equal campaign.class, decoded.class
-      refute_equal campaign.attributes, decoded.attributes
-    end
+    decoded = URI::UID.parse(uid.to_s).decode
+    assert_equal campaign.class, decoded.class
+    refute_equal campaign.attributes, decoded.attributes
   end
 
   def test_new_model_include_unsaved_changes
-    Campaign.test do |campaign|
-      uid = URI::UID.create(campaign, include_unsaved_changes: true)
-      decoded = URI::UID.parse(uid.to_s).decode
-      assert_equal campaign.class, decoded.class
-      assert_equal campaign.attributes, decoded.attributes
-    end
+    campaign = Campaign.build_for_test
+    uid = URI::UID.create(campaign, include_unsaved_changes: true)
+    decoded = URI::UID.parse(uid.to_s).decode
+    assert_equal campaign.class, decoded.class
+    assert_equal campaign.attributes, decoded.attributes
   end
 
   def test_new_model_include_unsaved_changes_exclude_blanks
-    Campaign.test do |campaign|
-      uid = URI::UID.create(campaign, include_unsaved_changes: true, include_blank: false)
-      decoded = URI::UID.parse(uid.to_s).decode
-      assert_equal campaign.class, decoded.class
-      assert_equal campaign.attributes, decoded.attributes
-    end
+    campaign = Campaign.build_for_test
+    uid = URI::UID.create(campaign, include_unsaved_changes: true, include_blank: false)
+    decoded = URI::UID.parse(uid.to_s).decode
+    assert_equal campaign.class, decoded.class
+    assert_equal campaign.attributes, decoded.attributes
   end
 
   def test_persisted_model
-    Campaign.test! do |campaign|
-      uid = URI::UID.create(campaign)
-      decoded = URI::UID.parse(uid.to_s).decode
-      assert_equal campaign, decoded
-    end
+    campaign = Campaign.create_for_test
+    uid = URI::UID.create(campaign)
+    decoded = URI::UID.parse(uid.to_s).decode
+    assert_equal campaign, decoded
   end
 
   def test_changed_persisted_model
-    Campaign.test! do |campaign|
-      campaign.description = "Changed Description"
-      uid = URI::UID.create(campaign)
-      decoded = URI::UID.parse(uid.to_s).decode
-      assert_equal campaign, decoded
-      refute_equal campaign.description, decoded.description
-    end
+    campaign = Campaign.create_for_test
+    campaign.description = "Changed Description"
+    uid = URI::UID.create(campaign)
+    decoded = URI::UID.parse(uid.to_s).decode
+    assert_equal campaign, decoded
+    refute_equal campaign.description, decoded.description
   end
 
   def test_changed_persisted_model_include_unsaved_changes
-    Campaign.test! do |campaign|
-      campaign.description = "Changed Description"
-      uid = URI::UID.create(campaign, include_unsaved_changes: true)
-      decoded = URI::UID.parse(uid.to_s).decode
-      assert_equal campaign, decoded
-      assert_equal campaign.description, decoded.description
-    end
+    campaign = Campaign.create_for_test
+    campaign.description = "Changed Description"
+    uid = URI::UID.create(campaign, include_unsaved_changes: true)
+    decoded = URI::UID.parse(uid.to_s).decode
+    assert_equal campaign, decoded
+    assert_equal campaign.description, decoded.description
   end
 
   def test_changed_persisted_model_with_registered_custom_config
@@ -76,32 +70,32 @@ class URI::UID::ActiveRecordTest < Minitest::Test
 
     _, settings = UniversalID::Settings.register("test_#{SecureRandom.alphanumeric(8)}", YAML.safe_load(yaml))
 
-    Campaign.test! do |campaign|
-      # remember orig values
-      description = campaign.description
-      trigger = campaign.trigger
+    campaign = Campaign.create_for_test
 
-      # change values
-      campaign.name = "Changed Name"
-      campaign.description = "Changed Description"
-      campaign.trigger = "Changed Trigger"
+    # remember orig values
+    description = campaign.description
+    trigger = campaign.trigger
 
-      uid = URI::UID.create(campaign, **settings)
-      decoded = URI::UID.parse(uid.to_s).decode
+    # change values
+    campaign.name = "Changed Name"
+    campaign.description = "Changed Description"
+    campaign.trigger = "Changed Trigger"
 
-      # same record
-      assert_equal campaign, decoded
+    uid = URI::UID.create(campaign, **settings)
+    decoded = URI::UID.parse(uid.to_s).decode
 
-      # included values match
-      assert_equal campaign.name, decoded.name
+    # same record
+    assert_equal campaign, decoded
 
-      # excluded values do not match the in-memory changes
-      refute_equal campaign.description, decoded.description
-      refute_equal campaign.trigger, decoded.trigger
+    # included values match
+    assert_equal campaign.name, decoded.name
 
-      # excluded values match the original values
-      assert_equal description, decoded.description
-      assert_equal trigger, decoded.trigger
-    end
+    # excluded values do not match the in-memory changes
+    refute_equal campaign.description, decoded.description
+    refute_equal campaign.trigger, decoded.trigger
+
+    # excluded values match the original values
+    assert_equal description, decoded.description
+    assert_equal trigger, decoded.trigger
   end
 end

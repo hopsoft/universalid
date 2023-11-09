@@ -2,5 +2,5 @@
 
 class Email < ApplicationRecord
   belongs_to :campaign
-  has_many :email_attachments, dependent: :destroy
+  has_many :attachments, dependent: :destroy
 end
