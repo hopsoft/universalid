@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pry"
+require "benchmark"
+
+require_relative "../test/rails_kit/setup"
+require_relative "../lib/universalid"
+
+@count = 10_000
+@pad = 98
+
+def run(label)
+  Benchmark.benchmark Benchmark::CAPTION, 52, Benchmark::FORMAT, "Average" do |x|
+    time = x.report(label) { @count.times { yield } }
+    [time / @count.to_f]
+  end
+  puts "".ljust(@pad, ".")
+end
+
+# seed data ..................................................................................................
+campaign = Campaign.new(name: "Example Campaign", description: "Example Description", trigger: "Sign Up")
+campaign.emails << campaign.emails.build(subject: "First Email", body: "Welcome", wait: 1.day)
+campaign.emails << campaign.emails.build(subject: "Second Email", body: "Follow Up", wait: 1.week)
+campaign.emails << campaign.emails.build(subject: "Third Email", body: "Hard Sell", wait: 2.days)
+campaign.save!
+hash = campaign.as_json(include: :emails)
+
+# pre/setup ......................................................................................................
+hash_uid = URI::UID.create(hash)
+hash_uid_string = hash_uid.to_s
+
+active_record_uid = URI::UID.create(campaign, include_descendants: true, descendant_depth: 1)
+active_record_uid_string = active_record_uid.to_s
+
+# benchmarks .................................................................................................
+puts "".ljust(@pad, "=")
+puts "Benchmarking #{@count} iterations"
+puts "".ljust(@pad, "=")
+
+# PackableHash ...............................................................................................
+run("URI::UID.create Hash") { URI::UID.create hash }
+run("URI::UID.create Hash, include_blank: false") { URI::UID.create hash, include_blank: false }
+run("URI::UID.parse HASH/UID") { URI::UID.parse hash_uid_string }
+run("URI::UID.decode HASH/UID") { hash_uid.decode }
+
+# ActiveRecord ...............................................................................................
+run("URI::UID.create ActiveRecord") { URI::UID.create campaign }
+run("URI::UID.create ActiveRecord, exclude_blank") { URI::UID.create campaign, include_blank: false }
+run("URI::UID.create ActiveRecord, include_descendants") { URI::UID.create campaign, include_descendants: true, descendant_depth: 1 }
+run("URI::UID.parse ActiveRecord/UID") { URI::UID.parse active_record_uid_string }
+run("URI::UID.decode HASH/UID") { active_record_uid.decode }

@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require "date"
+require "forwardable"
+require "ostruct"
+require "set"
+require "uri"
+
 require_relative "universal_id/version"
 require_relative "universal_id/settings"
 require_relative "universal_id/encoder"

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
-  require "uri"
-  require "forwardable"
 
   module URI
     class UID < ::URI::Generic
