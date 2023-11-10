@@ -3,22 +3,29 @@
 require_relative "../../test_helper"
 
 class URI::UID::GlobalIDTest < Minitest::Test
-  def test_changed_persisted_model_with_prepack_options
-    campaign = Campaign.create_for_test
-    campaign.description = "Changed Description"
-
-    # SEE: config/defaults.yml
-    prepack_options = {
-      include_blank: false,
-      include_unsaved_changes: true,
-      include_timestamps: false
+  def test_uid_to_and_from_global_id
+    product = {
+      name: "Wireless Bluetooth Earbuds",
+      price: 99.99,
+      category: "Electronics"
     }
-    uid = URI::UID.create(campaign, prepack_options)
-    gid = uid.to_global_id
 
-    assert_equal uid, gid.find.uid
-    assert_equal campaign, uid.decode
-    assert_equal campaign, gid.find.uid.decode
-    assert_equal campaign.description, gid.find.uid.decode.description
+    uid = URI::UID.create(product)
+    gid = uid.to_gid_param
+    decoded = URI::UID.from_gid(gid).decode
+    assert_equal product, decoded
+  end
+
+  def test_uid_to_and_from_signed_global_id
+    product = {
+      name: "Wireless Bluetooth Headphones",
+      price: 179.99,
+      category: "Electronics"
+    }
+
+    uid = URI::UID.create(product)
+    sgid = uid.to_sgid_param(purpose: "cart-123", expires_in: 1.hour)
+    decoded = URI::UID.from_sgid(sgid).decode
+    assert_equal product, decoded
   end
 end

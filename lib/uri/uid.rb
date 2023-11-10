@@ -52,9 +52,12 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         UniversalID::Encoder.decode(payload) if valid?
       end
 
-      # pattern matching support
       def deconstruct_keys(_keys)
         {scheme: scheme, host: host, path: path}
+      end
+
+      def inspect
+        "#<URI::UID scheme=#{scheme}, host=#{host}, path=#{(path.length > 40) ? "#{path[0..36]}..." : path}>"
       end
 
       if defined? GlobalID::Identification
@@ -62,15 +65,42 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
           include GlobalID::Identification
 
           def self.find(value)
-            new UID.parse(value)
+            new value
           end
 
           attr_reader :id, :uid
 
           def initialize(uid)
+            uid = case uid.to_s
+            when /\A#{URI::UID::SCHEME}/o then URI::UID.parse(uid)
+            else URI::UID.build(scheme: URI::UID::SCHEME, host: URI::UID::HOST, path: "/#{uid}")
+            end
+
             @uid = uid
-            @id = uid.to_s
+            @id = uid&.payload
           end
+
+          def uid
+            URI::UID.build scheme: URI::UID::SCHEME, host: URI::UID::HOST, path: "/#{id}"
+          end
+        end
+
+        class << self
+          def from_global_id_record(gid_record)
+            gid_record.find&.uid
+          end
+
+          def from_global_id(gid, options = {})
+            from_global_id_record GlobalID.parse(gid, options)
+          end
+
+          alias_method :from_gid, :from_global_id
+
+          def from_signed_global_id(sgid, options = {})
+            from_global_id_record SignedGlobalID.parse(sgid, options)
+          end
+
+          alias_method :from_sgid, :from_signed_global_id
         end
 
         # Returns a GlobalIDRecord instance which implements the GlobalID::Identification interface/protocol

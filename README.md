@@ -2,7 +2,7 @@
   <h1 align="center">Universal ID 🌌</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-646-47d299.svg" />
+      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-670-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
       <img src="https://api.codeclimate.com/v1/badges/567624cbe733fafc2330/maintainability" />
@@ -427,24 +427,47 @@ UniversalID::Settings.register :unsaved, YAML.safe_load("app/config/unsaved.yml"
 URI::UID.create @record, UniversalID::Settings[:small_record]
 ```
 
-## GlobalID and SignedGlobalID
-
-### TODO: write this...
-
 ## Advanced ActiveRecord
 
-### TODO: write this...
+### Descendants
+
+### New Records
+
+### Deep Copies
+
+## SignedGlobalID
+
+Options like `signing`, `purpose`, and `expiration` are some of the best things provided by SignedGlobalID.
+These options _(and more)_ will be folded into UniversalID, but until then...
+you can simply cast your UniversalID to a SignedGlobalID to pick up these features.
+
+```ruby
+product = {
+  name: "Wireless Bluetooth Headphones",
+  price: 79.99,
+  category: "Electronics"
+}
+
+uid = URI::UID.create(product)
+#=> #<URI::UID scheme="uid", host="universal-id", path="/G0sAgBypU587HsjkLpEnGHiaWfPQEyiiuH6j...">
+
+sgid = uid.to_sgid_param(purpose: "cart-123", expires_in: 1.hour)
+#=> "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJZ0d4WjJsa09pOHZkVzVwZG1WeWMyRnNMV2xrTDFWU1NUbzZWVWxFT2pwSGJHOWlZV3hKUkZKbFkyOXlaQzlITUhO..."
+
+URI::UID.from_sgid(sgid).decode
+#=> {
+#     name: "Wireless Bluetooth Headphones",
+#     price: 79.99,
+#     category: "Electronics"
+#   }
+```
 
 ## Performance and Benchmarks
 
 <details>
   <summary>Benchmarks</summary>
-
-  ---
+  <p></p>
   Benchmarks can be performed by cloning the project and running `bin/bench`.
-
-  ---
-
   The run below was performed on the following hardware.
 
   ```
