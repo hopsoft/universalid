@@ -33,7 +33,7 @@
       <img alt="Twitter Follow" src="https://img.shields.io/twitter/url?label=%40hopsoft&style=social&url=https%3A%2F%2Ftwitter.com%2Fhopsoft">
     </a>
   </p>
-  <h2 align="center">Introducing UniversalID: Powerful Portability for Ruby Objects!</h2>
+  <h2 align="center">Powerful Web-Safe Portability for Ruby Objects</h2>
 </p>
 
 ## Universal ID
