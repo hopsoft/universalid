@@ -39,7 +39,7 @@
 
 ## Universal ID
 
-Universal ID is a Ruby library that supports recursive serialization/deserialization of any Ruby object to/from a URL safe Base 64 encoded URI. The resulting URI string can can be transported across process boundaries. Also, the encoded representation of the object can also be embeded within standard URLs.
+Universal ID is a Ruby library that supports recursive serialization/deserialization of any Ruby object to/from a URL-safe Base64 URI. The encoded payload can can be transported across process boundaries and can even be used in standard web URLs.
 
 UID is built on top of [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and world class compression)_.
 
