@@ -25,9 +25,9 @@ class UniversalID::Encoder::RubyCompositesTest < Minitest::Test
   COMPOSITES = {
     Array => SCALARS.values,
     Hash => SCALARS,
-    Struct => NamedStruct.new(*SCALARS.values),
     OpenStruct => OpenStruct.new(SCALARS),
-    Set => Set.new(SCALARS.values)
+    Set => Set.new(SCALARS.values),
+    Struct => NamedStruct.new(*SCALARS.values)
   }
 
   COMPOSITES.each do |klass, value|

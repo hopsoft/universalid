@@ -5,11 +5,18 @@ require "msgpack"
 
 UniversalID::MessagePackFactory = MessagePack::Factory.new.tap do |factory|
   class << factory
-    def register_next_type(...)
-      register_type(next_type_id, ...)
+    attr_reader :msgpack_pool
+
+    def create_msgpack_pool
+      @msgpack_pool = UniversalID::MessagePackFactory.pool([Etc.nprocessors.to_i, 1].max)
     end
 
-    private
+    def register(type:, type_id: nil, recreate_pool: true, **options)
+      id = type_id || next_type_id
+      options[:recursive] = true unless options.key?(:recursive)
+      register_type(id, type, options)
+      create_msgpack_pool if recreate_pool
+    end
 
     def next_type_id
       max_type_id = registered_types.map { |type| type[:type].to_i }.max
@@ -24,10 +31,7 @@ UniversalID::MessagePackFactory.register_type MessagePack::Timestamp::TYPE, ::Ti
   unpacker: MessagePack::Time::Unpacker
 
 # Register MessagePack built-in extensions
-UniversalID::MessagePackFactory.register_next_type(::Symbol)
+UniversalID::MessagePackFactory.register_type 0x00, ::Symbol
 
 # Register UniversalID types/extensions
 require_relative "message_pack_types"
-
-# Setup a pool of pre-initialized packers/unpackers for marshaling operations
-UniversalID::MessagePackFactoryPool = UniversalID::MessagePackFactory.pool([Etc.nprocessors.to_i, 1].max)

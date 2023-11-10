@@ -1,9 +1,4 @@
 ---
-# A note on semantics
-#
-# Configuration options apply the same semantics as Ruby.
-# For example, we use `exclude` and `include` to denote a condition or preference.
-# Words like `keep` and `reject` are more action oriented to help apply the preference.
 prepack:
   exclude: []
   include: []

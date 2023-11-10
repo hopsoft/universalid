@@ -9,15 +9,17 @@ types = %w[
   signed_global_id/type
   global_id/type
   active_record/base/type
-  ruby/complex
-  ruby/rational
-  ruby/date_time
-  ruby/date
-  ruby/range
-  ruby/regexp
-  ruby/set
-  ruby/open_struct
-  ruby/struct
+  ruby/scalars/complex
+  ruby/scalars/rational
+  ruby/scalars/date_time
+  ruby/scalars/date
+  ruby/scalars/range
+  ruby/scalars/regexp
+  ruby/composites/set
+  ruby/composites/open_struct
+  ruby/composites/struct
 ]
 
 types.each { |type| require_relative "message_pack_types/#{type}.rb" }
+
+UniversalID::MessagePackFactory.create_msgpack_pool

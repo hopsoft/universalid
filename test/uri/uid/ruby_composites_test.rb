@@ -25,31 +25,25 @@ class URI::UID::RubyCompositesTest < Minitest::Test
   COMPOSITES = {
     Array => SCALARS.values,
     Hash => SCALARS,
-    Struct => NamedStruct.new(*SCALARS.values),
     OpenStruct => OpenStruct.new(SCALARS),
-    Set => Set.new(SCALARS.values)
+    Set => Set.new(SCALARS.values),
+    Struct => NamedStruct.new(*SCALARS.values)
   }
 
   COMPOSITES.each do |klass, value|
     define_method :"test_#{klass.name}_with_factory" do
       value = COMPOSITES[klass]
-      uid = (klass == Struct) ?
-        URI::UID.create(value.values) :
-        URI::UID.create(value)
+      uid = URI::UID.create(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
-      decoded = NamedStruct.new(*decoded) if klass == Struct
       assert_equal value, decoded
     end
 
     define_method :"test_#{klass.name}_with_factory_pool" do
       value = COMPOSITES[klass]
-      uid = (klass == Struct) ?
-        URI::UID.create(value.values) :
-        URI::UID.create(value)
+      uid = URI::UID.create(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
-      decoded = NamedStruct.new(*decoded) if klass == Struct
       assert_equal value, decoded
     end
   end

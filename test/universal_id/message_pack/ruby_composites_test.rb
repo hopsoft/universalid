@@ -40,8 +40,8 @@ class UniversalID::MessagePackRubyCompositesTest < Minitest::Test
 
     define_method :"test_#{klass.name}_with_factory_pool" do
       value = COMPOSITES[klass]
-      packed = UniversalID::MessagePackFactoryPool.dump(value)
-      unpacked = UniversalID::MessagePackFactoryPool.load(packed)
+      packed = UniversalID::MessagePackFactory.msgpack_pool.dump(value)
+      unpacked = UniversalID::MessagePackFactory.msgpack_pool.load(packed)
       assert_equal value, unpacked
     end
   end

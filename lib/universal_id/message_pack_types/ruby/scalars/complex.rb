@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 UniversalID::MessagePackFactory.register(
-  type: URI::UID,
+  type: Complex,
   recreate_pool: false,
   packer: ->(obj, packer) { packer.write obj.to_s },
-  unpacker: ->(unpacker) { URI::UID.parse unpacker.read }
+  unpacker: ->(unpacker) { Kernel.Complex unpacker.read }
 )

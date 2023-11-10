@@ -2,9 +2,11 @@
 
 if defined? GlobalID
 
-  UniversalID::MessagePackFactory.register_next_type GlobalID,
+  UniversalID::MessagePackFactory.register(
+    type: GlobalID,
+    recreate_pool: false,
     packer: ->(obj, packer) { packer.write obj.to_param },
-    unpacker: ->(unpacker) { GlobalID.parse unpacker.read },
-    recursive: true
+    unpacker: ->(unpacker) { GlobalID.parse unpacker.read }
+  )
 
 end
