@@ -101,13 +101,10 @@ You can use Universal ID for for individual scalar values if desired, but scalar
 _Think of scalars as the low level building blocks._
 
 ```ruby
-URI::UID.create(:demo)
-#=> #<URI::UID uid://universal-id/iwKA1gBkZW1vAw>
-
-URI::UID.create(:demo).to_s
+uri = URI::UID.create(:demo).to_s
 #=> "uid://universal-id/iwKA1gBkZW1vAw"
 
-uid = URI::UID.parse("uid://universal-id/iwKA1gBkZW1vAw")
+uid = URI::UID.parse(uri)
 #=> #<URI::UID uid://universal-id/iwKA1gBkZW1vAw>
 
 uid.decode
@@ -144,7 +141,7 @@ Composite support is where things start to get interesting. All of the composite
   hash = {a: 1, b: 2, c: 3, array: [1, 2, 3, [:a, :b, :c, [true]]]}
 
   uri = URI::UID.create(hash).to_s
-  #=> "uid://universal-id/CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAECA5TUAGHUAGLUAGORwwM"
+  #=> "CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAEC..."
 
   uid = URI::UID.parse(uri)
   #=> #<URI::UID uid://universal-id/CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAECA5TUAGHUAGLUAGORwwM>
@@ -167,10 +164,10 @@ Composite support is where things start to get interesting. All of the composite
   )
 
   uri = URI::UID.create(ostruct).to_s
-  #=> "uid://universal-id/iyaAx0sMhNYAbmFtZbFXaXJlbGVzcyBLZXlib2FyZMcFAHByaWNly0BI_rhR64Uf1wBjYXRlZ29yeatFbGVjdHJvbmljc9cAaW5fc3RvY2vDAw"
+  #=> "uid://universal-id/iyaAx0sMhNYAbmFtZbFXaXJlbGVzcyBLZXlib2FyZMcFAHByaWNly0BI_rhR64Uf1wBjYXRlZ29ye..."
 
   uid = URI::UID.parse(uri)
-  #=> #<URI::UID uid://universal-id/iyaAx0sMhNYAbmFtZbFXaXJlbGVzcyBLZXlib2FyZMcFAHByaWNly0BI_rhR64Uf1wBjYXRlZ29yeatFbGVjdHJvbmljc9cAaW5fc3RvY2vDAw>
+  #=> #<URI::UID scheme=uid, host=universal-id, payload=iyaAx0sMhNYAbmFtZbFXaXJlbGVzcyBLZXlib2FyZMcFAHByaWNly0BI_rhR64Uf1wBjYXRlZ29ye...>
 
   uid.decode
   #=> #<OpenStruct name="Wireless Keyboard", price=49.99, category="Electronics", in_stock=true>
@@ -204,10 +201,10 @@ Composite support is where things start to get interesting. All of the composite
   book = Book.new("The Great Gatsby", "F. Scott Fitzgerald", "9780743273565", 1925)
 
   uri = URI::UID.create(book).to_s
-  #=> "uid://universal-id/G2YAoGTomv9N_4RV2oJRxRvZdC1wNJ0H3Ipu45kVcSrAxtg6Wjtogpi6GV1XXQAOAXoNR3BrCg9AQMZ8HeaM_jvFfGbJGNTxHyqmsL3rqsapkiiooqzIgIZq0Qv0j7wC"
+  #=> "uid://universal-id/G2YAoGTomv9N_4RV2oJRxRvZdC1wNJ0H3Ipu45kVcSrAxtg6Wjtogpi6GV1XXQAOAXoNR3BrCg9AQ..."
 
   uid = URI::UID.parse(uri)
-  #=> #<URI::UID uid://universal-id/G2YAoGTomv9N_4RV2oJRxRvZdC1wNJ0H3Ipu45kVcSrAxtg6Wjtogpi6GV1XXQAOAXoNR3BrCg9AQMZ8HeaM_jvFfGbJGNTxHyqmsL3rqsapkiiooqzIgIZq0Qv0j7wC>
+  #=> #<URI::UID scheme=uid, host=universal-id, payload=G2YAoGTomv9N_4RV2oJRxRvZdC1wNJ0H3Ipu45kVcSrAxtg6Wjtogpi6GV1XXQAOAXoNR3BrCg9AQ...>
 
   uid.decode
   #=> #<struct Book title="The Great Gatsby", author="F. Scott Fitzgerald", isbn="9780743273565", published_year=1925>
@@ -298,10 +295,10 @@ It couldn't be simpler. Just convert the required data to a Ruby scalar or compo
     )
 
     uri = URI::UID.create(settings).to_s
-    #=> "uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGeXVUoPBNAg"
+    #=> "uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGe..."
 
     uid = URI::UID.parse(uri)
-    #=> #<URI::UID uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGeXVUoPBNAg>
+    #=> #<URI::UID uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGe..."
 
     uid.decode
     => #<UserSettings:0x0000000139157dd8 @preferences={:theme=>"dark", :notifications=>"email", :language=>"en", :layout=>"grid", :privacy=>"private"}, @user_id=1>

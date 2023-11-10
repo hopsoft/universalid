@@ -33,8 +33,8 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         end
       end
 
-      def payload
-        path[1..]
+      def payload(truncate: false)
+        (truncate && path.length > 80) ? "#{path[1..77]}..." : path[1..]
       end
 
       def valid?
@@ -57,7 +57,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       end
 
       def inspect
-        "#<URI::UID scheme=#{scheme}, host=#{host}, path=#{(path.length > 40) ? "#{path[0..36]}..." : path}>"
+        "#<URI::UID scheme=#{scheme}, host=#{host}, payload=#{payload truncate: true}>"
       end
 
       if defined? GlobalID::Identification
