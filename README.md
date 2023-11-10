@@ -62,12 +62,11 @@ This short list highlights the flexibility and convenience of encoding complex R
   - [Supported Data Types](#supported-data-types)
     - [Scalars](#scalars)
     - [Composites](#composites)
-    - [Advanced Types](#advanced-types)
-      - [ActiveRecord](#activerecord)
-      - [Custom Datatypes](#custom-datatypes)
+    - [ActiveRecord](#activerecord)
+    - [Custom Datatypes](#custom-datatypes)
   - [Settings and Prepack Options](#settings-and-prepack-options)
   - [Advanced ActiveRecord](#advanced-activerecord)
-    - [New Records](#new-records)
+    - [Unsaved Data](#unsaved-data)
     - [Descendants](#descendants)
     - [Deep Copies](#deep-copies)
   - [SignedGlobalID](#signedglobalid)
@@ -212,12 +211,7 @@ Composite support is where things start to get interesting. All of the composite
   ```
 </details>
 
-### Advanced Types
-
-Universal ID supports advanced datatypes like database records and more...
-In fact, Universal ID can be extended with custom datatypes.
-
-#### ActiveRecord
+### ActiveRecord
 
 ActiveRecord models can be easily converted to UIDs.
 
@@ -255,7 +249,7 @@ ActiveRecord models can be easily converted to UIDs.
   > :question: Why not just use [GlobalID](https://github.com/rails/globalid)? Read on to learn why UID may be a better option for your application.
 </details>
 
-#### Custom Datatypes
+### Custom Datatypes
 
 Universal ID is **extensible** so you can register your own datatypes with specialized serialization rules.
 It couldn't be simpler. Just convert the required data to a Ruby scalar or composite value.
@@ -507,9 +501,9 @@ We'll limit the demos below to 3 tables, but Universal ID can support much more 
   ```
 </details>
 
-### New Records
+### Unsaved Data
 
-It's possible to convert new unsaved records to Universal IDs.
+It's possible to convert records with unsaved data to Universal IDs that capture the unsaved changes.
 This allows you to marshal complex unsaved data that can be restored at a later time.
 
 This feature supports several use cases, like allowing users to pause their work and resume at any point in the future
