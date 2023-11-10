@@ -429,16 +429,16 @@ URI::UID.create @record, UniversalID::Settings[:small_record]
 
 ## Advanced ActiveRecord
 
-### Descendants
-
 ### New Records
+
+### Descendants
 
 ### Deep Copies
 
 ## SignedGlobalID
 
 Options like `signing`, `purpose`, and `expiration` are some of the best things provided by SignedGlobalID.
-These options _(and more)_ will be folded into UniversalID, but until then...
+These options _(and more)_ will eventually be folded into UniversalID, but until then...
 you can simply cast your UniversalID to a SignedGlobalID to pick up these features.
 
 ```ruby
