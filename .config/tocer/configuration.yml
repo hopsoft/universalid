@@ -1,0 +1,4 @@
+label: "## Table of Contents"
+patterns:
+  - "README.md"
+root_dir: "."

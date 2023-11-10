@@ -36,13 +36,11 @@
   <h2 align="center">Powerful Web-Safe Portability for Ruby Objects</h2>
 </p>
 
-## Universal ID
-
 Universal ID is a Ruby library that supports recursive serialization/deserialization of any Ruby object to/from a URL-safe Base64 URI. The encoded payload can be transported across process boundaries and can also be used in standard web URLs.
 
 UID is built on top of [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 
-### Use Cases
+## Use Cases
 
 - **State Preservation in Web Apps**: Maintain the state of a user's session in web applications without storing data server-side
 - **API Data Transfer**: Serialize complex data structures into a URI format for easy and efficient transfer via RESTful APIs
@@ -57,9 +55,29 @@ UID is built on top of [MessagePack](https://msgpack.org/) and [Brotli](https://
 
 This short list highlights the flexibility and convenience of encoding complex Ruby objects into a compact, URL-safe format, making the Universal ID library a powerful tool for various uses in web development, API design, data management, and more. **The possibilities are endless and only limited by your imagination!**
 
-### Supported Data Types
+<!-- Tocer[start]: Auto-generated, don't remove. -->
 
-#### Scalars
+## Table of Contents
+
+  - [Supported Data Types](#supported-data-types)
+    - [Scalars](#scalars)
+    - [Composites](#composites)
+    - [Advanced Types](#advanced-types)
+      - [ActiveRecord](#activerecord)
+      - [Extend Behavior with Custom Datatypes](#extend-behavior-with-custom-datatypes)
+  - [Prepack Options](#prepack-options)
+  - [GlobalID and SignedGlobalID](#globalid-and-signedglobalid)
+    - [TODO: write this...](#todo-write-this)
+  - [Advanced ActiveRecord](#advanced-activerecord)
+    - [TODO: write this...](#todo-write-this-1)
+  - [Performance and Benchmarks](#performance-and-benchmarks)
+  - [License](#license)
+
+<!-- Tocer[finish]: Auto-generated, don't remove. -->
+
+## Supported Data Types
+
+### Scalars
 
 Universal ID supports most Ruby primitives. _Including but not limited to the following._
 
@@ -96,7 +114,7 @@ uid.decode
 #=> :demo
 ```
 
-#### Composites
+### Composites
 
 Composite support is where things start to get interesting. All of the composite datatypes listed below can be recursively transformed into a Universal ID.
 
@@ -196,12 +214,12 @@ Composite support is where things start to get interesting. All of the composite
   ```
 </details>
 
-#### Advanced Types
+### Advanced Types
 
 Universal ID supports advanced datatypes like database records and more...
 In fact, Universal ID can be extended with custom datatypes.
 
-##### ActiveRecord
+#### ActiveRecord
 
 ActiveRecord models can be easily converted to UIDs.
 
@@ -239,7 +257,7 @@ ActiveRecord models can be easily converted to UIDs.
 
 > :question: Why not use [GlobalID](https://github.com/rails/globalid)? Read on to learn why UID may be a better option for your application.
 
-##### Extend Behavior with Custom Datatypes
+#### Extend Behavior with Custom Datatypes
 
 Universal ID is **extensible** so you can register your own datatypes with specialized serialization rules.
 It couldn't be simpler. Just convert the required data to a Ruby scalar or composite value.
@@ -290,7 +308,7 @@ It couldn't be simpler. Just convert the required data to a Ruby scalar or compo
     ```
 </details>
 
-### Prepack Options
+## Prepack Options
 
 Universal ID supports a small but powerful set of configuration options for transforming objects before being
 delivered to [MessagePack](https://msgpack.org/) for serialization.
