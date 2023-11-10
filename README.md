@@ -221,7 +221,7 @@ In fact, Universal ID can be extended with custom datatypes.
 ActiveRecord models can be easily converted to UIDs.
 
 <details>
-  <summary><b>UIDs for Database Models</b>... ▾</summary>
+  <summary><b>How to Convert Database Models to UIDs</b>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -260,7 +260,7 @@ Universal ID is **extensible** so you can register your own datatypes with speci
 It couldn't be simpler. Just convert the required data to a Ruby scalar or composite value.
 
 <details>
-  <summary><b>Registering your own Datatype</b>... ▾</summary>
+  <summary><b>How to Register your own Datatype</b>... ▾</summary>
   <p></p>
 
     ```ruby
@@ -305,124 +305,143 @@ It couldn't be simpler. Just convert the required data to a Ruby scalar or compo
     ```
 </details>
 
-## Prepack Options
+## Settings and Prepack Options
 
 Universal ID supports a small but powerful set of configuration options for transforming objects before being
-delivered to [MessagePack](https://msgpack.org/) for serialization.
+handed off to MessagePack for serialization.
 
-Prepacking gives you more control of what data gets included in the Universal ID.
+Prepacking gives you explicit control over what data to include in the Universal ID.
 
-```yml
-prepack:
-  # ..........................................................................................................
-  # A list of attributes to exclude (default includes all keys)
-  # Takes prescedence over the`include` list
-  exclude: []
 
-  # ..........................................................................................................
-  # A list of attributes to include (default includes all keys)
-  include: []
+<details>
+  <summary><b>View All Settings and Prepack Options</b>... ▾</summary>
+  <p></p>
 
-  # ..........................................................................................................
-  # Whether or not to omit blank values when packing (nil, {}, [], "", etc.)
-  include_blank: true
+  ```yml
+  prepack:
+    # ..........................................................................................................
+    # A list of attributes to exclude (default includes all keys)
+    # Takes prescedence over the`include` list
+    exclude: []
 
-  # ==========================================================================================================
-  # Database records
-  database:
-    # ......................................................................................................
-    # Whether or not to include primary/foreign keys
-    # Setting this to `false` can be used to make a copy of an existing record
-    include_keys: true
+    # ..........................................................................................................
+    # A list of attributes to include (default includes all keys)
+    include: []
 
-    # ......................................................................................................
-    # Whether or not to include date/time timestamps (created_at, updated_at, etc.)
-    # Setting this to `false` can be used to make a copy of an existing record
-    include_timestamps: true
+    # ..........................................................................................................
+    # Whether or not to omit blank values when packing (nil, {}, [], "", etc.)
+    include_blank: true
 
-    # ......................................................................................................
-    # Whether or not to include unsaved changes
-    # Assign to `true` when packing new records
-    include_unsaved_changes: false
+    # ==========================================================================================================
+    # Database records
+    database:
+      # ......................................................................................................
+      # Whether or not to include primary/foreign keys
+      # Setting this to `false` can be used to make a copy of an existing record
+      include_keys: true
 
-    # ......................................................................................................
-    # Whether or not to include loaded in-memory descendants (i.e. child associations)
-    include_descendants: false
+      # ......................................................................................................
+      # Whether or not to include date/time timestamps (created_at, updated_at, etc.)
+      # Setting this to `false` can be used to make a copy of an existing record
+      include_timestamps: true
 
-    # ......................................................................................................
-    # The max depth (number) of loaded in-memory descendants to include when `include_descendants == true`
-    # For example, a value of (3) would include the following:
-    #   Parent > Child > Grandchild
-    descendant_depth: 0
-```
+      # ......................................................................................................
+      # Whether or not to include unsaved changes
+      # Assign to `true` when packing new records
+      include_unsaved_changes: false
+
+      # ......................................................................................................
+      # Whether or not to include loaded in-memory descendants (i.e. child associations)
+      include_descendants: false
+
+      # ......................................................................................................
+      # The max depth (number) of loaded in-memory descendants to include when `include_descendants == true`
+      # For example, a value of (3) would include the following:
+      #   Parent > Child > Grandchild
+      descendant_depth: 0
+  ```
+
+</details>
 
 Prepack options can be applied when creating a Universal ID and can be passed in structured or flat format.
 
-```ruby
-person = {
-  full_name: "Jane Doe",
-  email: "janedoe@example.com",
-  birthdate: "1980-05-15",
-  phone_number: "555-6789",
-  ssn: "123-45-6789",
-  children: [
-    {
-      full_name: "Alice Doe",
-      email: "alicedoe@example.com",
-      birthdate: nil,
-      phone_number: "555-1234",
-      ssn: "987-65-4321"
-    },
-    {
-      full_name: "Bob Doe",
-      email: "bobdoe@example.com",
-      birthdate: "2008-11-21",
-      phone_number: nil,
-      ssn: "456-12-1234"
-    }
-  ]
-}
+<details>
+  <summary><b>How to Apply Prepack Options when Creating UIDs</b>... ▾</summary>
+  <p></p>
 
-uid = URI::UID.build(person, include_blank: false, exclude: [:phone_number, :ssn])
-uid.decode
+  ```ruby
+  person = {
+    full_name: "Jane Doe",
+    email: "janedoe@example.com",
+    birthdate: "1980-05-15",
+    phone_number: "555-6789",
+    ssn: "123-45-6789",
+    children: [
+      {
+        full_name: "Alice Doe",
+        email: "alicedoe@example.com",
+        birthdate: nil,
+        phone_number: "555-1234",
+        ssn: "987-65-4321"
+      },
+      {
+        full_name: "Bob Doe",
+        email: "bobdoe@example.com",
+        birthdate: "2008-11-21",
+        phone_number: nil,
+        ssn: "456-12-1234"
+      }
+    ]
+  }
 
-# Note that the decoded payload is smaller due to the prepack options
-# Also note that the options were applied recursively
+  uid = URI::UID.build(person, include_blank: false, exclude: [:phone_number, :ssn])
+  uid.decode
 
-{
-  full_name: "Jane Doe",
-  email: "janedoe@example.com",
-  birthdate: "1980-05-15",
-  children: [
-    {
-      full_name: "Alice Doe",
-      email: "alicedoe@example.com"
-    },
-    {
-      full_name: "Bob Doe",
-      email: "bobdoe@example.com",
-      birthdate: "2008-11-21"
-    }
-  ]
-}
-```
+  # Note that the decoded payload is smaller due to the prepack options
+  # Also note that the options were applied recursively
 
-It's also possible to register frequently used options as reusable settings.
+  {
+    full_name: "Jane Doe",
+    email: "janedoe@example.com",
+    birthdate: "1980-05-15",
+    children: [
+      {
+        full_name: "Alice Doe",
+        email: "alicedoe@example.com"
+      },
+      {
+        full_name: "Bob Doe",
+        email: "bobdoe@example.com",
+        birthdate: "2008-11-21"
+      }
+    ]
+  }
+  ```
 
-```yaml
-# app/config/unsaved.yml
-prepack:
-  include_blank: false
+</details>
 
-  database:
-    include_unsaved_changes: true
-    include_timestamps: false
-```
+It's also possible to register frequently used options as reusable settings to further simplify creating UIDs.
 
-```ruby
-UniversalID::Settings.register :unsaved, YAML.safe_load("app/config/unsaved.yml")
-URI::UID.build @record, UniversalID::Settings[:small_record]
-```
+<details>
+  <summary><b>How to Register Prepack Options as Preconfigured Settings</b>... ▾</summary>
+  <p></p>
+
+  ```yaml
+  # app/config/unsaved.yml
+  prepack:
+    include_blank: false
+
+    database:
+      include_unsaved_changes: true
+      include_timestamps: false
+  ```
+
+  ```ruby
+  UniversalID::Settings.register :unsaved, YAML.safe_load("app/config/unsaved.yml")
+  URI::UID.build @record, UniversalID::Settings[:small_record]
+  ```
+
+</details>
 
 ## Advanced ActiveRecord
 
@@ -434,13 +453,12 @@ URI::UID.build @record, UniversalID::Settings[:small_record]
 
 ## SignedGlobalID
 
-Options like `signing`, `purpose`, and `expiration` are some of the best things provided by SignedGlobalID.
-These options _(and more)_ will eventually be folded into UniversalID, but until then
-you can simply cast your UniversalID to a SignedGlobalID to pick up these features.
-
+Options like `signing` _(to prevent tampering)_, `purpose`, and `expiration` are features provided by SignedGlobalID.
+These features _(and more)_ will eventually be added to UniversalID, but until then...
+simply convert your UniversalID to a SignedGlobalID to pick up these features for UID.
 
 <details>
-  <summary><b>Convert a UID to/from a SignedGlobalID</b>... ▾</summary>
+  <summary><b>How to Convert a UID to/from a SignedGlobalID</b>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -456,7 +474,7 @@ you can simply cast your UniversalID to a SignedGlobalID to pick up these featur
   sgid = uid.to_sgid_param(for: "cart-123", expires_in: 1.hour)
   #=> "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJZ0d4WjJsa09pOHZkVzVwZG1WeWMyRnNMV2xrTDFWU1NUbzZWVWxFT2pwSGJHOWlZV3hKUkZKbFkyOXlaQzlITUhO..."
 
-  URI::UID.from_sgid(sgid).decode
+  URI::UID.from_sgid(sgid, for: "cart-123").decode
   #=> {
   #     name: "Wireless Bluetooth Headphones",
   #     price: 79.99,
@@ -465,7 +483,7 @@ you can simply cast your UniversalID to a SignedGlobalID to pick up these featur
 
 
   # mismatched purpose returns nil... as expected
-  URI::UID.from_sgid sgid, for: "mismatch"
+  URI::UID.from_sgid(sgid, for: "mismatch")
   #=> nil
   ```
 
@@ -474,7 +492,7 @@ you can simply cast your UniversalID to a SignedGlobalID to pick up these featur
 ## Performance and Benchmarks
 
 <details>
-  <summary><b>Benchmarks</b>... ▾</summary>
+  <summary><b>View Benchmarks</b>... ▾</summary>
   <p></p>
 
   Benchmarks can be performed by cloning the project and running `bin/bench`.
