@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">Universal ID 🌌</h1>
+  <h1 align="center">Universal ID</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
       <img alt="Lines of Code" src="https://img.shields.io/badge/loc-670-47d299.svg" />
@@ -64,12 +64,13 @@ This short list highlights the flexibility and convenience of encoding complex R
     - [Composites](#composites)
     - [Advanced Types](#advanced-types)
       - [ActiveRecord](#activerecord)
-      - [Extend Behavior with Custom Datatypes](#extend-behavior-with-custom-datatypes)
-  - [Prepack Options](#prepack-options)
-  - [GlobalID and SignedGlobalID](#globalid-and-signedglobalid)
-    - [TODO: write this...](#todo-write-this)
+      - [Custom Datatypes](#custom-datatypes)
+  - [Settings and Prepack Options](#settings-and-prepack-options)
   - [Advanced ActiveRecord](#advanced-activerecord)
-    - [TODO: write this...](#todo-write-this-1)
+    - [New Records](#new-records)
+    - [Descendants](#descendants)
+    - [Deep Copies](#deep-copies)
+  - [SignedGlobalID](#signedglobalid)
   - [Performance and Benchmarks](#performance-and-benchmarks)
   - [License](#license)
 
@@ -254,7 +255,7 @@ ActiveRecord models can be easily converted to UIDs.
   > :question: Why not just use [GlobalID](https://github.com/rails/globalid)? Read on to learn why UID may be a better option for your application.
 </details>
 
-#### Extend Behavior with Custom Datatypes
+#### Custom Datatypes
 
 Universal ID is **extensible** so you can register your own datatypes with specialized serialization rules.
 It couldn't be simpler. Just convert the required data to a Ruby scalar or composite value.
@@ -360,7 +361,6 @@ Prepacking gives you explicit control over what data to include in the Universal
       #   Parent > Child > Grandchild
       descendant_depth: 0
   ```
-
 </details>
 
 Prepack options can be applied when creating a Universal ID and can be passed in structured or flat format.
@@ -417,7 +417,6 @@ Prepack options can be applied when creating a Universal ID and can be passed in
     ]
   }
   ```
-
 </details>
 
 It's also possible to register frequently used options as reusable settings to further simplify creating UIDs.
@@ -440,12 +439,82 @@ It's also possible to register frequently used options as reusable settings to f
   UniversalID::Settings.register :unsaved, YAML.safe_load("app/config/unsaved.yml")
   URI::UID.build @record, UniversalID::Settings[:small_record]
   ```
-
 </details>
 
 ## Advanced ActiveRecord
 
+Universal ID ships with several advanced capabilities when used with ActiveRecord.
+
+Before we go further, let's establish the schema structure we'll be working with.
+We'll limit the demos below to 3 tables, but Universal ID can support much more complex data models.
+
+- Campaign
+- Email
+- Attachment
+
+<details>
+  <summary><b>View the ActiveRecord Schema</b>... ▾</summary>
+  <p></p>
+
+  ```ruby
+  ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+
+  ActiveRecord::Schema.define do
+    create_table :campaigns do |t|
+      t.column :name, :string
+      t.column :description, :text
+      t.column :trigger, :string
+      t.timestamps
+    end
+
+    create_table :emails do |t|
+      t.column :campaign_id, :integer
+      t.column :subject, :string
+      t.column :body, :text
+      t.column :wait, :integer
+      t.timestamps
+    end
+
+    create_table :attachments do |t|
+      t.column :email_id, :integer
+      t.column :file_name, :string
+      t.column :content_type, :string
+      t.column :file_size, :integer
+      t.column :file_data, :binary
+      t.timestamps
+    end
+  end
+  ```
+</details>
+
+<details>
+  <summary><b>View the ActiveRecord Models</b>... ▾</summary>
+  <p></p>
+
+  ```ruby
+  class Campaign < ApplicationRecord
+    has_many :emails, dependent: :destroy
+  end
+
+  class Email < ApplicationRecord
+    belongs_to :campaign
+    has_many :attachments, dependent: :destroy
+  end
+
+  class Attachment < ApplicationRecord
+    belongs_to :email
+  end
+  ```
+</details>
+
 ### New Records
+
+It's possible to convert new unsaved records to Universal IDs.
+This allows you to marshal complex unsaved data that can be restored at a later time.
+
+This feature supports several use cases, like allowing users to pause their work and resume at any point in the future
+without the need to store partial records in your database. And, because UIDs are web safe, you can hold this data
+in browser Cookies, LocalStorage, SessionStorage, etc.
 
 ### Descendants
 
@@ -486,7 +555,6 @@ simply convert your UniversalID to a SignedGlobalID to pick up these features fo
   URI::UID.from_sgid(sgid, for: "mismatch")
   #=> nil
   ```
-
 </details>
 
 ## Performance and Benchmarks
@@ -660,7 +728,6 @@ simply convert your UniversalID to a SignedGlobalID to pick up these features fo
   Average                                                0.000310   0.000002   0.000312 (  0.000313)
   ..................................................................................................
   ```
-
 </details>
 
 ## License

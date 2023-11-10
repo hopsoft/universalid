@@ -3,7 +3,6 @@
 require "date"
 require "forwardable"
 require "ostruct"
-require "set"
 require "uri"
 
 require_relative "universal_id/version"
