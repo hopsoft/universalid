@@ -33,8 +33,7 @@
       <img alt="Twitter Follow" src="https://img.shields.io/twitter/url?label=%40hopsoft&style=social&url=https%3A%2F%2Ftwitter.com%2Fhopsoft">
     </a>
   </p>
-  <h2 align="center">Introducing the UniversalID Gem: The Future of Object Portability in Rails!</h2>
-  <h3 align="center">Simple, standardized, secure marshaling</h3>
+  <h2 align="center">Introducing UniversalID: Powerful Portability for Ruby Objects!</h2>
 </p>
 
 ## Universal ID
