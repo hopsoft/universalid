@@ -23,7 +23,7 @@ class URI::UID::ScalarsTest < Minitest::Test
   SCALARS.each do |klass, value|
     define_method :"test_#{klass.name}_with_factory" do
       value = SCALARS[klass]
-      uid = URI::UID.create(value)
+      uid = URI::UID.build(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
       if value.nil?
@@ -35,7 +35,7 @@ class URI::UID::ScalarsTest < Minitest::Test
 
     define_method :"test_#{klass.name}_with_factory_pool" do
       value = SCALARS[klass]
-      uid = URI::UID.create(value)
+      uid = URI::UID.build(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
 

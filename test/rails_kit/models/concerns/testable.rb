@@ -44,7 +44,7 @@ module Testable
       columns.each do |column|
         next if column.default
         next if column.name == primary_key
-        next if column.name.in?(foreign_key_column_names)
+        next if foreign_key_column_names.include?(column.name)
 
         case column.type
         when :string

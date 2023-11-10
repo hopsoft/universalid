@@ -15,19 +15,41 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
           new(*components)
         end
 
-        alias_method :find, :parse
+        def build_string(payload)
+          "#{SCHEME}://#{HOST}/#{payload}"
+        end
 
-        def create(object, options = {})
+        def build(object, options = {})
           path = "/#{UniversalID::Encoder.encode(object, options)}"
           parse "#{SCHEME}://#{HOST}#{path}"
         end
 
+        # Creates a new URI::UID with the given URI components.
+        # SEE: https://ruby-doc.org/3.2.2/stdlibs/uri/URI/Generic.html#method-c-new
+        #
+        # @param scheme [String] the scheme component.
+        # @param userinfo [String] the userinfo component.
+        # @param host [String] the host component.
+        # @param port [Integer] the port component.
+        # @param registry [String] the registry component.
+        # @param path [String] the path component.
+        # @param opaque [String] the opaque component.
+        # @param query [String] the query component.
+        # @param fragment [String] the fragment component.
+        # @param parser [URI::Parser] the parser to use for the URI, defaults to DEFAULT_PARSER.
+        # @param arg_check [Boolean] whether to check arguments, defaults to false.
+        # @return [URI::UID] the new URI::UID instance.
+        # # @raise [URI::InvalidURIError] if the URI is malformed.
+        # @raise [ArgumentError] if the number of arguments is incorrect or an argument is of the wrong type.
+        # @raise [TypeError] if an argument is not of the expected type.
+        # @raise [URI::InvalidComponentError] if a component of the URI is not valid.
+        # @raise [URI::BadURIError] if the URI is in a bad or unexpected state.
         def new(...)
           super.tap do |uri|
             if uri.invalid?
-              raise ::URI::InvalidURIError, "Scheme must be `#{SCHEME}`" if uri.scheme != SCHEME
-              raise ::URI::InvalidURIError, "Host must be `#{HOST}`" if uri.host != HOST
-              raise ::URI::InvalidURIError, "Unable to parse `payload`" if uri.payload.strip.empty?
+              raise ::URI::InvalidComponentError, "Scheme must be `#{SCHEME}`" if uri.scheme != SCHEME
+              raise ::URI::InvalidComponentError, "Host must be `#{HOST}`" if uri.host != HOST
+              raise ::URI::InvalidComponentError, "Unable to parse `payload` from the path component!" if uri.payload.strip.empty?
             end
           end
         end
@@ -70,24 +92,23 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
           attr_reader :id, :uid
 
-          def initialize(uid)
-            uid = case uid.to_s
-            when /\A#{URI::UID::SCHEME}/o then URI::UID.parse(uid)
-            else URI::UID.build(scheme: URI::UID::SCHEME, host: URI::UID::HOST, path: "/#{uid}")
+          def initialize(uid_or_payload)
+            @uid = case uid_or_payload
+            when URI::UID then uid_or_payload
+            when String
+              case uid_or_payload
+              when /\A#{URI::UID::SCHEME}/o then URI::UID.parse(uid_or_payload)
+              else URI::UID.parse(URI::UID.build_string(uid_or_payload))
+              end
             end
 
-            @uid = uid
-            @id = uid&.payload
-          end
-
-          def uid
-            URI::UID.build scheme: URI::UID::SCHEME, host: URI::UID::HOST, path: "/#{id}"
+            @id = @uid&.payload
           end
         end
 
         class << self
           def from_global_id_record(gid_record)
-            gid_record.find&.uid
+            gid_record&.find&.uid
           end
 
           def from_global_id(gid, options = {})

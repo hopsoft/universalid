@@ -10,7 +10,7 @@ class UniversalID::UniversalIDTest < Minitest::Test
       email.attachments = Attachment.create_for_test(2)
     end
 
-    uid = URI::UID.create(campaign)
+    uid = URI::UID.build(campaign)
     gid_param = uid.to_gid_param
 
     parsed_gid = GlobalID.parse(gid_param)
@@ -32,7 +32,7 @@ class UniversalID::UniversalIDTest < Minitest::Test
       email.attachments = Attachment.create_for_test(2)
     end
 
-    uid = URI::UID.create(campaign)
+    uid = URI::UID.build(campaign)
     gid_param = uid.to_sgid_param
 
     parsed_gid = SignedGlobalID.parse(gid_param)

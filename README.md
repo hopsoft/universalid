@@ -101,7 +101,7 @@ You can use Universal ID for for individual scalar values if desired, but scalar
 _Think of scalars as the low level building blocks._
 
 ```ruby
-uri = URI::UID.create(:demo).to_s
+uri = URI::UID.build(:demo).to_s
 #=> "uid://universal-id/iwKA1gBkZW1vAw"
 
 uid = URI::UID.parse(uri)
@@ -122,7 +122,7 @@ Composite support is where things start to get interesting. All of the composite
   ```ruby
   array = [1, 2, 3, [:a, :b, :c, [true]]]
 
-  uri = URI::UID.create(array).to_s
+  uri = URI::UID.build(array).to_s
   #=> "uid://universal-id/iweAlAECA5TUAGHUAGLUAGORwwM"
 
   uid = URI::UID.parse(uri)
@@ -140,7 +140,7 @@ Composite support is where things start to get interesting. All of the composite
   ```ruby
   hash = {a: 1, b: 2, c: 3, array: [1, 2, 3, [:a, :b, :c, [true]]]}
 
-  uri = URI::UID.create(hash).to_s
+  uri = URI::UID.build(hash).to_s
   #=> "CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAEC..."
 
   uid = URI::UID.parse(uri)
@@ -163,7 +163,7 @@ Composite support is where things start to get interesting. All of the composite
     in_stock: true
   )
 
-  uri = URI::UID.create(ostruct).to_s
+  uri = URI::UID.build(ostruct).to_s
   #=> "uid://universal-id/iyaAx0sMhNYAbmFtZbFXaXJlbGVzcyBLZXlib2FyZMcFAHByaWNly0BI_rhR64Uf1wBjYXRlZ29ye..."
 
   uid = URI::UID.parse(uri)
@@ -181,7 +181,7 @@ Composite support is where things start to get interesting. All of the composite
   ```ruby
   set = Set.new([1, 2, 3, [:a, :b, :c, [true]]])
 
-  uri = URI::UID.create(set).to_s
+  uri = URI::UID.build(set).to_s
   #=> "uid://universal-id/iwiA2AuUAQIDlNQAYdQAYtQAY5HDAw"
 
   uid = URI::UID.parse(uri)
@@ -200,7 +200,7 @@ Composite support is where things start to get interesting. All of the composite
   Book = Struct.new(:title, :author, :isbn, :published_year)
   book = Book.new("The Great Gatsby", "F. Scott Fitzgerald", "9780743273565", 1925)
 
-  uri = URI::UID.create(book).to_s
+  uri = URI::UID.build(book).to_s
   #=> "uid://universal-id/G2YAoGTomv9N_4RV2oJRxRvZdC1wNJ0H3Ipu45kVcSrAxtg6Wjtogpi6GV1XXQAOAXoNR3BrCg9AQ..."
 
   uid = URI::UID.parse(uri)
@@ -241,7 +241,7 @@ ActiveRecord models can be easily converted to UIDs.
 
   campaign = Campaign.create(name: "Marketing Campaign")
 
-  uri = URI::UID.create(campaign).to_s
+  uri = URI::UID.build(campaign).to_s
   #=> "uid://universal-id/CwiAxw4EqENhbXBhaWdugaJpZAMD"
 
   uid = URI::UID.parse(uri)
@@ -250,9 +250,9 @@ ActiveRecord models can be easily converted to UIDs.
   URI::UID.parse(uri).decode
   ##<Campaign:0x000000011cc67da8 id: 1, name: "Marketing Campaign", ...>
   ```
-</details>
 
-> :question: Why not use [GlobalID](https://github.com/rails/globalid)? Read on to learn why UID may be a better option for your application.
+  > :question: Why not just use [GlobalID](https://github.com/rails/globalid)? Read on to learn why UID may be a better option for your application.
+</details>
 
 #### Extend Behavior with Custom Datatypes
 
@@ -263,7 +263,7 @@ It couldn't be simpler. Just convert the required data to a Ruby scalar or compo
   <summary><b>Registering your own Datatype</b>... ▾</summary>
   <p></p>
 
-    ```
+    ```ruby
     class UserSettings
       attr_accessor :user_id, :preferences
 
@@ -294,7 +294,7 @@ It couldn't be simpler. Just convert the required data to a Ruby scalar or compo
       privacy: "private" # Privacy settings
     )
 
-    uri = URI::UID.create(settings).to_s
+    uri = URI::UID.build(settings).to_s
     #=> "uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGe..."
 
     uid = URI::UID.parse(uri)
@@ -383,7 +383,7 @@ person = {
   ]
 }
 
-uid = URI::UID.create(person, include_blank: false, exclude: [:phone_number, :ssn])
+uid = URI::UID.build(person, include_blank: false, exclude: [:phone_number, :ssn])
 uid.decode
 
 # Note that the decoded payload is smaller due to the prepack options
@@ -421,7 +421,7 @@ prepack:
 
 ```ruby
 UniversalID::Settings.register :unsaved, YAML.safe_load("app/config/unsaved.yml")
-URI::UID.create @record, UniversalID::Settings[:small_record]
+URI::UID.build @record, UniversalID::Settings[:small_record]
 ```
 
 ## Advanced ActiveRecord
@@ -435,35 +435,48 @@ URI::UID.create @record, UniversalID::Settings[:small_record]
 ## SignedGlobalID
 
 Options like `signing`, `purpose`, and `expiration` are some of the best things provided by SignedGlobalID.
-These options _(and more)_ will eventually be folded into UniversalID, but until then...
+These options _(and more)_ will eventually be folded into UniversalID, but until then
 you can simply cast your UniversalID to a SignedGlobalID to pick up these features.
 
-```ruby
-product = {
-  name: "Wireless Bluetooth Headphones",
-  price: 79.99,
-  category: "Electronics"
-}
 
-uid = URI::UID.create(product)
-#=> #<URI::UID scheme="uid", host="universal-id", path="/G0sAgBypU587HsjkLpEnGHiaWfPQEyiiuH6j...">
+<details>
+  <summary><b>Convert a UID to/from a SignedGlobalID</b>... ▾</summary>
+  <p></p>
 
-sgid = uid.to_sgid_param(purpose: "cart-123", expires_in: 1.hour)
-#=> "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJZ0d4WjJsa09pOHZkVzVwZG1WeWMyRnNMV2xrTDFWU1NUbzZWVWxFT2pwSGJHOWlZV3hKUkZKbFkyOXlaQzlITUhO..."
+  ```ruby
+  product = {
+    name: "Wireless Bluetooth Headphones",
+    price: 79.99,
+    category: "Electronics"
+  }
 
-URI::UID.from_sgid(sgid).decode
-#=> {
-#     name: "Wireless Bluetooth Headphones",
-#     price: 79.99,
-#     category: "Electronics"
-#   }
-```
+  uid = URI::UID.build(product)
+  #=> #<URI::UID scheme="uid", host="universal-id", path="/G0sAgBypU587HsjkLpEnGHiaWfPQEyiiuH6j...">
+
+  sgid = uid.to_sgid_param(for: "cart-123", expires_in: 1.hour)
+  #=> "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJZ0d4WjJsa09pOHZkVzVwZG1WeWMyRnNMV2xrTDFWU1NUbzZWVWxFT2pwSGJHOWlZV3hKUkZKbFkyOXlaQzlITUhO..."
+
+  URI::UID.from_sgid(sgid).decode
+  #=> {
+  #     name: "Wireless Bluetooth Headphones",
+  #     price: 79.99,
+  #     category: "Electronics"
+  #   }
+
+
+  # mismatched purpose returns nil... as expected
+  URI::UID.from_sgid sgid, for: "mismatch"
+  #=> nil
+  ```
+
+</details>
 
 ## Performance and Benchmarks
 
 <details>
-  <summary>Benchmarks</summary>
+  <summary><b>Benchmarks</b>... ▾</summary>
   <p></p>
+
   Benchmarks can be performed by cloning the project and running `bin/bench`.
   The run below was performed on the following hardware.
 
@@ -585,11 +598,11 @@ URI::UID.from_sgid(sgid).decode
   Benchmarking 10000 iterations
   ==================================================================================================
                                                             user     system      total        real
-  URI::UID.create Hash                                  36.687913   0.130642  36.818555 ( 36.925714)
+  URI::UID.build Hash                                  36.687913   0.130642  36.818555 ( 36.925714)
   Average                                                0.003669   0.000013   0.003682 (  0.003693)
   ..................................................................................................
                                                             user     system      total        real
-  URI::UID.create Hash, include_blank: false            34.666529   0.236112  34.902641 ( 35.004841)
+  URI::UID.build Hash, include_blank: false            34.666529   0.236112  34.902641 ( 35.004841)
   Average                                                0.003467   0.000024   0.003490 (  0.003500)
   ..................................................................................................
                                                             user     system      total        real
@@ -601,15 +614,15 @@ URI::UID.from_sgid(sgid).decode
   Average                                                0.000031   0.000001   0.000033 (  0.000035)
   ..................................................................................................
                                                             user     system      total        real
-  URI::UID.create ActiveRecord                           1.911902   0.015386   1.927288 (  1.930672)
+  URI::UID.build ActiveRecord                           1.911902   0.015386   1.927288 (  1.930672)
   Average                                                0.000191   0.000002   0.000193 (  0.000193)
   ..................................................................................................
                                                             user     system      total        real
-  URI::UID.create ActiveRecord, exclude_blank            1.930856   0.014851   1.945707 (  1.948803)
+  URI::UID.build ActiveRecord, exclude_blank            1.930856   0.014851   1.945707 (  1.948803)
   Average                                                0.000193   0.000001   0.000195 (  0.000195)
   ..................................................................................................
                                                             user     system      total        real
-  URI::UID.create ActiveRecord, include_descendants     33.488788   0.211935  33.700723 ( 33.795023)
+  URI::UID.build ActiveRecord, include_descendants     33.488788   0.211935  33.700723 ( 33.795023)
   Average                                                0.003349   0.000021   0.003370 (  0.003380)
   ..................................................................................................
                                                             user     system      total        real
@@ -621,11 +634,11 @@ URI::UID.from_sgid(sgid).decode
   Average                                                0.000649   0.000003   0.000652 (  0.000656)
   ..................................................................................................
                                                             user     system      total        real
-  UID.create.to_gid > GID.parse.find > UID.decode        2.870192   0.022088   2.892280 (  2.898905)
+  UID.build.to_gid > GID.parse.find > UID.decode        2.870192   0.022088   2.892280 (  2.898905)
   Average                                                0.000287   0.000002   0.000289 (  0.000290)
   ..................................................................................................
                                                             user     system      total        real
-  UID.create.to_sgid > SGID.parse.find > UID.decode      3.095248   0.024358   3.119606 (  3.126645)
+  UID.build.to_sgid > SGID.parse.find > UID.decode      3.095248   0.024358   3.119606 (  3.126645)
   Average                                                0.000310   0.000002   0.000312 (  0.000313)
   ..................................................................................................
   ```

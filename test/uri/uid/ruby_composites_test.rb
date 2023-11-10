@@ -33,7 +33,7 @@ class URI::UID::RubyCompositesTest < Minitest::Test
   COMPOSITES.each do |klass, value|
     define_method :"test_#{klass.name}_with_factory" do
       value = COMPOSITES[klass]
-      uid = URI::UID.create(value)
+      uid = URI::UID.build(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
       assert_equal value, decoded
@@ -41,7 +41,7 @@ class URI::UID::RubyCompositesTest < Minitest::Test
 
     define_method :"test_#{klass.name}_with_factory_pool" do
       value = COMPOSITES[klass]
-      uid = URI::UID.create(value)
+      uid = URI::UID.build(value)
       assert uid.valid?
       decoded = URI::UID.parse(uid.to_s).decode
       assert_equal value, decoded

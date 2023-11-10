@@ -10,7 +10,7 @@ class URI::UID::GlobalIDTest < Minitest::Test
       category: "Electronics"
     }
 
-    uid = URI::UID.create(product)
+    uid = URI::UID.build(product)
     gid = uid.to_gid_param
     decoded = URI::UID.from_gid(gid).decode
     assert_equal product, decoded
@@ -23,9 +23,13 @@ class URI::UID::GlobalIDTest < Minitest::Test
       category: "Electronics"
     }
 
-    uid = URI::UID.create(product)
-    sgid = uid.to_sgid_param(purpose: "cart-123", expires_in: 1.hour)
-    decoded = URI::UID.from_sgid(sgid).decode
+    uid = URI::UID.build(product)
+
+    sgid = uid.to_sgid_param(for: "cart-123", expires_in: 1.hour)
+    decoded = URI::UID.from_sgid(sgid, for: "cart-123").decode
     assert_equal product, decoded
+
+    # test mismatched purpose
+    assert_nil URI::UID.from_sgid(sgid, for: "cart-456")
   end
 end

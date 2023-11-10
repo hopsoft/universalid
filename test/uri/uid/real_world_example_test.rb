@@ -31,7 +31,7 @@ class URI::UID::RealWorldExampleTest < Minitest::Test
     campaign.description = "Changed to Description 2"
 
     # create the UID
-    uid = URI::UID.create(data, include_blank: false, exclude: ["password"], include_unsaved_changes: true)
+    uid = URI::UID.build(data, include_blank: false, exclude: ["password"], include_unsaved_changes: true)
 
     # add a binding.pry here if you want to introspect the UID
     # it's pretty interesting, so I highly recommend doing this
@@ -43,7 +43,7 @@ class URI::UID::RealWorldExampleTest < Minitest::Test
     # dig out the campaign for some assertions
     decoded_campaign = decoded.dig(:corporate, :campaigns).first
 
-    # this is the expected decoded data structure given the args passed to URI::UID.create
+    # this is the expected decoded data structure given the args passed to URI::UID.build
     expected = {
       first_name: "John",
       last_name: "Doe",
