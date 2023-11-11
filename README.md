@@ -714,14 +714,45 @@ Now let's look at how to leverage Universal ID with ActiveRecord.
   <p></p>
 
   ```ruby
+  # NOTE: The campaign model instance was setup earlier in the "Model Instances" section above
+  # persist the model and its associations
+  campaign.save!
+
+
+  options = {
+    include_keys: false,
+    include_timestamps: false,
+    include_unsaved_changes: true,
+    include_descendants: true,
+    descendant_depth: 2
+  }
+
+  encoded = URI::UID.build(campaign, options).to_s
+  copy = URI::UID.parse(encoded).decode
+
+  campaign.persisted? # false
+  copy.new_record? # true
+  copy.save!
+
+  copy == campaign # false
+
+  campaign.emails.each do |email|
+    copy_email_ids = copy.emails.map(&:id)
+    campaign_email_ids = campaign.emails.map(&:id)
+    (copy_email_ids && campaign_email_ids).any? # false
+
+    copy_attachment_ids = copy.emails.map(&:attachments).flatten.map(&:id)
+    campaign_attachment_ids = campaign.emails.map(&:attachments).flatten.map(&:id)
+    (copy_attachment_ids & campaign_attachment_ids).any? # false
+  end
   ```
 </details>
 
 ## SignedGlobalID
 
-Options like `signing` _(to prevent tampering)_, `purpose`, and `expiration` are features provided by SignedGlobalID.
+Features like `signing` _(to prevent tampering)_, `purpose`, and `expiration` are provided by SignedGlobalIDs.
 These features _(and more)_ will eventually be added to UniversalID, but until then...
-simply convert your UniversalID to a SignedGlobalID to pick up these features for UID.
+simply convert your UniversalID to a SignedGlobalID to add these features to any Universal ID.
 
 <details>
   <summary><b>How to Convert a UID to/from a SignedGlobalID</b>... ▾</summary>

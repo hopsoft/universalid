@@ -46,6 +46,35 @@ class UniversalID::ReadmeTest < Minitest::Test
     assert_persisted_record restored, changes_expected: true
   end
 
+  def test_copy_persisted_records
+    campaign = new_campaign
+    campaign.save!
+
+    assert_persisted_record campaign
+
+    options = {
+      include_keys: false,
+      include_timestamps: false,
+      include_unsaved_changes: true,
+      include_descendants: true,
+      descendant_depth: 2
+    }
+
+    encoded = URI::UID.build(campaign, options).to_s
+    copy = URI::UID.parse(encoded).decode
+
+    assert_new_record copy
+    copy.save!
+    assert_persisted_record copy
+
+    refute_equal campaign.id, copy.id
+
+    campaign.emails.each do |email|
+      assert (campaign.emails.map(&:id) & copy.emails.map(&:id)).none?
+      assert (campaign.emails.map(&:attachments).flatten.map(&:id) & copy.emails.map(&:attachments).flatten.map(&:id)).none?
+    end
+  end
+
   private
 
   def new_campaign
