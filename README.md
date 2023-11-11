@@ -55,6 +55,8 @@ UID is built on top of [MessagePack](https://msgpack.org/) and [Brotli](https://
 
 This short list highlights the flexibility and convenience of encoding complex Ruby objects into a compact, URL-safe format, making the Universal ID library a powerful tool for various uses in web development, API design, data management, and more. **The possibilities are endless and only limited by your imagination!**
 
+> :information_source: While Universal ID has built in support for ActiveRecord, there is not a direct dependency on anything Rails related. This means you can use Univeral ID on **any Ruby project**.
+
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
@@ -74,6 +76,8 @@ This short list highlights the flexibility and convenience of encoding complex R
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
+
+> :information_source: All demos below can be run locally by cloning the repo and executing `bin/console`.
 
 ## Supported Data Types
 
@@ -516,6 +520,7 @@ Note that we won't save the data just yet.
     trigger: "SummerStart"
   )
 
+  # NOTE: Assigning campaign.emails via `=` to ensure ActiveRecord flags the association as `loaded`
   campaign.emails = 3.times.map do |i|
     email = campaign.emails.build(
       subject: "Summer Sale Special Offer #{i + 1}",
@@ -523,6 +528,7 @@ Note that we won't save the data just yet.
       wait: rand(1..14)
     )
 
+    # NOTE: Assigning email.attachments via `=` to ensure ActiveRecord flags the association as `loaded`
     email.tap do |e|
       e.attachments = 2.times.map do |j|
         data = SecureRandom.random_bytes(rand(500..1500))
@@ -567,8 +573,10 @@ in browser Cookies, LocalStorage, SessionStorage, etc.
 Given the data _(campaign, email, attachment)_ we esablished above,
 let's see what this looks like for new unsaved records.
 
+> :information_source: ActiveRecord associations must be `loaded?` to be considered for inclusion with `include_descendants`. There a multiple ways to achieve this, so be sure to [read up on associations](https://guides.rubyonrails.org/association_basics.html).
+
 <details>
-  <summary><b>View the Model Instances</b>... ▾</summary>
+  <summary><b>How to Include Unsaved ActiveRecord Changes on <em>New Records</em></b> <small>including <code>loaded</code> associations</small>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -579,8 +587,38 @@ let's see what this looks like for new unsaved records.
     descendant_depth: 2
   }
 
-  uid = URI::UID.build(campaign, options)
-  copy = uid.decode
+  # NOTE: The campaign model instance was setup earlier in the "Model Instances" section above
+  campaign.new_record? # true
+  campaign.changes
+  # {
+  #   "name"=>[nil, "Summer Sale Campaign"],
+  #   "description"=>[nil, "A campaign for the summer sale, targeting our loyal customers."],
+  #   "trigger"=>[nil, "SummerStart"]
+  # }
+
+  campaign.emails.each do |email|
+    email.new_record? # true
+    email.changes
+    # {
+    #   "subject"=>[nil, "Summer Sale Special Offer ..."],
+    #   "body"=>[nil, "Dear Customer, check out our exclusive summer sale offers! ..."],
+    #   "wait"=>[nil, ...]
+    # }
+
+    email.attachments.each do |attachment|
+      attachment.new_record? # true
+      attachment.changes
+      # {
+      #   "file_name"=>[nil, "summer_sale_..._attachment_....pdf"],
+      #   "content_type"=>[nil, "application/pdf"],
+      #   "file_size"=>[nil, ...],
+      #   "file_data"=>[nil, "..."]
+      # }
+    end
+  end
+
+  uid = URI::UID.build(campaign, options).to_s
+  copy = URI::UID.parse(uid).decode
 
   copy.new_record? # true
   copy.changes
@@ -590,11 +628,88 @@ let's see what this looks like for new unsaved records.
   #   "trigger"=>[nil, "SummerStart"]
   # }
 
-  copy.emails.size # 3
-  copy.emails[0].attachments.size # 2
-  copy.emails[1].attachments.size # 2
-  copy.emails[2].attachments.size # 2
+  copy.emails.each do |email|
+    email.new_record? # true
+    email.changes
+    # {
+    #   "subject"=>[nil, "Summer Sale Special Offer ..."],
+    #   "body"=>[nil, "Dear Customer, check out our exclusive summer sale offers! ..."],
+    #   "wait"=>[nil, ...]
+    # }
 
+    email.attachments.each do |attachment|
+      attachment.new_record? # true
+      attachment.changes
+      # {
+      #   "file_name"=>[nil, "summer_sale_..._attachment_....pdf"],
+      #   "content_type"=>[nil, "application/pdf"],
+      #   "file_size"=>[nil, ...],
+      #   "file_data"=>[nil, "..."]
+      # }
+    end
+  end
+  ```
+</details>
+
+<details>
+  <summary><b>How to Include Unsaved ActiveRecord Changes on <em>Persisted Records</em></b> <small>including <code>loaded</code> associations</small>... ▾</summary>
+  <p></p>
+
+  ```ruby
+  # NOTE: The campaign model instance was setup earlier in the "Model Instances" section above
+  # persist the model and its associations
+  campaign.save!
+
+  # make some unsaved changes to the records
+  campaign.name = "Changed Name #{SecureRandom.hex}"
+  campaign.emails.each do |email|
+    email.subject = "Changed Subject #{SecureRandom.hex}"
+    email.attachments.each do |attachment|
+      attachment.file_name = "changed_file_name#{SecureRandom.hex}.pdf"
+    end
+  end
+
+  campaign.persisted? # true
+  campaign.changes
+  # {"name"=>["Summer Sale Campaign", "Changed Name ..."]}
+
+  campaign.emails.each do |email|
+    email.persisted? # true
+    email.changes
+    # {"subject"=>["Summer Sale Special Offer 1", "Changed Subject ..."]}
+
+    email.attachments.each do |attachment|
+      attachment.persisted? # true
+      attachment.changes
+      # {"file_name"=>["summer_sale_..._attachment_....pdf", "changed_file_name....pdf"]}
+    end
+  end
+
+  # prepack options
+  options = {
+    include_unsaved_changes: true,
+    include_descendants: true,
+    descendant_depth: 2
+  }
+
+  uid = URI::UID.build(campaign, options)
+  copy = uid.decode
+
+  copy.persisted? # true
+  copy.changes
+  # {"name"=>["Summer Sale Campaign", "Changed Name ..."]}
+
+  copy.emails.each do |email|
+    email.persisted? # true
+    email.changes
+    # {"subject"=>["Summer Sale Special Offer 1", "Changed Subject ..."]}
+
+    email.attachments.each do |attachment|
+      attachment.persisted? # true
+      attachment.changes
+      # {"file_name"=>["summer_sale_..._attachment_....pdf", "changed_file_name....pdf"]}
+    end
+  end
   ```
 </details>
 
