@@ -284,11 +284,11 @@ It couldn't be simpler. Just convert the required data to a Ruby scalar or compo
   )
 
   settings = UserSettings.new(1,
-    theme: "dark", # User preference for UI theme
-    notifications: "email", # How the user prefers to receive notifications
-    language: "en", # Preferred language
-    layout: "grid", # Preferred layout for viewing content
-    privacy: "private" # Privacy settings
+    theme: "dark",
+    notifications: "email",
+    language: "en",
+    layout: "grid",
+    privacy: "private"
   )
 
   uri = URI::UID.build(settings).to_s
