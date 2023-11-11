@@ -33,12 +33,12 @@
       <img alt="Twitter Follow" src="https://img.shields.io/twitter/url?label=%40hopsoft&style=social&url=https%3A%2F%2Ftwitter.com%2Fhopsoft">
     </a>
   </p>
-  <h2 align="center">Powerful Web-Safe Portability for Ruby Objects</h2>
+  <h2 align="center">URL-Safe Portability for Ruby Objects</h2>
 </p>
 
-Universal ID is a Ruby library that supports recursive serialization/deserialization of any Ruby object to/from a URL-safe Base64 URI. The encoded payload can be transported across process boundaries and can also be used in standard web URLs.
+**Universal ID** is a Ruby library that introduces **recursive serialization** for any Ruby object to/from a URL-safe string. The encoded object can easily be marshaled across process boundaries to support a wide variety of use cases.
 
-UID is built on top of [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
+Universal ID is built on top of [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 
 ## Use Cases
 
@@ -78,7 +78,7 @@ This short list highlights the flexibility and convenience of encoding complex R
 
 ### Scalars
 
-Universal ID supports most Ruby primitives. _Including but not limited to the following._
+Universal ID supports most Ruby primitives.
 
 - `NilClass`
 - `Complex`
@@ -96,8 +96,8 @@ Universal ID supports most Ruby primitives. _Including but not limited to the fo
 - `Time`
 - `TrueClass`
 
-You can use Universal ID for for individual scalar values if desired, but scalar support is the foundation for more serious use cases.
-_Think of scalars as the low level building blocks._
+You can use Universal ID for individual primitives if desired, but scalar support is really the foundation for more serious use cases.
+_See below..._
 
 ```ruby
 uri = URI::UID.build(:demo).to_s
@@ -140,7 +140,7 @@ Composite support is where things start to get interesting. All of the composite
   hash = {a: 1, b: 2, c: 3, array: [1, 2, 3, [:a, :b, :c, [true]]]}
 
   uri = URI::UID.build(hash).to_s
-  #=> "CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAEC..."
+  #=> "uid://universal-id/CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAEC..."
 
   uid = URI::UID.parse(uri)
   #=> #<URI::UID uid://universal-id/CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAECA5TUAGHUAGLUAGORwwM>
