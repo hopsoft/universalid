@@ -318,12 +318,12 @@ Prepacking gives you explicit control over what data to include in the Universal
   ```yml
   prepack:
     # ..........................................................................................................
-    # A list of attributes to exclude (default includes all keys)
+    # A list of attributes to exclude (for objects like Hash, OpenStruct, Struct, etc.)
     # Takes prescedence over the`include` list
     exclude: []
 
     # ..........................................................................................................
-    # A list of attributes to include (default includes all keys)
+    # A list of attributes to include (for objects like Hash, OpenStruct, Struct, etc.)
     include: []
 
     # ..........................................................................................................
