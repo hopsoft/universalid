@@ -4,9 +4,11 @@ class UniversalID::ActiveRecordBasePacker
   using UniversalID::Refinements::HashRefinement
 
   # TODO: implement support for has_one
-  # ActiveRecord::Reflection::HasOneReflection
+  #       ActiveRecord::Reflection::HasOneReflection
+  #
   # TODO: implement support for has_and_belongs_to_many
-  # ActiveRecord::Reflection::HasAndBelongsToManyReflection
+  #       ActiveRecord::Reflection::HasAndBelongsToManyReflection
+  #
   HAS_MANY_ASSOCIATIONS = [
     ActiveRecord::Reflection::HasManyReflection
   ]
@@ -43,7 +45,7 @@ class UniversalID::ActiveRecordBasePacker
     reject_keys! hash if prepack_database_options.exclude_keys?
     reject_timestamps! hash if prepack_database_options.exclude_timestamps?
     reject_unsaved_changes! hash if prepack_database_options.exclude_unsaved_changes?
-    add_descendants! hash if prepack_database_options.include_descendants?
+    add_descendants! hash if include_descendants?
 
     hash.prepack prepack_options
   end
@@ -53,6 +55,14 @@ class UniversalID::ActiveRecordBasePacker
     return false if record.new_record?
     return false if prepack_database_options.include_descendants?
     prepack_database_options.exclude_unsaved_changes?
+  end
+
+  def include_descendants?
+    return false unless prepack_database_options.include_descendants?
+
+    max_depth = prepack_database_options.descendant_depth.to_i
+    record_depth = record.instance_variable_get(:@_uid_depth).to_i
+    record_depth < max_depth
   end
 
   # attribute mutators .......................................................................................
@@ -73,14 +83,20 @@ class UniversalID::ActiveRecordBasePacker
   end
 
   def add_descendants!(hash)
-    prepack_database_options.increment_current_descendant_depth_count!
     hash[DESCENDANTS_KEY] ||= {}
 
-    # has_many
     loaded_has_many_relations_by_name.each do |name, relation|
-      descendants = relation.map { |record| UniversalID::Encoder.encode record, prepack_options }
+      descendants = relation.map do |descendant|
+        descendant.instance_variable_set(:@_uid_depth, prepack_database_options.current_depth + 1)
+        UniversalID::Encoder.encode descendant, prepack_options
+      ensure
+        prepack_database_options.decrement_current_depth!
+        descendant.remove_instance_variable :@_uid_depth
+      end
       hash[DESCENDANTS_KEY][name] = descendants
     end
+
+    prepack_database_options.increment_current_depth!
   end
 
   # active record helpers ....................................................................................

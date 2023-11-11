@@ -33,23 +33,28 @@ class UniversalID::PrepackDatabaseOptions
     !include_unsaved_changes?
   end
 
+  def descendant_depth
+    @settings.descendant_depth ||= 0
+  end
+
+  attr_writer :current_depth
+
+  def current_depth
+    @settings.current_depth ||= 0
+  end
+
+  def increment_current_depth!
+    @settings.current_depth ||= 0
+    @settings.current_depth = @settings.current_depth += 1
+  end
+
+  def decrement_current_depth!
+    @settings.current_depth ||= 0
+    @settings.current_depth = @settings.current_depth -= 1
+  end
+
   def include_descendants?
-    depth = @settings.descendant_depth.to_i
-    depth_count = @settings.current_descendant_depth_count.to_i
-
-    return false unless !!@settings.include_descendants
-    return false unless depth > 0 && depth_count < depth
-
-    true
-  end
-
-  def current_descendant_depth_count
-    @settings.current_descendant_depth_count ||= -1
-  end
-
-  def increment_current_descendant_depth_count!
-    @settings.current_descendant_depth_count ||= -1
-    @settings.current_descendant_depth_count += 1
+    !!@settings.include_descendants
   end
 
   def exclude_descentants?

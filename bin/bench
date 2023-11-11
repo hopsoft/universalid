@@ -8,7 +8,7 @@ require "awesome_print"
 require_relative "../test/rails_kit/setup"
 require_relative "../lib/universalid"
 
-@count = 1_000
+@count = 5_000
 @pad = 98
 
 def run(label)
@@ -50,14 +50,14 @@ run("URI::UID.decode HASH/UID") { hash_uid.decode }
 # ActiveRecord ...............................................................................................
 run("URI::UID.build ActiveRecord") { URI::UID.build campaign }
 run("URI::UID.build ActiveRecord, exclude_blank") { URI::UID.build campaign, include_blank: false }
-run("URI::UID.build ActiveRecord, include_descendants") { URI::UID.build campaign, include_descendants: true, descendant_depth: 1 }
+run("URI::UID.build ActiveRecord, include_descendants") { URI::UID.build campaign, include_descendants: true, descendant_depth: 2 }
 run("URI::UID.parse ActiveRecord/UID") { URI::UID.parse active_record_uid_string }
 run("URI::UID.decode HASH/UID") { active_record_uid.decode }
 
 # Everything .................................................................................................
-run("UID.build.to_gid > GID.parse.find > UID.decode") do
-  URI::UID.from_gid(URI::UID.build(campaign).to_gid_param).decode
+run("UID > GID > UID.decode include_descendants") do
+  URI::UID.from_gid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_gid_param).decode
 end
-run("UID.build.to_sgid > SGID.parse.find > UID.decode") do
-  URI::UID.from_sgid(URI::UID.build(campaign).to_sgid_param(for: "benchmarks"), for: "benchmarks").decode
+run("UID > SGID > UID.decode include_descendants") do
+  URI::UID.from_sgid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_sgid_param(for: "benchmarks"), for: "benchmarks").decode
 end

@@ -501,6 +501,60 @@ We'll limit the demos below to 3 tables, but Universal ID can support much more 
   ```
 </details>
 
+Now let's create some ActiveRecord model instances that we'll use in the sections below.
+We'll use 1 campaign that contains 3 emails with 2 attachments each.
+Note that we won't save the data just yet.
+
+<details>
+  <summary><b>View the Model Instances</b>... ▾</summary>
+  <p></p>
+
+  ```ruby
+  campaign = Campaign.new(
+    name: "Summer Sale Campaign",
+    description: "A campaign for the summer sale, targeting our loyal customers.",
+    trigger: "SummerStart"
+  )
+
+  campaign.emails = 3.times.map do |i|
+    email = campaign.emails.build(
+      subject: "Summer Sale Special Offer #{i + 1}",
+      body: "Dear Customer, check out our exclusive summer sale offers! #{i + 1}",
+      wait: rand(1..14)
+    )
+
+    email.tap do |e|
+      e.attachments = 2.times.map do |j|
+        data = SecureRandom.random_bytes(rand(500..1500))
+        e.attachments.build(
+          file_name: "summer_sale_#{i + 1}_attachment_#{j + 1}.pdf",
+          content_type: "application/pdf",
+          file_size: data.size,
+          file_data: data
+        )
+      end
+    end
+  end
+
+  # demonstrate that we have new unsaved records
+
+  #campaign
+  campaign.new_record? # true
+  campaign.changed? # true
+
+  # emails
+  campaign.emails.each do |email|
+    email.new_record? # true
+    email.changed? # true
+
+    email.attachments.each do |attachment|
+      attachment.new_record? # true
+      attachment.changed? # true
+    end
+  end
+  ```
+</details>
+
 ### Unsaved Data
 
 It's possible to convert records with unsaved data to Universal IDs that capture the unsaved changes.
@@ -509,6 +563,40 @@ This allows you to marshal complex unsaved data that can be restored at a later 
 This feature supports several use cases, like allowing users to pause their work and resume at any point in the future
 without the need to store partial records in your database. And, because UIDs are web safe, you can hold this data
 in browser Cookies, LocalStorage, SessionStorage, etc.
+
+Given the data _(campaign, email, attachment)_ we esablished above,
+let's see what this looks like for new unsaved records.
+
+<details>
+  <summary><b>View the Model Instances</b>... ▾</summary>
+  <p></p>
+
+  ```ruby
+  # prepack options
+  options = {
+    include_unsaved_changes: true,
+    include_descendants: true,
+    descendant_depth: 2
+  }
+
+  uid = URI::UID.build(campaign, options)
+  copy = uid.decode
+
+  copy.new_record? # true
+  copy.changes
+  # {
+  #   "name"=>[nil, "Summer Sale Campaign"],
+  #   "description"=>[nil, "A campaign for the summer sale, targeting our loyal customers."],
+  #   "trigger"=>[nil, "SummerStart"]
+  # }
+
+  copy.emails.size # 3
+  copy.emails[0].attachments.size # 2
+  copy.emails[1].attachments.size # 2
+  copy.emails[2].attachments.size # 2
+
+  ```
+</details>
 
 ### Descendants
 
@@ -572,154 +660,154 @@ simply convert your UniversalID to a SignedGlobalID to pick up these features fo
   Benchmarking with the following ActiveRecord/Hash data...
   ==================================================================================================
   {
-              "id" => 1,
-            "name" => "Awesome Leather Bag Stand-alone regional model",
-      "description" => "You wanna hear a lie? ... I...think you're great. You're my best friend. It's not my fault being the biggest and the strongest. I don't even exercise. Congratulations. No one's ever beat her before. You just made an enemy for life Talk Jabba. (Tell that to Jabba.) You want a toe? I can get you a toe, believe me. There are ways, Dude. You don't wanna know about it, believe me.",
-          "trigger" => "Incredible Plastic Clock ideate",
-      "created_at" => "2023-11-09T20:25:47.405Z",
-      "updated_at" => "2023-11-09T20:25:47.405Z",
-          "emails" => [
+               "id" => 1,
+             "name" => "Production",
+      "description" => "RISC is good Well then get your shit together. Get it all together and put it in a backpack, all your shit, so it's together. ...and if you gotta take it somewhere, take it somewhere ya know? Take it to the shit store and sell it, or put it in a shit museum. I don't care what you do, you just gotta get it together... Get your shit together. Mark it zero! What you do not smell is called Iocane Power. You wanna hear a lie? ... I...think you're great. You're my best friend.",
+          "trigger" => "Political Organization enhance web-enabled architectures",
+       "created_at" => "2023-11-11T01:28:46.657Z",
+       "updated_at" => "2023-11-11T01:28:46.657Z",
+           "emails" => [
           [0] {
-                      "id" => 1,
+                       "id" => 1,
               "campaign_id" => 1,
-                  "subject" => "Human Resources Heavy Duty Copper Plate",
-                    "body" => "I don't play well with others That's the difference between you and me, Morty. I never go back to the carpet store. It's weird. They always travel in groups of five. These programmers, there's always a tall, skinny white guy; short, skinny Asian guy; fat guy with a ponytail; some guy with crazy facial hair; and then an East Indian guy. It's like they trade guys until they all have the right group.",
-                    "wait" => nil,
-              "created_at" => "2023-11-09T20:25:47.409Z",
-              "updated_at" => "2023-11-09T20:25:47.425Z",
+                  "subject" => "drive synergistic web-readiness",
+                     "body" => "But first things first. To the death! I feel like all my kids grew up, and then they married each other. It's every parents' dream. Koona t'chuta Solo? (Going somewhere Solo?)",
+                     "wait" => nil,
+               "created_at" => "2023-11-11T01:28:46.661Z",
+               "updated_at" => "2023-11-11T01:28:46.675Z",
               "attachments" => [
                   [0] {
                                 "id" => 1,
                           "email_id" => 1,
-                        "file_name" => "home stretch",
-                      "content_type" => "Ferry-Cronin",
-                        "file_size" => nil,
-                        "file_data" => nil,
-                        "created_at" => "2023-11-09T20:25:47.412Z",
-                        "updated_at" => "2023-11-09T20:25:47.421Z"
+                         "file_name" => "Schneider and Sons",
+                      "content_type" => "Enterprise-wide 4th generation complexity",
+                         "file_size" => nil,
+                         "file_data" => nil,
+                        "created_at" => "2023-11-11T01:28:46.664Z",
+                        "updated_at" => "2023-11-11T01:28:46.670Z"
                   },
                   [1] {
                                 "id" => 2,
                           "email_id" => 1,
-                        "file_name" => "Writing and Editing Bogan, Upton and Lang",
-                      "content_type" => "McCullough, Leffler and Morar Decentralized dedicated function",
-                        "file_size" => nil,
-                        "file_data" => nil,
-                        "created_at" => "2023-11-09T20:25:47.413Z",
-                        "updated_at" => "2023-11-09T20:25:47.421Z"
+                         "file_name" => "Devolved solution-oriented circuit",
+                      "content_type" => "revolutionize magnetic bandwidth Intelligent Paper Gloves",
+                         "file_size" => nil,
+                         "file_data" => nil,
+                        "created_at" => "2023-11-11T01:28:46.664Z",
+                        "updated_at" => "2023-11-11T01:28:46.670Z"
                   }
               ]
           },
           [1] {
-                      "id" => 2,
+                       "id" => 2,
               "campaign_id" => 1,
-                  "subject" => "Cummings, Veum and Lockman Human Resources",
-                    "body" => "Yeah, well, that's just, like, your opinion, man. You listen to me, you muscle-bound handsome Adonis: tech is reserved for people like me, okay? The freaks, the weirdos, the misfits, the geeks, the dweebs, the dorks! Not you! Would I rather be feared or loved? Easy. Both. I want people to be afraid of how much they love me. I'm more than just a hammer.",
-                    "wait" => nil,
-              "created_at" => "2023-11-09T20:25:47.421Z",
-              "updated_at" => "2023-11-09T20:25:47.425Z",
+                  "subject" => "Marketing",
+                     "body" => "I'll explain and I'll use small words so that you'll be sure to understand, you warthog faced buffoon. Well then get your shit together. Get it all together and put it in a backpack, all your shit, so it's together. ...and if you gotta take it somewhere, take it somewhere ya know? Take it to the shit store and sell it, or put it in a shit museum. I don't care what you do, you just gotta get it together... Get your shit together. I am running away from my responsibilities. And it feels good.",
+                     "wait" => nil,
+               "created_at" => "2023-11-11T01:28:46.671Z",
+               "updated_at" => "2023-11-11T01:28:46.675Z",
               "attachments" => [
                   [0] {
                                 "id" => 3,
                           "email_id" => 2,
-                        "file_name" => "Sleek Rubber Shirt",
-                      "content_type" => "snackable content Heidenreich, Rau and Blanda",
-                        "file_size" => nil,
-                        "file_data" => nil,
-                        "created_at" => "2023-11-09T20:25:47.422Z",
-                        "updated_at" => "2023-11-09T20:25:47.423Z"
+                         "file_name" => "Weber-Schulist benchmark open-source applications",
+                      "content_type" => "Enormous Linen Shoes synthesize customized e-services",
+                         "file_size" => nil,
+                         "file_data" => nil,
+                        "created_at" => "2023-11-11T01:28:46.672Z",
+                        "updated_at" => "2023-11-11T01:28:46.672Z"
                   },
                   [1] {
                                 "id" => 4,
                           "email_id" => 2,
-                        "file_name" => "Optional 6th generation solution",
-                      "content_type" => "expansion play Synergistic Granite Bag",
-                        "file_size" => nil,
-                        "file_data" => nil,
-                        "created_at" => "2023-11-09T20:25:47.422Z",
-                        "updated_at" => "2023-11-09T20:25:47.423Z"
+                         "file_name" => "thought leadership",
+                      "content_type" => "Business Development Enhanced logistical collaboration",
+                         "file_size" => nil,
+                         "file_data" => nil,
+                        "created_at" => "2023-11-11T01:28:46.672Z",
+                        "updated_at" => "2023-11-11T01:28:46.672Z"
                   }
               ]
           },
           [2] {
-                      "id" => 3,
+                       "id" => 3,
               "campaign_id" => 1,
-                  "subject" => "branding Outsourcing / Offshoring",
-                    "body" => "God gave men brains larger than dogs so they wouldn't hump women's legs at cocktail parties I do not think you would accept my help, since I am only waiting around to kill you. I was gonna sleep last night, but, uh... I thought I had this solve for this computational trust issue I've been working on, but it turns out, I didn't have a solve. But it was too late. I had already drank the whole pot of coffee. I am running away from my responsibilities. And it feels good.",
-                    "wait" => nil,
-              "created_at" => "2023-11-09T20:25:47.423Z",
-              "updated_at" => "2023-11-09T20:25:47.425Z",
+                  "subject" => "Mediocre Aluminum Car",
+                     "body" => "Don’t even trip dawg. Stay away from my special lady friend, man.",
+                     "wait" => nil,
+               "created_at" => "2023-11-11T01:28:46.672Z",
+               "updated_at" => "2023-11-11T01:28:46.675Z",
               "attachments" => [
                   [0] {
                                 "id" => 5,
                           "email_id" => 3,
-                        "file_name" => "Ergonomic Rubber Clock",
-                      "content_type" => "Nanotechnology best practice",
-                        "file_size" => nil,
-                        "file_data" => nil,
-                        "created_at" => "2023-11-09T20:25:47.424Z",
-                        "updated_at" => "2023-11-09T20:25:47.424Z"
+                         "file_name" => "Import and Export",
+                      "content_type" => "Heavy Duty Paper Bench Project Management",
+                         "file_size" => nil,
+                         "file_data" => nil,
+                        "created_at" => "2023-11-11T01:28:46.673Z",
+                        "updated_at" => "2023-11-11T01:28:46.674Z"
                   },
                   [1] {
                                 "id" => 6,
                           "email_id" => 3,
-                        "file_name" => "disintermediate innovative e-commerce",
-                      "content_type" => "Nitzsche Inc",
-                        "file_size" => nil,
-                        "file_data" => nil,
-                        "created_at" => "2023-11-09T20:25:47.424Z",
-                        "updated_at" => "2023-11-09T20:25:47.425Z"
+                         "file_name" => "synthesize ubiquitous architectures Corporate Communications",
+                      "content_type" => "Durable Rubber Watch",
+                         "file_size" => nil,
+                         "file_data" => nil,
+                        "created_at" => "2023-11-11T01:28:46.674Z",
+                        "updated_at" => "2023-11-11T01:28:46.674Z"
                   }
               ]
           }
       ]
   }
   ==================================================================================================
-  Benchmarking 10000 iterations
+  Benchmarking 5000 iterations
   ==================================================================================================
-                                                            user     system      total        real
-  URI::UID.build Hash                                  36.687913   0.130642  36.818555 ( 36.925714)
-  Average                                                0.003669   0.000013   0.003682 (  0.003693)
+                                                             user     system      total        real
+  URI::UID.build Hash                                   14.770667   0.102535  14.873202 ( 14.898856)
+  Average                                                0.002954   0.000021   0.002975 (  0.002980)
   ..................................................................................................
-                                                            user     system      total        real
-  URI::UID.build Hash, include_blank: false            34.666529   0.236112  34.902641 ( 35.004841)
-  Average                                                0.003467   0.000024   0.003490 (  0.003500)
+                                                             user     system      total        real
+  URI::UID.build Hash, include_blank: false             13.821420   0.066910  13.888330 ( 13.892066)
+  Average                                                0.002764   0.000013   0.002778 (  0.002778)
   ..................................................................................................
-                                                            user     system      total        real
-  URI::UID.parse HASH/UID                                0.183434   0.001195   0.184629 (  0.184920)
-  Average                                                0.000018   0.000000   0.000018 (  0.000018)
+                                                             user     system      total        real
+  URI::UID.parse HASH/UID                                0.075566   0.000411   0.075977 (  0.076035)
+  Average                                                0.000015   0.000000   0.000015 (  0.000015)
   ..................................................................................................
-                                                            user     system      total        real
-  URI::UID.decode HASH/UID                               0.312589   0.012773   0.325362 (  0.350239)
-  Average                                                0.000031   0.000001   0.000033 (  0.000035)
+                                                             user     system      total        real
+  URI::UID.decode HASH/UID                               0.111007   0.003572   0.114579 (  0.114587)
+  Average                                                0.000022   0.000001   0.000023 (  0.000023)
   ..................................................................................................
-                                                            user     system      total        real
-  URI::UID.build ActiveRecord                           1.911902   0.015386   1.927288 (  1.930672)
-  Average                                                0.000191   0.000002   0.000193 (  0.000193)
+                                                             user     system      total        real
+  URI::UID.build ActiveRecord                            0.984594   0.010059   0.994653 (  0.994662)
+  Average                                                0.000197   0.000002   0.000199 (  0.000199)
   ..................................................................................................
-                                                            user     system      total        real
-  URI::UID.build ActiveRecord, exclude_blank            1.930856   0.014851   1.945707 (  1.948803)
-  Average                                                0.000193   0.000001   0.000195 (  0.000195)
+                                                             user     system      total        real
+  URI::UID.build ActiveRecord, exclude_blank             0.953653   0.006692   0.960345 (  0.960765)
+  Average                                                0.000191   0.000001   0.000192 (  0.000192)
   ..................................................................................................
-                                                            user     system      total        real
-  URI::UID.build ActiveRecord, include_descendants     33.488788   0.211935  33.700723 ( 33.795023)
-  Average                                                0.003349   0.000021   0.003370 (  0.003380)
+                                                             user     system      total        real
+  URI::UID.build ActiveRecord, include_descendants      44.958468   0.170125  45.128593 ( 45.176116)
+  Average                                                0.008992   0.000034   0.009026 (  0.009035)
   ..................................................................................................
-                                                            user     system      total        real
-  URI::UID.parse ActiveRecord/UID                        0.119169   0.001046   0.120215 (  0.120513)
-  Average                                                0.000012   0.000000   0.000012 (  0.000012)
+                                                             user     system      total        real
+  URI::UID.parse ActiveRecord/UID                        0.119030   0.000319   0.119349 (  0.119525)
+  Average                                                0.000024   0.000000   0.000024 (  0.000024)
   ..................................................................................................
-                                                            user     system      total        real
-  URI::UID.decode HASH/UID                               6.493185   0.031636   6.524821 (  6.555731)
-  Average                                                0.000649   0.000003   0.000652 (  0.000656)
+                                                             user     system      total        real
+  URI::UID.decode HASH/UID                               5.198092   0.024652   5.222744 (  5.282794)
+  Average                                                0.001040   0.000005   0.001045 (  0.001057)
   ..................................................................................................
-                                                            user     system      total        real
-  UID.build.to_gid > GID.parse.find > UID.decode        2.870192   0.022088   2.892280 (  2.898905)
-  Average                                                0.000287   0.000002   0.000289 (  0.000290)
+                                                             user     system      total        real
+  UID > GID > UID.decode include_descendants            55.612061   0.398193  56.010254 ( 57.372350)
+  Average                                                0.011122   0.000080   0.011202 (  0.011474)
   ..................................................................................................
-                                                            user     system      total        real
-  UID.build.to_sgid > SGID.parse.find > UID.decode      3.095248   0.024358   3.119606 (  3.126645)
-  Average                                                0.000310   0.000002   0.000312 (  0.000313)
+                                                             user     system      total        real
+  UID > SGID > UID.decode include_descendants           55.406590   0.260552  55.667142 ( 56.432082)
+  Average                                                0.011081   0.000052   0.011133 (  0.011286)
   ..................................................................................................
   ```
 </details>
