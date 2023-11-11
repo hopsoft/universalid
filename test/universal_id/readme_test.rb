@@ -14,10 +14,10 @@ class UniversalID::ReadmeTest < Minitest::Test
       descendant_depth: 2
     }
 
-    uid = URI::UID.build(campaign, options).to_s
-    copy = URI::UID.parse(uid).decode
+    encoded = URI::UID.build(campaign, options).to_s
+    restored = URI::UID.parse(encoded).decode
 
-    assert_new_record copy
+    assert_new_record restored
   end
 
   def test_unsaved_changes_on_persisted_records
@@ -40,10 +40,10 @@ class UniversalID::ReadmeTest < Minitest::Test
       descendant_depth: 2
     }
 
-    uid = URI::UID.build(campaign, options).to_s
-    copy = URI::UID.parse(uid).decode
+    encoded = URI::UID.build(campaign, options).to_s
+    restored = URI::UID.parse(encoded).decode
 
-    assert_persisted_record copy, changes_expected: true
+    assert_persisted_record restored, changes_expected: true
   end
 
   private

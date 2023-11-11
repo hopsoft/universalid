@@ -55,8 +55,6 @@ UID is built on top of [MessagePack](https://msgpack.org/) and [Brotli](https://
 
 This short list highlights the flexibility and convenience of encoding complex Ruby objects into a compact, URL-safe format, making the Universal ID library a powerful tool for various uses in web development, API design, data management, and more. **The possibilities are endless and only limited by your imagination!**
 
-> :information_source: While Universal ID has built in support for ActiveRecord, there is not a direct dependency on anything Rails related. This means you can use Univeral ID on **any Ruby project**.
-
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
@@ -68,16 +66,13 @@ This short list highlights the flexibility and convenience of encoding complex R
     - [Custom Datatypes](#custom-datatypes)
   - [Settings and Prepack Options](#settings-and-prepack-options)
   - [Advanced ActiveRecord](#advanced-activerecord)
-    - [Unsaved Data](#unsaved-data)
-    - [Descendants](#descendants)
-    - [Deep Copies](#deep-copies)
   - [SignedGlobalID](#signedglobalid)
   - [Performance and Benchmarks](#performance-and-benchmarks)
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
 
-> :information_source: All demos below can be run locally by cloning the repo and executing `bin/console`.
+> :information_source: All code shown below can be run locally by cloning the repo and executing `bin/console`. <em>Just be sure to `bundle` first.</em>
 
 ## Supported Data Types
 
@@ -217,10 +212,12 @@ Composite support is where things start to get interesting. All of the composite
 
 ### ActiveRecord
 
+> :information_source: Even though Universal ID has built in support for ActiveRecord, it does not include a direct dependency on anything Rails related. This means you can use Univeral ID on **any Ruby project**.
+
 ActiveRecord models can be easily converted to UIDs.
 
 <details>
-  <summary><b>How to Convert Database Models to UIDs</b>... ▾</summary>
+  <summary><b>How to Convert Records to UIDs</b>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -441,17 +438,31 @@ It's also possible to register frequently used options as reusable settings to f
 
 ## Advanced ActiveRecord
 
-Universal ID ships with several advanced capabilities when used with ActiveRecord.
+Universal ID includes some advanced capabilities when used with ActiveRecord.
 
-Before we go further, let's establish the schema structure we'll be working with.
-We'll limit the demos below to 3 tables, but Universal ID can support much more complex data models.
+- [x] **Include loaded associations**
+  Universal ID supports including `loaded` associations when a model is transformed into a UID.
+  <small><em>Note that associations must be `loaded?` to be considered candidates for inclusion. There a multiple ways to achieve this, so be sure to [read up on associations](https://guides.rubyonrails.org/association_basics.html).</em></small>
+
+- [x] **Include unsaved changes**
+  Universal ID supports capturing unsaved change, for both new and persisted records, when a model is transformed into a UID.
+  <small><em>This allows you to marshal complex unsaved data that can be restored at a later time. This feature supports several use cases, like allowing users to pause their work and resume at any point in the future without the need to store partial records in your database. And, because UIDs are web safe, you can hold this data in URLs, browser Cookies, Local/SessionStorage, etc.</em></small>
+
+- [x] **Exclude keys** to make copies of existing records
+  Universal ID supports making copies of individual records or entire collections by opt'ing to exclude keys when transorming to UID.
+  <small><em>This allows you to make data sharable. Consider a sencario with complex infrastructure (db sharding, etc.). You can leverage Universal ID to move entire subsets of data across physical data stores.</em></small>
+
+First, let's establish the schema structure and data we'll be working with.
+We'll limit ourselves to 3 tables here, but Universal ID can support much more complex data models.
 
 - Campaign
 - Email
 - Attachment
 
+We'll use 1 campaign with 3 emails that have 2 attachments each.
+
 <details>
-  <summary><b>View the ActiveRecord Schema</b>... ▾</summary>
+  <summary><b>Setup the Schema</b>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -486,7 +497,7 @@ We'll limit the demos below to 3 tables, but Universal ID can support much more 
 </details>
 
 <details>
-  <summary><b>View the ActiveRecord Models</b>... ▾</summary>
+  <summary><b>Setup the Models</b>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -505,12 +516,9 @@ We'll limit the demos below to 3 tables, but Universal ID can support much more 
   ```
 </details>
 
-Now let's create some ActiveRecord model instances that we'll use in the sections below.
-We'll use 1 campaign that contains 3 emails with 2 attachments each.
-Note that we won't save the data just yet.
 
 <details>
-  <summary><b>View the Model Instances</b>... ▾</summary>
+  <summary><b>Setup the Model Instances</b>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -561,22 +569,10 @@ Note that we won't save the data just yet.
   ```
 </details>
 
-### Unsaved Data
-
-It's possible to convert records with unsaved data to Universal IDs that capture the unsaved changes.
-This allows you to marshal complex unsaved data that can be restored at a later time.
-
-This feature supports several use cases, like allowing users to pause their work and resume at any point in the future
-without the need to store partial records in your database. And, because UIDs are web safe, you can hold this data
-in browser Cookies, LocalStorage, SessionStorage, etc.
-
-Given the data _(campaign, email, attachment)_ we esablished above,
-let's see what this looks like for new unsaved records.
-
-> :information_source: ActiveRecord associations must be `loaded?` to be considered for inclusion with `include_descendants`. There a multiple ways to achieve this, so be sure to [read up on associations](https://guides.rubyonrails.org/association_basics.html).
+Now let's look at how to leverage Universal ID with ActiveRecord.
 
 <details>
-  <summary><b>How to Include Unsaved ActiveRecord Changes on <em>New Records</em></b> <small>including <code>loaded</code> associations</small>... ▾</summary>
+  <summary><b>How to Include Unsaved Changes for New Records</b>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -617,18 +613,18 @@ let's see what this looks like for new unsaved records.
     end
   end
 
-  uid = URI::UID.build(campaign, options).to_s
-  copy = URI::UID.parse(uid).decode
+  encoded = URI::UID.build(campaign, options).to_s
+  restored = URI::UID.parse(encoded).decode
 
-  copy.new_record? # true
-  copy.changes
+  restored.new_record? # true
+  restored.changes
   # {
   #   "name"=>[nil, "Summer Sale Campaign"],
   #   "description"=>[nil, "A campaign for the summer sale, targeting our loyal customers."],
   #   "trigger"=>[nil, "SummerStart"]
   # }
 
-  copy.emails.each do |email|
+  restored.emails.each do |email|
     email.new_record? # true
     email.changes
     # {
@@ -652,7 +648,7 @@ let's see what this looks like for new unsaved records.
 </details>
 
 <details>
-  <summary><b>How to Include Unsaved ActiveRecord Changes on <em>Persisted Records</em></b> <small>including <code>loaded</code> associations</small>... ▾</summary>
+  <summary><b>How to Include Unsaved Changes for Persisted Records</b>... ▾</summary>
   <p></p>
 
   ```ruby
@@ -692,14 +688,14 @@ let's see what this looks like for new unsaved records.
     descendant_depth: 2
   }
 
-  uid = URI::UID.build(campaign, options)
-  copy = uid.decode
+  encoded = URI::UID.build(campaign, options).to_s
+  restored = URI::UID.parse(encoded).decode
 
-  copy.persisted? # true
-  copy.changes
+  restored.persisted? # true
+  restored.changes
   # {"name"=>["Summer Sale Campaign", "Changed Name ..."]}
 
-  copy.emails.each do |email|
+  restored.emails.each do |email|
     email.persisted? # true
     email.changes
     # {"subject"=>["Summer Sale Special Offer 1", "Changed Subject ..."]}
@@ -713,9 +709,13 @@ let's see what this looks like for new unsaved records.
   ```
 </details>
 
-### Descendants
+<details>
+  <summary><b>How to Copy Persisted Records</b>... ▾</summary>
+  <p></p>
 
-### Deep Copies
+  ```ruby
+  ```
+</details>
 
 ## SignedGlobalID
 
