@@ -36,11 +36,11 @@
   <h2 align="center">URL-Safe Portability for Ruby Objects</h2>
 </p>
 
-**Universal ID** is a Ruby library that introduces **recursive serialization** for any Ruby object to/from a URL-safe string. The encoded object can easily be marshaled across process boundaries to support a wide variety of use cases.
+**Universal ID** is a Ruby library that introduces **recursive serialization** for any Ruby object to/from a URL-safe string. The encoded object can be easily marshaled across process boundaries to support a wide variety of use cases.
 
 Universal ID is built on top of [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 
-## Use Cases
+## Use Case Examples
 
 - **State Preservation in Web Apps**: Maintain the state of a user's session in web applications without storing data server-side
 - **API Data Transfer**: Serialize complex data structures into a URI format for easy and efficient transfer via RESTful APIs
@@ -53,7 +53,7 @@ Universal ID is built on top of [MessagePack](https://msgpack.org/) and [Brotli]
 - **Versioning Serialized Objects**: Enable versioning of serialized objects in URLs, allowing users to access different states or versions of data
 - **Data Export/Import**: Simplify the export and import process of complex objects between different environments or systems by using URI-encoded data
 
-This short list highlights the flexibility and convenience of encoding complex Ruby objects into a compact, URL-safe format, making the Universal ID library a powerful tool for various uses in web development, API design, data management, and more. **The possibilities are endless and only limited by your imagination!**
+This is just a fraction of what's possible with Universal ID. It's an invaluable tool for a range of development needs. API design, data management, user experience, and more. **Endless possibilities!**
 
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
