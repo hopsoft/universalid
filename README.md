@@ -2,7 +2,7 @@
   <h1 align="center">Universal ID</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-670-47d299.svg" />
+      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-686-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
       <img src="https://api.codeclimate.com/v1/badges/567624cbe733fafc2330/maintainability" />
@@ -260,46 +260,46 @@ It couldn't be simpler. Just convert the required data to a Ruby scalar or compo
   <summary><b>How to Register your own Datatype</b>... ▾</summary>
   <p></p>
 
-    ```ruby
-    class UserSettings
-      attr_accessor :user_id, :preferences
+  ```ruby
+  class UserSettings
+    attr_accessor :user_id, :preferences
 
-      def initialize(user_id, preferences = {})
-        @user_id = user_id
-        @preferences = preferences
-      end
+    def initialize(user_id, preferences = {})
+      @user_id = user_id
+      @preferences = preferences
     end
+  end
 
-    UniversalID::MessagePackFactory.register(
-      type: UserSettings,
-      packer: ->(user_preferences, packer) do
-        packer.write user_preferences.user_id
-        packer.write user_preferences.preferences
-      end,
-      unpacker: ->(unpacker) do
-        user_id = unpacker.read
-        preferences = unpacker.read
-        UserSettings.new user_id, preferences
-      end
-    )
+  UniversalID::MessagePackFactory.register(
+    type: UserSettings,
+    packer: ->(user_preferences, packer) do
+      packer.write user_preferences.user_id
+      packer.write user_preferences.preferences
+    end,
+    unpacker: ->(unpacker) do
+      user_id = unpacker.read
+      preferences = unpacker.read
+      UserSettings.new user_id, preferences
+    end
+  )
 
-    settings = UserSettings.new(1,
-      theme: "dark", # User preference for UI theme
-      notifications: "email", # How the user prefers to receive notifications
-      language: "en", # Preferred language
-      layout: "grid", # Preferred layout for viewing content
-      privacy: "private" # Privacy settings
-    )
+  settings = UserSettings.new(1,
+    theme: "dark", # User preference for UI theme
+    notifications: "email", # How the user prefers to receive notifications
+    language: "en", # Preferred language
+    layout: "grid", # Preferred layout for viewing content
+    privacy: "private" # Privacy settings
+  )
 
-    uri = URI::UID.build(settings).to_s
-    #=> "uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGe..."
+  uri = URI::UID.build(settings).to_s
+  #=> "uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGe..."
 
-    uid = URI::UID.parse(uri)
-    #=> #<URI::UID uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGe..."
+  uid = URI::UID.parse(uri)
+  #=> #<URI::UID uid://universal-id/G1QAQAT-bfcGW1QOgadJwJF06yL8gDnGgfs1Xdti20TDDvG5STPqzbYcQ6TBqVKhdZ39CdQZUwEGe..."
 
-    uid.decode
-    => #<UserSettings:0x0000000139157dd8 @preferences={:theme=>"dark", :notifications=>"email", :language=>"en", :layout=>"grid", :privacy=>"private"}, @user_id=1>
-    ```
+  uid.decode
+  => #<UserSettings:0x0000000139157dd8 @preferences={:theme=>"dark", :notifications=>"email", :language=>"en", :layout=>"grid", :privacy=>"private"}, @user_id=1>
+  ```
 </details>
 
 ## Settings and Prepack Options
@@ -443,7 +443,7 @@ Universal ID includes some advanced capabilities when used with ActiveRecord.
 
 - [x] **Include loaded associations**
   Universal ID supports including `loaded` associations when a model is transformed into a UID.
-  <small><em>Note that associations must be `loaded?` to be considered candidates for inclusion. There a multiple ways to achieve this, so be sure to [read up on associations](https://guides.rubyonrails.org/association_basics.html).</em></small>
+  <small><em>Note that associations must be `loaded?` to be considered candidates for inclusion. There are multiple ways to achieve this, so be sure to [read up on associations](https://guides.rubyonrails.org/association_basics.html).</em></small>
 
 - [x] **Include unsaved changes**
   Universal ID supports capturing unsaved change, for both new and persisted records, when a model is transformed into a UID.
