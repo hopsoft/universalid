@@ -225,7 +225,7 @@ While ActiveRecord already supports GlobalID, a robust library for serializing i
 - **Capturing Unsaved Changes**: It can serialize ActiveRecord models with unsaved changes, ensuring that even transient states are captured
 - **Association Handling**: Universal ID goes beyond single models. It can serialize associated records, including those with unsaved changes, creating a comprehensive snapshot of complex object states
 - **Cloning Existing Records**: Need to make a copy of a record, including its associations? Universal ID handles this effortlessly, making it ideal for duplicating complex datasets
-- **Granular Data Control**: With Universal ID, you gain explicit control over the serialization process. You can precisely choose which columns to include or exclude, allowing for tailored, optimized payloads that fit your specific needs.
+- **Granular Data Control**: With Universal ID, you gain explicit control over the serialization process. You can precisely choose which columns to include or exclude, allowing for tailored, optimized payloads that fit your specific needs
 
 In summary, while GlobalID excels in its specific use case, Universal ID offers extended capabilities, particularly useful in scenarios involving unsaved records, complex associations, and data cloning.
 
