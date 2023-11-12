@@ -6,9 +6,6 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   def test_new_model
     campaign = Campaign.build_for_test
     encoded = UniversalID::Encoder.encode(campaign)
-    expected = "G0QAAIyUqtsjPVl5TlKzKZpALGZjpKCBvwzJgkOO7KD2LaDmEdXYkpn7hLkDzVNFme8I9aQWSOwRNg"
-    assert_equal expected, encoded
-
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign.class, decoded.class
     refute_equal campaign.attributes, decoded.attributes

@@ -81,57 +81,6 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       def inspect
         "#<URI::UID scheme=#{scheme}, host=#{host}, payload=#{payload truncate: true}>"
       end
-
-      if defined? GlobalID::Identification
-        class GlobalIDRecord
-          include GlobalID::Identification
-
-          def self.find(value)
-            new value
-          end
-
-          attr_reader :id, :uid
-
-          def initialize(uid_or_payload)
-            @uid = case uid_or_payload
-            when URI::UID then uid_or_payload
-            when String
-              case uid_or_payload
-              when /\A#{URI::UID::SCHEME}/o then URI::UID.parse(uid_or_payload)
-              else URI::UID.parse(URI::UID.build_string(uid_or_payload))
-              end
-            end
-
-            @id = @uid&.payload
-          end
-        end
-
-        class << self
-          def from_global_id_record(gid_record)
-            gid_record&.find&.uid
-          end
-
-          def from_global_id(gid, options = {})
-            from_global_id_record GlobalID.parse(gid, options)
-          end
-
-          alias_method :from_gid, :from_global_id
-
-          def from_signed_global_id(sgid, options = {})
-            from_global_id_record SignedGlobalID.parse(sgid, options)
-          end
-
-          alias_method :from_sgid, :from_signed_global_id
-        end
-
-        # Returns a GlobalIDRecord instance which implements the GlobalID::Identification interface/protocol
-        def to_global_id_record
-          GlobalIDRecord.new self
-        end
-
-        # Adds all GlobalID::Identification methods to URI::UID
-        def_delegators(:to_global_id_record, *GlobalID::Identification.instance_methods(false))
-      end
     end
 
     # Register the URI scheme

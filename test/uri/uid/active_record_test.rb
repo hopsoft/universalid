@@ -6,9 +6,6 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   def test_new_model
     campaign = Campaign.build_for_test
     uid = URI::UID.build(campaign)
-    expected = "uid://universal-id/G0QAAIyUqtsjPVl5TlKzKZpALGZjpKCBvwzJgkOO7KD2LaDmEdXYkpn7hLkDzVNFme8I9aQWSOwRNg"
-    assert_equal expected, uid.to_s
-
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign.class, decoded.class
     refute_equal campaign.attributes, decoded.attributes

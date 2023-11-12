@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UniversalID::ActiveRecordBaseUnpacker
+class UniversalID::Contrib::ActiveRecordUnpacker
   using UniversalID::Refinements::KernelRefinement
 
   class << self
@@ -35,7 +35,7 @@ class UniversalID::ActiveRecordBaseUnpacker
     end
 
     def assign_descendants(record, attributes)
-      descendants = attributes[UniversalID::ActiveRecordBasePacker::DESCENDANTS_KEY] || {}
+      descendants = attributes[UniversalID::Contrib::ActiveRecordPacker::DESCENDANTS_KEY] || {}
       descendants.each do |name, list|
         next unless record.respond_to?(name) && record.respond_to?("#{name}=")
 

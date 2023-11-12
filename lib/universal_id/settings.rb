@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "forwardable"
 require "monitor"
 require "singleton"
 require "config"

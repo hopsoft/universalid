@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.metadata["changelog_uri"] = s.homepage + "/blob/main/CHANGELOG.md"
 
   s.files = Dir.chdir(File.expand_path(__dir__)) do
-    Dir["{lib}/**/*", "config/**/*.yml", "MIT-LICENSE", "Rakefile", "README.md"]
+    Dir["{config,contrib,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   end
 
   s.require_paths = ["lib"]
