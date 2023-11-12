@@ -42,7 +42,7 @@ This innovative library transforms any Ruby object into a URL-safe string, enabl
 It leverages both [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 MessagePack + Brotli is up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
 
-## Use Case Examples
+## Example Use Cases
 
 - **State Preservation in Web Apps**: Maintain the state of a user's session in web applications without storing data server-side
 - **API Data Transfer**: Serialize complex data structures into a URI format for easy and efficient transfer via RESTful APIs
