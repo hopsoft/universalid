@@ -37,7 +37,7 @@
 </p>
 
 **Universal ID introduces a paradigm shift in Ruby development with powerful recursive serialization.**
-This innovative library transforms any Ruby object into a URL-safe string, enabling efficient encoding and seamless data transfer across process boundaries. By simplifying complex serialization tasks, Universal ID enhances both the developer and end-user experience, paving the way for a wide range of use cases—from state preservation in web apps to inter-service communication. Its practicality and efficiency make it an indispensable tool for modern Ruby development.
+This innovative library transforms any Ruby object into a URL-safe string, enabling efficient encoding and seamless data transfer across process boundaries. By simplifying complex serialization tasks, Universal ID enhances both the developer and end-user experience, paving the way for a wide range of use cases—from state preservation in web apps to inter-service communication.
 
 It leverages both [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 MessagePack + Brotli is up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
