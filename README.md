@@ -65,6 +65,7 @@ This is just a fraction of what's possible with Universal ID. It's an invaluable
     - [Scalars](#scalars)
     - [Composites](#composites)
     - [ActiveRecord](#activerecord)
+      - [Why Universal ID with ActiveRecord?](#why-universal-id-with-activerecord)
     - [Custom Datatypes](#custom-datatypes)
   - [Settings and Prepack Options](#settings-and-prepack-options)
   - [Advanced ActiveRecord](#advanced-activerecord)
@@ -214,9 +215,19 @@ Composite support is where things start to get interesting. All of the composite
 
 ### ActiveRecord
 
-> :information_source: Even though Universal ID has built in support for ActiveRecord, it does not include a direct dependency on anything Rails related. This means you can use Univeral ID on **any Ruby project**.
+> :information_source: **Broad Compatibility**: Universal ID has built-in support for ActiveRecord, yet it maintains independence from Rails-specific dependencies. This versatile design enables integration into **any Ruby project**.
 
-ActiveRecord models can be easily converted to UIDs.
+#### Why Universal ID with ActiveRecord?
+
+While ActiveRecord inherently supports GlobalID, a robust library for serializing individual ActiveRecord models, Universal ID extends this functionality to cover a wider range of use cases. Here's why Universal ID should be your go-to choice:
+
+- **Support for New Records**: Unlike GlobalID, Universal ID can serialize models that haven't been saved to the database yet
+- **Capturing Unsaved Changes**: It can serialize ActiveRecord models with unsaved changes, ensuring that even transient states are captured
+- **Association Handling**: Universal ID goes beyond single models. It can serialize associated records, including those with unsaved changes, creating a comprehensive snapshot of complex object states
+- **Cloning Existing Records**: Need to make a copy of a record, including its associations? Universal ID handles this effortlessly, making it ideal for duplicating complex datasets
+- **Granular Data Control**: With Universal ID, you gain explicit control over the serialization process. You can precisely choose which columns to include or exclude, allowing for tailored, optimized payloads that fit your specific needs.
+
+In summary, while GlobalID excels in its specific use case, Universal ID offers extended capabilities, particularly useful in scenarios involving unsaved records, complex associations, and data cloning.
 
 <details>
   <summary><b>How to Convert Records to UIDs</b>... ▾</summary>
@@ -248,8 +259,6 @@ ActiveRecord models can be easily converted to UIDs.
   URI::UID.parse(uri).decode
   ##<Campaign:0x000000011cc67da8 id: 1, name: "Marketing Campaign", ...>
   ```
-
-  > :question: Why not just use [GlobalID](https://github.com/rails/globalid)? Read on to learn why UID may be a better option for your application.
 </details>
 
 ### Custom Datatypes
