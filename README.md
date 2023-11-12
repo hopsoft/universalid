@@ -219,7 +219,7 @@ Composite support is where things start to get interesting. All of the composite
 
 #### Why Universal ID with ActiveRecord?
 
-While ActiveRecord already supports GlobalID, a robust library for serializing individual ActiveRecord models, Universal ID extends this functionality to cover a wider range of use cases. Here's why Universal ID should be your go-to choice:
+While ActiveRecord already supports GlobalID, a robust library for serializing individual ActiveRecord models, Universal ID extends this functionality to cover a wider range of use cases. Here are a few reasons you may want to consider Universal ID.
 
 - **Support for New Records**: Unlike GlobalID, Universal ID can serialize models that haven't been saved to the database yet
 - **Capturing Unsaved Changes**: It can serialize ActiveRecord models with unsaved changes, ensuring that even transient states are captured
