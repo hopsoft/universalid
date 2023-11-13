@@ -8,9 +8,12 @@ Gem::Specification.new do |s|
   s.authors = ["Nate Hopkins (hopsoft)"]
   s.email = ["natehop@gmail.com"]
 
-  s.summary = "GlobalID for for Arrays, Hashes, and objects like ActiveRecord::Relation, etc."
+  s.summary = "URL-Safe String Serialization for any Ruby Object"
   s.description = <<~DESC
-    UniversalID expands GlobalID support to objects like Array, Hash, ActiveRecord::Relation, and more.
+    Universal ID is a Ruby library that specializes in the serialization of Ruby objects to URL-safe strings,
+    employing MessagePack and Brotli for optimized encoding. It facilitates efficient data transfer and state
+    management across various computing processes. Designed to seamlessly integrate with Ruby applications,
+    it does not rely on Rails-specific dependencies, making it adaptable for diverse Ruby projects.
   DESC
 
   s.homepage = "https://github.com/hopsoft/universalid"
