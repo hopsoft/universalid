@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+
+exec File.expand_path("./console", __dir__), *ARGV

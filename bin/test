@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+globs = if ARGV.size > 1
+  ARGV
+elsif ARGV.size == 1
+  fuzzy = ARGV.first
+  fuzzy.end_with?("_test.rb") ?
+    ["test/**/*#{fuzzy}"] :
+    ["test/**/*#{fuzzy}**/*_test.rb", "test/**/*#{fuzzy}*_test.rb"]
+end
+
+if globs.nil?
+  exec "bundle exec rake test"
+else
+  exec "bundle exec rake test GLOBS='#{globs.join(",")}'"
+end

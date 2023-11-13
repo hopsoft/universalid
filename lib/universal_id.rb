@@ -1,21 +1,26 @@
 # frozen_string_literal: true
 
-require "base64"
-require "zlib"
-require "digest/md5"
-require "globalid"
-require "active_model"
-require "active_support/all"
-
-module UniversalID
-  def self.deprecator
-    @deprecator ||= ActiveSupport::Deprecation.new("0.1", "UniversalID")
-  end
-end
+require "date"
+require "forwardable"
+require "ostruct"
+require "uri"
 
 require_relative "universal_id/version"
-require_relative "universal_id/errors"
-require_relative "universal_id/config"
-require_relative "universal_id/portable"
-require_relative "universal_id/portable_hash"
-require_relative "universal_id/active_model_serializer"
+require_relative "universal_id/settings"
+require_relative "universal_id/encoder"
+require_relative "uri/uid"
+require_relative "universal_id/prepacker"
+require_relative "universal_id/prepack_options"
+require_relative "universal_id/message_pack_factory"
+
+UniversalID::Settings.instance # initialize settings
+
+module UniversalID
+  class << self
+    attr_writer :logger
+
+    def logger
+      @logger ||= defined?(Rails) ? Rails.logger : Logger.new(File::NULL)
+    end
+  end
+end
