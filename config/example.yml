@@ -40,6 +40,6 @@ prepack:
 
     # ......................................................................................................
     # The max depth (number) of loaded in-memory descendants to include when `include_descendants == true`
-    # For example, a value of (3) would include the following:
+    # For example, a value of (2) would include the following:
     #   Parent > Child > Grandchild
     descendant_depth: 0
