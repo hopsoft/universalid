@@ -71,6 +71,7 @@ This is just a fraction of what's possible with Universal ID. It's an invaluable
   - [Advanced ActiveRecord](#advanced-activerecord)
   - [SignedGlobalID](#signedglobalid)
   - [Performance and Benchmarks](#performance-and-benchmarks)
+  - [Sponsors](#sponsors)
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
@@ -968,6 +969,19 @@ simply convert your UniversalID to a SignedGlobalID to add these features to any
   ..................................................................................................
   ```
 </details>
+
+## Sponsors
+
+<p align="center">
+  <em>Proudly sponsored by</em>
+</p>
+<p align="center">
+  <a href="https://www.clickfunnels.com?utm_source=hopsoft&utm_medium=open-source&utm_campaign=universalid">
+    <img src="https://images.clickfunnel.com/uploads/digital_asset/file/176632/clickfunnels-dark-logo.svg" width="575" />
+  </a>
+</p>
+
+[Add your company...](https://github.com/sponsors/hopsoft/sponsorships?sponsor=hopsoft&tier_id=23918&preview=false)
 
 ## License
 
