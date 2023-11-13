@@ -15,11 +15,5 @@ module UniversalID::Refinements::KernelRefinement
 
       (constant.name == name) ? constant : nil
     end
-
-    # Indicates if the current Class or Module is a descendant of the passed list of Classes or Modules
-    def descends_from?(*klasses)
-      klass = is_a?(Class) ? self : self.class
-      (klass.ancestors & klasses).any?
-    end
   end
 end
