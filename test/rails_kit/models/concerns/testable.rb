@@ -9,8 +9,8 @@ module Testable
     def build_for_test(count = 1, **attributes)
       records = count.times.map { build generate_attributes.merge(attributes) }
 
-      records.each do |record|
-        yield record if block_given?
+      records.each_with_index do |record, i|
+        yield record, i if block_given?
       end
 
       return records.first if count == 1
@@ -21,9 +21,9 @@ module Testable
       records = build_for_test(count, **attributes)
       records = [records] if count == 1
 
-      records.each do |record|
+      records.each_with_index do |record, i|
         record.save!
-        yield record if block_given?
+        yield record, i if block_given?
       end
 
       return records.first if count == 1

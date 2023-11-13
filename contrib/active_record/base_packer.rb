@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UniversalID::Contrib::ActiveRecordPacker
+class UniversalID::Contrib::ActiveRecordBasePacker
   using UniversalID::Refinements::HashRefinement
 
   # TODO: implement support for has_one

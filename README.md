@@ -69,6 +69,7 @@ This is just a fraction of what's possible with Universal ID. It's an invaluable
     - [Custom Datatypes](#custom-datatypes)
   - [Settings and Prepack Options](#settings-and-prepack-options)
   - [Advanced ActiveRecord](#advanced-activerecord)
+  - [ActiveRecord::Relation Support](#activerecordrelation-support)
   - [SignedGlobalID](#signedglobalid)
   - [Performance and Benchmarks](#performance-and-benchmarks)
   - [Sponsors](#sponsors)
@@ -76,7 +77,8 @@ This is just a fraction of what's possible with Universal ID. It's an invaluable
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
 
-> :information_source: All code shown below can be run locally by cloning the repo and executing `bin/console`. <em>Just be sure to `bundle` first.</em>
+> :rocket: **Ready to Dive In?**: All the code examples below can be tested on your local machine. Simply clone the repo and run `bin/console` to begin exploring. Don't forget to execute `bundle` first to ensure all dependencies are up to date. Happy coding!
+
 
 ## Supported Data Types
 
@@ -227,6 +229,7 @@ While ActiveRecord already supports GlobalID, a robust library for serializing i
 - **Association Handling**: Universal ID goes beyond single models. It can serialize associated records, including those with unsaved changes, creating a comprehensive snapshot of complex object states
 - **Cloning Existing Records**: Need to make a copy of a record, including its associations? Universal ID handles this effortlessly, making it ideal for duplicating complex datasets
 - **Granular Data Control**: With Universal ID, you gain explicit control over the serialization process. You can precisely choose which columns to include or exclude, allowing for tailored, optimized payloads that fit your specific needs
+- **Efficient Query Serialization**: Universal ID extends its capabilities to ActiveRecord relations, enabling the serialization of complex queries and scopes. This feature allows for seamless sharing of query logic between processes, ensuring consistency and reducing redundancy in data handling tasks.
 
 In summary, while GlobalID excels in its specific use case, Universal ID offers extended capabilities, particularly useful in scenarios involving unsaved records, complex associations, and data cloning.
 
@@ -730,7 +733,6 @@ Now let's look at how to leverage Universal ID with ActiveRecord.
   # persist the model and its associations
   campaign.save!
 
-
   options = {
     include_keys: false,
     include_timestamps: false,
@@ -757,6 +759,35 @@ Now let's look at how to leverage Universal ID with ActiveRecord.
     campaign_attachment_ids = campaign.emails.map(&:attachments).flatten.map(&:id)
     (copy_attachment_ids & campaign_attachment_ids).any? # false
   end
+  ```
+</details>
+
+## ActiveRecord::Relation Support
+
+Universal ID seamlessly handles the serialization of ActiveRecord relations and scopes, striking the perfect balance between efficiency and functionality. It paves the way for easy, optimized, and effective sharing of database queries. This capability transforms query management, allowing developers to encapsulate complex query structures into a reliable, portable, and reusable format that ensures query consistency across different parts of the application.
+
+> :bulb: **Optimized Payloads**: When handling `ActiveRecord::Relations`, Universal ID intelligently clears cached data within the relation before encoding. This approach minimizes payload size, ensuring efficient data transfer without sacrificing the integrity of the original query logic.
+
+<details>
+  <summary><b>How to work with ActiveRecord::Relations</b>... ▾</summary>
+  <p></p>
+
+  ```ruby
+  # Assuming we have multiple campaigns already stored in the database
+  relation = Campaign.joins(:emails).where("emails.subject LIKE ?", "Flash Sale%")
+
+  # force load the relation
+  relation.load
+  relation.loaded? # true
+
+  encoded = URI::UID.build(relation).to_s
+  decoded = URI::UID.parse(encoded).decode
+
+  decoded.is_a? ActiveRecord::Relation # true
+  decoded.loaded? # false
+  decoded == relation # true
+  decoded.size == relation.size # true
+  decoded.to_a == relation.to_a # true
   ```
 </details>
 
