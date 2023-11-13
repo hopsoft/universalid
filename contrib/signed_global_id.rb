@@ -1,3 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "signed_global_id/message_pack_type" if defined? SignedGlobalID
+if defined? SignedGlobalID
+
+  require_relative "signed_global_id/message_pack_type"
+
+end

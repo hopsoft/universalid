@@ -10,4 +10,5 @@ module UniversalID::Contrib; end
 
 require_relative "../../contrib/signed_global_id"
 require_relative "../../contrib/global_id"
+require_relative "../../contrib/active_support"
 require_relative "../../contrib/active_record"
