@@ -17,7 +17,7 @@ class UniversalID::Contrib::ActiveRecordUnpacker
       return nil unless klass
 
       record = if attributes[klass.primary_key]
-        klass.find_by(id: attributes[klass.primary_key])
+        klass.find_by(klass.primary_key => attributes[klass.primary_key])
       else
         klass.new
       end
