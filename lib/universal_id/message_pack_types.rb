@@ -15,6 +15,7 @@ require_relative "message_pack_types/ruby/composites/open_struct"
 require_relative "message_pack_types/ruby/composites/struct"
 require_relative "message_pack_types/ruby/composites/set"
 
+# uid
 require_relative "message_pack_types/uri/uid/type"
 
 # contribs
