@@ -35,4 +35,7 @@ SimpleCov.start do
 end
 
 # Load UniversalID
-require_relative "../lib/universal_id"
+require "universal_id"
+
+# Load contribs
+require "universal_id/contrib/rails"

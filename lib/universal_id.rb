@@ -16,6 +16,8 @@ require_relative "universal_id/message_pack_factory"
 UniversalID::Settings.instance # initialize settings
 
 module UniversalID
+  module Contrib; end
+
   class << self
     attr_writer :logger
 
