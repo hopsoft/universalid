@@ -241,7 +241,12 @@ require "universal_id/contrib/active_record"
 require "universal_id/contrib/active_support"
 require "universal_id/contrib/global_id"
 require "universal_id/contrib/signed_global_id"
+
+# or simply
+require "universal_id/contrib/rails"
 ```
+
+> :bulb: **Implicit Contribs**: Whenever the `Rails` constant is defined, the related contribs are auto-loaded.
 
 ### ActiveRecord
 

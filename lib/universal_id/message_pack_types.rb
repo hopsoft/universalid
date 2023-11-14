@@ -17,4 +17,7 @@ require_relative "message_pack_types/ruby/composites/set"
 
 require_relative "message_pack_types/uri/uid/type"
 
+# contribs
+require_relative "contrib/rails" if defined? Rails
+
 UniversalID::MessagePackFactory.create_msgpack_pool

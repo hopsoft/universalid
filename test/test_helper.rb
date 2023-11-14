@@ -38,7 +38,4 @@ end
 require "universal_id"
 
 # Load contribs
-require "universal_id/contrib/active_record"
-require "universal_id/contrib/active_support"
-require "universal_id/contrib/global_id"
-require "universal_id/contrib/signed_global_id"
+require "universal_id/contrib/rails"
