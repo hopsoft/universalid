@@ -6,7 +6,13 @@ require "benchmark"
 require "awesome_print"
 
 require_relative "../test/rails_kit/setup"
-require_relative "../lib/universalid"
+require_relative "../lib/universal_id"
+
+# load contribs
+require_relative "../lib/universal_id/contrib/active_record"
+require_relative "../lib/universal_id/contrib/active_support"
+require_relative "../lib/universal_id/contrib/global_id"
+require_relative "../lib/universal_id/contrib/signed_global_id"
 
 @count = 5_000
 @pad = 98

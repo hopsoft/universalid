@@ -64,6 +64,7 @@ This is just a fraction of what's possible with Universal ID. It's an invaluable
   - [Supported Data Types](#supported-data-types)
     - [Scalars](#scalars)
     - [Composites](#composites)
+    - [Contributed Types](#contributed-types)
     - [ActiveRecord](#activerecord)
       - [Why Universal ID with ActiveRecord?](#why-universal-id-with-activerecord)
     - [Custom Datatypes](#custom-datatypes)
@@ -215,6 +216,32 @@ Composite support is where things start to get interesting. All of the composite
   #=> #<struct Book title="The Great Gatsby", author="F. Scott Fitzgerald", isbn="9780743273565", published_year=1925>
   ```
 </details>
+
+### Contributed Types
+
+Universal ID is designed to be highly extensible, allowing for third-party contributions to enhance its capabilities.
+These contributions can introduce support for additional data types, further broadening the scope of Universal ID’s utility.
+The following are some notable contrib extensions:
+
+- **ActiveRecord::Base**: Integrates Universal ID with ActiveRecord base models, enabling intelligent serialization of database records
+- **ActiveRecord::Relation**: Supports the serialization of ActiveRecord relations, making it possible to encode complex query structures
+- **ActiveSupport::TimeWithZone**: Adds the ability to serialize ActiveSupport's TimeWithZone objects
+- **GlobalID**: Extends support to include GlobalIDs
+- **SignedGlobalID**: Extends support to include SignedGlobalIDs
+
+#### Requiring Contributed Types
+
+To utilize the contributed types, you must explicitly require them in your application.
+This ensures the extensions are loaded and available for use.
+Here is an example illustrating how to include contributed types:
+
+```ruby
+# load contrib types
+require "universal_id/contrib/active_record"
+require "universal_id/contrib/active_support"
+require "universal_id/contrib/global_id"
+require "universal_id/contrib/signed_global_id"
+```
 
 ### ActiveRecord
 
