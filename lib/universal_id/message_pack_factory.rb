@@ -11,16 +11,30 @@ UniversalID::MessagePackFactory = MessagePack::Factory.new.tap do |factory|
       @msgpack_pool = UniversalID::MessagePackFactory.pool([Etc.nprocessors.to_i, 1].max)
     end
 
-    def register(type:, type_id: nil, recreate_pool: true, **options)
-      id = type_id || next_type_id
+    def register_scalar(type:, recreate_pool: true, **options)
+      register id: next_type_id(order: :asc), type: type, **options
+    end
+
+    def register(type:, id: nil, recreate_pool: true, **options)
       options[:recursive] = true unless options.key?(:recursive)
-      register_type(id, type, options)
+      register_type(id || next_type_id(order: :desc), type, options)
       create_msgpack_pool if recreate_pool
     end
 
-    def next_type_id
-      max_type_id = registered_types.map { |type| type[:type].to_i }.max
-      max_type_id.nil? ? 0 : max_type_id + 1
+    def next_type_id(order:)
+      range = 0..127
+
+      case order
+      when :asc
+        id = range.first
+        id += 1 while type_registered?(id)
+      when :desc
+        id = range.last
+        id -= 1 while type_registered?(id)
+      end
+
+      id = nil unless range.cover?(id)
+      id
     end
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-UniversalID::MessagePackFactory.register(
+UniversalID::MessagePackFactory.register_scalar(
   type: Range,
   recreate_pool: false,
   packer: ->(obj, packer) do
