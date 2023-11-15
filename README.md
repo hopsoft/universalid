@@ -50,9 +50,8 @@ MessagePack + Brotli is up to 30% faster and within 2-5% compression rates compa
   - [Supported Data Types](#supported-data-types)
     - [Scalars](#scalars)
     - [Composites](#composites)
-    - [Custom Datatypes](#custom-datatypes)
+    - [Custom Types](#custom-types)
     - [Contributed Types](#contributed-types)
-      - [ActiveRecord](#activerecord)
   - [Settings and Prepack Options](#settings-and-prepack-options)
   - [Advanced ActiveRecord](#advanced-activerecord)
   - [ActiveRecord::Relation Support](#activerecordrelation-support)
@@ -226,7 +225,7 @@ Composite support is where things start to get interesting. All of the composite
   ```
 </details>
 
-### Custom Datatypes
+### Custom Types
 
 Universal ID is **extensible** so you can register your own datatypes with specialized serialization rules.
 It couldn't be simpler. Just convert the required data to a Ruby scalar or composite value.
@@ -317,9 +316,7 @@ require "universal_id/contrib/rails"
 
 > :bulb: **Implicit Contribs**: Whenever the `Rails` constant is defined, the related contribs are auto-loaded.
 
-#### ActiveRecord
-
-> :information_source: **Broad Compatibility**: Universal ID has built-in support for ActiveRecord, yet it maintains independence from Rails-specific dependencies. This versatile design enables integration into **any Ruby project**.
+> :bulb: **Broad Compatibility**: Universal ID has built-in support for ActiveRecord, yet it maintains independence from Rails-specific dependencies. This versatile design enables integration into **any Ruby project**.
 
 **Why Universal ID with ActiveRecord?**
 
