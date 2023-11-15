@@ -42,6 +42,29 @@ This innovative library transforms any Ruby object into a URL-safe string, enabl
 It leverages both [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 MessagePack + Brotli is up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
 
+<!-- Tocer[start]: Auto-generated, don't remove. -->
+
+## Table of Contents
+
+  - [Example Use Cases](#example-use-cases)
+  - [Supported Data Types](#supported-data-types)
+    - [Scalars](#scalars)
+    - [Composites](#composites)
+    - [Contributed Types](#contributed-types)
+      - [Requiring Contributed Types](#requiring-contributed-types)
+    - [ActiveRecord](#activerecord)
+      - [Why Universal ID with ActiveRecord?](#why-universal-id-with-activerecord)
+    - [Custom Datatypes](#custom-datatypes)
+  - [Settings and Prepack Options](#settings-and-prepack-options)
+  - [Advanced ActiveRecord](#advanced-activerecord)
+  - [ActiveRecord::Relation Support](#activerecordrelation-support)
+  - [SignedGlobalID](#signedglobalid)
+  - [Performance and Benchmarks](#performance-and-benchmarks)
+  - [Sponsors](#sponsors)
+  - [License](#license)
+
+<!-- Tocer[finish]: Auto-generated, don't remove. -->
+
 ## Example Use Cases
 
 Universal ID's powerful serialization capabilities unlock a myriad of possibilities across various domains.
@@ -67,29 +90,7 @@ Here are a few possibilities.
 
 These use cases demonstrate the versatility and power of Universal ID in various application and business scenarios, offering solutions that enhance efficiency, user experience, and system reliability.
 
-<!-- Tocer[start]: Auto-generated, don't remove. -->
-
-## Table of Contents
-
-  - [Supported Data Types](#supported-data-types)
-    - [Scalars](#scalars)
-    - [Composites](#composites)
-    - [Contributed Types](#contributed-types)
-    - [ActiveRecord](#activerecord)
-      - [Why Universal ID with ActiveRecord?](#why-universal-id-with-activerecord)
-    - [Custom Datatypes](#custom-datatypes)
-  - [Settings and Prepack Options](#settings-and-prepack-options)
-  - [Advanced ActiveRecord](#advanced-activerecord)
-  - [ActiveRecord::Relation Support](#activerecordrelation-support)
-  - [SignedGlobalID](#signedglobalid)
-  - [Performance and Benchmarks](#performance-and-benchmarks)
-  - [Sponsors](#sponsors)
-  - [License](#license)
-
-<!-- Tocer[finish]: Auto-generated, don't remove. -->
-
 > :rocket: **Ready to Dive In?**: All the code examples below can be tested on your local machine. Simply clone the repo and run `bin/console` to begin exploring. Don't forget to execute `bundle` first to ensure all dependencies are up to date. Happy coding!
-
 
 ## Supported Data Types
 
