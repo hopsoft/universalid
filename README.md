@@ -50,11 +50,9 @@ MessagePack + Brotli is up to 30% faster and within 2-5% compression rates compa
   - [Supported Data Types](#supported-data-types)
     - [Scalars](#scalars)
     - [Composites](#composites)
-    - [Contributed Types](#contributed-types)
-      - [Requiring Contributed Types](#requiring-contributed-types)
-    - [ActiveRecord](#activerecord)
-      - [Why Universal ID with ActiveRecord?](#why-universal-id-with-activerecord)
     - [Custom Datatypes](#custom-datatypes)
+    - [Contributed Types](#contributed-types)
+      - [ActiveRecord](#activerecord)
   - [Settings and Prepack Options](#settings-and-prepack-options)
   - [Advanced ActiveRecord](#advanced-activerecord)
   - [ActiveRecord::Relation Support](#activerecordrelation-support)
@@ -228,86 +226,6 @@ Composite support is where things start to get interesting. All of the composite
   ```
 </details>
 
-### Contributed Types
-
-Universal ID is designed to be highly extensible, allowing for third-party contributions to enhance its capabilities.
-These contributions can introduce support for additional data types, further broadening the scope of Universal ID’s utility.
-The following are some notable contrib extensions:
-
-- **ActiveRecord::Base**: Integrates Universal ID with ActiveRecord base models, enabling intelligent serialization of database records
-- **ActiveRecord::Relation**: Supports the serialization of ActiveRecord relations, making it possible to encode complex query structures
-- **ActiveSupport::TimeWithZone**: Adds the ability to serialize ActiveSupport's TimeWithZone objects
-- **GlobalID**: Extends support to include GlobalIDs
-- **SignedGlobalID**: Extends support to include SignedGlobalIDs
-
-#### Requiring Contributed Types
-
-To utilize the contributed types, you must explicitly require them in your application.
-This ensures the extensions are loaded and available for use.
-Here is an example illustrating how to include contributed types:
-
-```ruby
-# load contrib types
-require "universal_id/contrib/active_record"
-require "universal_id/contrib/active_support"
-require "universal_id/contrib/global_id"
-require "universal_id/contrib/signed_global_id"
-
-# or simply
-require "universal_id/contrib/rails"
-```
-
-> :bulb: **Implicit Contribs**: Whenever the `Rails` constant is defined, the related contribs are auto-loaded.
-
-### ActiveRecord
-
-> :information_source: **Broad Compatibility**: Universal ID has built-in support for ActiveRecord, yet it maintains independence from Rails-specific dependencies. This versatile design enables integration into **any Ruby project**.
-
-#### Why Universal ID with ActiveRecord?
-
-While ActiveRecord already supports GlobalID, a robust library for serializing individual ActiveRecord models, Universal ID extends this functionality to cover a wider range of use cases. Here are a few reasons you may want to consider Universal ID.
-
-- **Support for New Records**: Unlike GlobalID, Universal ID can serialize models that haven't been saved to the database yet
-- **Capturing Unsaved Changes**: It can serialize ActiveRecord models with unsaved changes, ensuring that even transient states are captured
-- **Association Handling**: Universal ID goes beyond single models. It can serialize associated records, including those with unsaved changes, creating a comprehensive snapshot of complex object states
-- **Cloning Existing Records**: Need to make a copy of a record, including its associations? Universal ID handles this effortlessly, making it ideal for duplicating complex datasets
-- **Granular Data Control**: With Universal ID, you gain explicit control over the serialization process. You can precisely choose which columns to include or exclude, allowing for tailored, optimized payloads that fit your specific needs
-- **Efficient Query Serialization**: Universal ID extends its capabilities to ActiveRecord relations, enabling the serialization of complex queries and scopes. This feature allows for seamless sharing of query logic between processes, ensuring consistency and reducing redundancy in data handling tasks.
-
-In summary, while GlobalID excels in its specific use case, Universal ID offers extended capabilities, particularly useful in scenarios involving unsaved records, complex associations, and data cloning.
-
-<details>
-  <summary><b>How to Convert Records to UIDs</b>... ▾</summary>
-  <p></p>
-
-  ```ruby
-  ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
-
-  ActiveRecord::Schema.define do
-    create_table :campaigns do |t|
-      t.column :name, :string
-      t.timestamps
-    end
-  end
-
-  class Campaign < ApplicationRecord
-  end
-
-  # ---
-
-  campaign = Campaign.create(name: "Marketing Campaign")
-
-  uri = URI::UID.build(campaign).to_s
-  #=> "uid://universal-id/CwiAxw4EqENhbXBhaWdugaJpZAMD"
-
-  uid = URI::UID.parse(uri)
-  #=> #<URI::UID uid://universal-id/CwiAxw4EqENhbXBhaWdugaJpZAMD>
-
-  URI::UID.parse(uri).decode
-  ##<Campaign:0x000000011cc67da8 id: 1, name: "Marketing Campaign", ...>
-  ```
-</details>
-
 ### Custom Datatypes
 
 Universal ID is **extensible** so you can register your own datatypes with specialized serialization rules.
@@ -356,6 +274,106 @@ It couldn't be simpler. Just convert the required data to a Ruby scalar or compo
 
   uid.decode
   => #<UserSettings:0x0000000139157dd8 @preferences={:theme=>"dark", :notifications=>"email", :language=>"en", :layout=>"grid", :privacy=>"private"}, @user_id=1>
+  ```
+</details>
+
+### Contributed Types
+
+Universal ID is designed to be highly extensible, allowing for third-party contributions to enhance its capabilities.
+These contributions can introduce support for additional data types, further broadening the scope of Universal ID’s utility.
+The following are some notable contrib extensions:
+
+- **ActiveRecord::Base**:
+  Integrates Universal ID with ActiveRecord base models, enabling intelligent serialization of database records.
+
+- **ActiveRecord::Relation**:
+  Supports the serialization of ActiveRecord relations, making it possible to encode complex query structures.
+
+- **ActiveSupport::TimeWithZone**:
+  Adds the ability to serialize ActiveSupport's TimeWithZone objects.
+
+- **GlobalID**:
+  Extends support to include GlobalIDs.
+
+- **SignedGlobalID**:
+  Extends support to include SignedGlobalIDs.
+
+**Requiring Contributed Types**
+
+To utilize the contributed types, you must explicitly require them in your application.
+This ensures the extensions are loaded and available for use.
+Here is an example illustrating how to include contributed types:
+
+```ruby
+# load contrib types
+require "universal_id/contrib/active_record"
+require "universal_id/contrib/active_support"
+require "universal_id/contrib/global_id"
+require "universal_id/contrib/signed_global_id"
+
+# or simply
+require "universal_id/contrib/rails"
+```
+
+> :bulb: **Implicit Contribs**: Whenever the `Rails` constant is defined, the related contribs are auto-loaded.
+
+#### ActiveRecord
+
+> :information_source: **Broad Compatibility**: Universal ID has built-in support for ActiveRecord, yet it maintains independence from Rails-specific dependencies. This versatile design enables integration into **any Ruby project**.
+
+**Why Universal ID with ActiveRecord?**
+
+While ActiveRecord already supports GlobalID, a robust library for serializing individual ActiveRecord models, Universal ID extends this functionality to cover a wider range of use cases. Here are a few reasons you may want to consider Universal ID.
+
+- **Support for New Records**:
+  Unlike GlobalID, Universal ID can serialize models that haven't been saved to the database yet.
+
+- **Capturing Unsaved Changes**:
+  It can serialize ActiveRecord models with unsaved changes, ensuring that even transient states are captured.
+
+- **Association Handling**:
+  Universal ID goes beyond single models. It can serialize associated records, including those with unsaved changes, creating a comprehensive snapshot of complex object states.
+
+- **Cloning Existing Records**:
+  Need to make a copy of a record, including its associations? Universal ID handles this effortlessly, making it ideal for duplicating complex datasets.
+
+- **Granular Data Control**:
+  With Universal ID, you gain explicit control over the serialization process. You can precisely choose which columns to include or exclude, allowing for tailored, optimized payloads that fit your specific needs.
+
+- **Efficient Query Serialization**:
+  Universal ID extends its capabilities to ActiveRecord relations, enabling the serialization of complex queries and scopes. This feature allows for seamless sharing of query logic between processes, ensuring consistency and reducing redundancy in data handling tasks.
+
+In summary, while GlobalID excels in its specific use case, Universal ID offers extended capabilities, particularly useful in scenarios involving unsaved records, complex associations, and data cloning.
+
+<details>
+  <summary><b>How to Convert Records to UIDs</b>... ▾</summary>
+  <p></p>
+
+  ```ruby
+  ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+
+  ActiveRecord::Schema.define do
+    create_table :campaigns do |t|
+      t.column :name, :string
+      t.timestamps
+    end
+  end
+
+  class Campaign < ApplicationRecord
+  end
+
+  # ---
+
+  campaign = Campaign.create(name: "Marketing Campaign")
+
+  uri = URI::UID.build(campaign).to_s
+  #=> "uid://universal-id/CwiAxw4EqENhbXBhaWdugaJpZAMD"
+
+  uid = URI::UID.parse(uri)
+  #=> #<URI::UID uid://universal-id/CwiAxw4EqENhbXBhaWdugaJpZAMD>
+
+  URI::UID.parse(uri).decode
+  ##<Campaign:0x000000011cc67da8 id: 1, name: "Marketing Campaign", ...>
   ```
 </details>
 
