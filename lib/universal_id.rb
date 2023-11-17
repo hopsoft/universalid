@@ -6,6 +6,7 @@ require "ostruct"
 require "uri"
 
 require_relative "universal_id/version"
+require_relative "universal_id/refinements"
 require_relative "universal_id/settings"
 require_relative "universal_id/encoder"
 require_relative "uri/uid"
