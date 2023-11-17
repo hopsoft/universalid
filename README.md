@@ -200,7 +200,6 @@ Universal ID supports most Ruby primitives.
 - `FalseClass`
 - `Float`
 - `Integer`
-- `NilClass`
 - `Range`
 - `Rational`
 - `Regexp`
