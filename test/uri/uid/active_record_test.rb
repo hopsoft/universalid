@@ -113,7 +113,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     uid = URI::UID.build(campaign) do |encoder, record, options|
       # NOTE: record == campaign (i.e. the 2nd arg is the object being converted to a uid)
 
-      # show an example of modifying the options as an example
+      # show an example of modifying the options
       options[:include] = %w[id custom]
 
       # create a specialized payload to be encoded
