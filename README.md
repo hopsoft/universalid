@@ -987,8 +987,6 @@ simply convert your UniversalID to a SignedGlobalID to add these features to any
 
 ## Fingerprinting (Implicit Versioning)
 
-> :bulb: **Optional Usage**: While fingerpint creation is automatic and implicit, using it is optional... ready whenever you want more control.
-
 Fingerprinting adds an extra layer of intelligence to the serialization process.
 UIDs automatically include a "fingerprint" for each serialized object based on the target object's class and
 its modification time _(mtime)_... based on the file that defined the object's class.
@@ -1053,6 +1051,8 @@ This is especially useful in scenarios where the data format might evolve over t
 
 Fingerprinting allows for seamless handling of different data versions and formats,
 making it invaluable for maintaining consistency and reliability in applications dealing with serialized data over time.
+
+> :bulb: **Optional Usage**: While fingerpint creation is automatic and implicit, using it is optional... ready whenever you want more control.
 
 ## Performance and Benchmarks
 
