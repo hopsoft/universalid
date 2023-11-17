@@ -989,7 +989,7 @@ simply convert your UniversalID to a SignedGlobalID to add these features to any
 
 Fingerprinting adds an extra layer of intelligence to the serialization process.
 UIDs automatically include a "fingerprint" for each serialized object based on the target object's class and
-its modification time _(mtime)_... based on the file that defined the object's class.
+its modification time _(mtime)_.
 
 Fingerprints are comprised of the following components:
 
@@ -998,9 +998,9 @@ Fingerprints are comprised of the following components:
 
 > :bulb: **Modification Timestamp**: The `mtime` is detected and captured the moment a UID is built or created.
 
-The primary benefit of this approach is that it allows developers to manage different versions of serialized data effectively...
-**without the need for custom versioning solutions**. Whenever the class definition changes, the mtime updates, resulting in a different fingerprint for new serializations.
-This is especially useful in scenarios where the data format might evolve over time, such as in long-lived applications or systems with persistent serialized data.
+Fingerprints allow developers to manage different versions of serialized data effectively...**without the need for custom versioning**.
+Whenever the class definition changes, the mtime updates, resulting in a different fingerprint.
+This is especially useful in scenarios where the data format evolves over time, such as in long-lived applications.
 
 <details>
   <summary><b>How to Use Fingerprinting</b>... ▾</summary>
@@ -1050,7 +1050,7 @@ This is especially useful in scenarios where the data format might evolve over t
 </details>
 
 Fingerprinting allows for seamless handling of different data versions and formats,
-making it invaluable for maintaining consistency and reliability in applications dealing with serialized data over time.
+so you can maintain consistency and reliability in applications dealing with serialized data over time.
 
 > :bulb: **Optional Usage**: While fingerpint creation is automatic and implicit, using it is optional... ready whenever you want more control.
 
