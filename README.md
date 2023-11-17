@@ -1017,6 +1017,10 @@ This is especially useful in scenarios where the data format evolves over time, 
   #                                    |        |
   uid = URI::UID.build(campaign) do |record, options|
     data = { id: record.id, demo: true }
+
+    # NOTE: this feature is compatible with other tools like kiba, amoeba, etc.
+    #       that can be leveraged to generate the data to be encoded
+
     URI::UID.encode data, options.merge(include: %w[id demo]) # block returns the encoded payload
   end
   ```
@@ -1029,6 +1033,9 @@ This is especially useful in scenarios where the data format evolves over time, 
   #                     the decoded payload from above  |         |
   #                                              |      |         |
   decoded = URI::UID.parse(uid.to_s).decode do |data, klass, timestamp|
+    # NOTE: this feature is compatible with other tools like kiba, amoeba, etc.
+    #       that can be leveraged to translate the decoded data into the correct format
+
     record = klass.find_by(id: data[:id])
     record.instance_variable_set(:@demo, data[:demo])
 
