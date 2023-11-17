@@ -100,8 +100,8 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   # Fingerprint components are automatically decoded and yielded to the optional decode block
   #
   # Fingerprint Components:
-  # 1. `Class` - The encoded object's class
-  # 2. `Time` - The mtime (UTC) of the file that defined the object's class
+  # 1. `Class Name (String)`  - The encoded object's class name
+  # 2. `Timestamp (String)` - The mtime (UTC) of the file that defined the object's class in iso8601 format
   #
   # NOTE: The mtime timestamp will be nil for Ruby primitives
   #
@@ -124,12 +124,12 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       encoder.encode data, options.merge(include: %w[id demo])
     end
 
-    decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, klass, timestamp|
+    decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, class_name, timestamp|
       data = decoder.decode(payload)
-      record = klass.find_by(id: data[:id])
+      record = Object.const_get(class_name).find_by(id: data[:id])
       record.instance_variable_set(:@demo, data[:demo])
 
-      case timestamp
+      case Time.parse(timestamp)
       when 3.months.ago..Time.now
         # current data format, return the record as-is
         record

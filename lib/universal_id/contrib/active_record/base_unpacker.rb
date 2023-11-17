@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class UniversalID::Contrib::ActiveRecordBaseUnpacker
-  using UniversalID::Refinements::KernelRefinement
-
   class << self
     def unpack_with(unpacker)
       class_name = unpacker.read
@@ -13,7 +11,7 @@ class UniversalID::Contrib::ActiveRecordBaseUnpacker
     private
 
     def create_instance(class_name, attributes)
-      klass = const_find(class_name)
+      klass = Object.const_get(class_name) if Object.const_defined?(class_name)
       return nil unless klass
 
       record = if attributes[klass.primary_key]

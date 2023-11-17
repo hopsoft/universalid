@@ -2,7 +2,7 @@
   <h1 align="center">Universal ID</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-721-47d299.svg" />
+      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-745-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
       <img src="https://api.codeclimate.com/v1/badges/567624cbe733fafc2330/maintainability" />
@@ -987,14 +987,16 @@ simply convert your UniversalID to a SignedGlobalID to add these features to any
 
 ## Fingerprinting (Implicit Versioning)
 
+> :bulb: **Optional Usage**: While fingerpint creation is automatic and implicit, using it is optional... ready whenever you want more control.
+
 Fingerprinting adds an extra layer of intelligence to the serialization process.
 UIDs automatically include a "fingerprint" for each serialized object based on the target object's class and
 its modification time _(mtime)_... based on the file that defined the object's class.
 
 Fingerprints are comprised of the following components:
 
-1. `Class` - The Ruby class of the object the UID represents
-2. `Time` - The modification time (UTC) of the file where the object's class is defined
+1. `Class Name (String)`  - The encoded object's class name
+2. `Timestamp (String)` - The mtime (UTC) of the file that defined the object's class in iso8601 format
 
 > :bulb: **Modification Timestamp**: The `mtime` is detected and captured the moment a UID is built or created.
 
@@ -1027,12 +1029,12 @@ This is especially useful in scenarios where the data format might evolve over t
   #                                                                      |
   #                                                                 ___________
   #                                                                 |         |
-  decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, klass, timestamp|
+  decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, class_name, timestamp|
     data = decoder.decode(payload)
-    record = klass.find_by(id: data[:id])
+    record = Object.const_get(class_name).find_by(id: data[:id])
     record.instance_variable_set(:@demo, data[:demo])
 
-    case timestamp
+    case Time.parse(timestamp)
     when 3.months.ago..Time.now
       # current data format
       # return the record as-is
