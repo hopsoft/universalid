@@ -4,13 +4,15 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
   module URI
     class UID < ::URI::Generic
-      extend Forwardable
-
       VERSION = UniversalID::VERSION
       SCHEME = "uid"
       HOST = "universal-id"
 
       class << self
+        def encoder
+          UniversalID::Encoder
+        end
+
         def fingerprint(object)
           encode fingerprint_components(object)
         end
@@ -30,8 +32,12 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         end
 
         def encode(object, options = {})
-          return yield(UniversalID::Encoder, object, options) if block_given?
-          UniversalID::Encoder.encode object, options
+          return yield(object, options) if block_given?
+          encoder.encode object, options
+        end
+
+        def decode(...)
+          encoder.decode(...)
         end
 
         # Creates a new URI::UID with the given URI components.
@@ -100,7 +106,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
       def decode
         return nil unless valid?
-        return yield(UniversalID::Encoder, payload, *decode_fingerprint) if block_given?
+        return yield(decode_payload, *decode_fingerprint) if block_given?
 
         decode_payload
       end
@@ -116,11 +122,11 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       private
 
       def decode_payload
-        UniversalID::Encoder.decode payload
+        self.class.decode payload
       end
 
       def decode_fingerprint
-        UniversalID::Encoder.decode fingerprint
+        self.class.decode fingerprint
       end
     end
 

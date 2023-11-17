@@ -100,8 +100,8 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   # Fingerprint components are automatically decoded and yielded to the optional decode block
   #
   # Fingerprint Components:
-  # 1. `Class Name (String)`  - The encoded object's class name
-  # 2. `Timestamp (String)` - The mtime (UTC) of the file that defined the object's class in iso8601 format
+  # 1. `Class (Class)`  - The encoded object's class
+  # 2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
   #
   # NOTE: The mtime timestamp will be nil for Ruby primitives
   #
@@ -110,7 +110,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
 
     # take control of encoding the uid payload to handle fingerprinting
     # (i.e. implicit versioning based on the mtime of the model definition)
-    uid = URI::UID.build(campaign) do |encoder, record, options|
+    uid = URI::UID.build(campaign) do |record, options|
       # NOTE: record == campaign (i.e. the 2nd arg is the object being converted to a uid)
 
       # show an example of modifying the options
@@ -121,11 +121,10 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       data = {id: record.id, demo: true}
 
       # encode just the attributes hash (this will become the uid payload)
-      encoder.encode data, options.merge(include: %w[id demo])
+      URI::UID.encode data, options.merge(include: %w[id demo])
     end
 
-    decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, klass, timestamp|
-      data = decoder.decode(payload)
+    decoded = URI::UID.parse(uid.to_s).decode do |data, klass, timestamp|
       record = klass.find_by(id: data[:id])
       record.instance_variable_set(:@demo, data[:demo])
 

@@ -995,8 +995,8 @@ its modification time _(mtime)_... based on the file that defined the object's c
 
 Fingerprints are comprised of the following components:
 
-1. `Class Name (String)`  - The encoded object's class name
-2. `Timestamp (String)` - The mtime (UTC) of the file that defined the object's class in iso8601 format
+1. `Class (Class)`  - The encoded object's class
+2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
 
 > :bulb: **Modification Timestamp**: The `mtime` is detected and captured the moment a UID is built or created.
 
@@ -1014,22 +1014,24 @@ This is especially useful in scenarios where the data format might evolve over t
   # NOTE: The campaign model instance was setup earlier in the "Model Instances" section above
   campaign.save!
 
-  #                    the uid build target (campaign in this case)
-  #                                              |
-  uid = URI::UID.build(campaign) do |encoder, record, options|
+  #           the uid build target (campaign in this case)
+  #                                    |
+  #                                    |  encoding options (whatever was passed to URI::UID.build or {})
+  #                                    |        |
+  uid = URI::UID.build(campaign) do |record, options|
     data = { id: record.id, demo: true }
-    encoder.encode data, options.merge(include: %w[id demo])
+    URI::UID.encode data, options.merge(include: %w[id demo])
   end
   ```
 
   2. Decode the UID using a custom handler _(optional Ruby block)_. This allows you to take control of the decoding process.
 
   ```ruby
-  #                                                           fingerprint components
-  #                                                                      |
-  #                                                                 ___________
-  #                                                                 |         |
-  decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, class_name, timestamp|
+  #                                                  fingerprint components
+  #                                                         ____|______
+  #                        the decoded data from above      |         |
+  #                                              |          |         |
+  decoded = URI::UID.parse(uid.to_s).decode do |data, class_name, timestamp|
     data = decoder.decode(payload)
     record = Object.const_get(class_name).find_by(id: data[:id])
     record.instance_variable_set(:@demo, data[:demo])
