@@ -5,17 +5,6 @@ require "forwardable"
 require "ostruct"
 require "uri"
 
-require_relative "universal_id/version"
-require_relative "universal_id/refinements"
-require_relative "universal_id/settings"
-require_relative "universal_id/encoder"
-require_relative "uri/uid"
-require_relative "universal_id/prepacker"
-require_relative "universal_id/prepack_options"
-require_relative "universal_id/message_pack_factory"
-
-UniversalID::Settings.instance # initialize settings
-
 module UniversalID
   module Contrib; end
 
@@ -27,3 +16,14 @@ module UniversalID
     end
   end
 end
+
+require_relative "universal_id/version"
+require_relative "universal_id/refinements"
+require_relative "universal_id/settings"
+require_relative "universal_id/encoder"
+require_relative "uri/uid"
+require_relative "universal_id/prepacker"
+require_relative "universal_id/prepack_options"
+require_relative "universal_id/message_pack_factory"
+
+UniversalID::Settings.instance # initialize settings
