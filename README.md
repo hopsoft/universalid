@@ -1018,20 +1018,19 @@ This is especially useful in scenarios where the data format evolves over time, 
   #                                    |        |
   uid = URI::UID.build(campaign) do |record, options|
     data = { id: record.id, demo: true }
-    URI::UID.encode data, options.merge(include: %w[id demo])
+    URI::UID.encode data, options.merge(include: %w[id demo]) # block returns the encoded payload
   end
   ```
 
   2. Decode the UID using a custom handler _(optional Ruby block)_. This allows you to take control of the decoding process.
 
   ```ruby
-  #                                                  fingerprint components
-  #                                                         ____|______
-  #                        the decoded data from above      |         |
-  #                                              |          |         |
-  decoded = URI::UID.parse(uid.to_s).decode do |data, class_name, timestamp|
-    data = decoder.decode(payload)
-    record = Object.const_get(class_name).find_by(id: data[:id])
+  #                                              fingerprint components
+  #                                                     ____|______
+  #                     the decoded payload from above  |         |
+  #                                              |      |         |
+  decoded = URI::UID.parse(uid.to_s).decode do |data, klass, timestamp|
+    record = klass.find_by(id: data[:id])
     record.instance_variable_set(:@demo, data[:demo])
 
     case Time.parse(timestamp)
