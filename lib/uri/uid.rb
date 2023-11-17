@@ -12,7 +12,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
       class << self
         def fingerprint(object)
-          encode fingerprint_tokens(object)
+          encode fingerprint_components(object)
         end
 
         def parse(value)
@@ -24,13 +24,13 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
           "#{SCHEME}://#{HOST}/#{payload}##{fingerprint(object)}"
         end
 
-        def build(object, options = {})
-          path = "/#{encode(object, options)}"
+        def build(object, options = {}, &block)
+          path = "/#{encode(object, options, &block)}"
           parse "#{SCHEME}://#{HOST}#{path}##{fingerprint(object)}"
         end
 
         def encode(object, options = {})
-          return yield(object) if block_given?
+          return yield(UniversalID::Encoder, object, options) if block_given?
           UniversalID::Encoder.encode object, options
         end
 
@@ -66,7 +66,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
         private
 
-        def fingerprint_tokens(object)
+        def fingerprint_components(object)
           klass = object.is_a?(Class) ? object : object.class
           tokens = [klass]
 
@@ -100,11 +100,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
       def decode
         return nil unless valid?
-
-        if block_given?
-          klass, timestamp = decode_fingerprint
-          return yield(klass, timestamp, payload)
-        end
+        return yield(UniversalID::Encoder, payload, *decode_fingerprint) if block_given?
 
         decode_payload
       end

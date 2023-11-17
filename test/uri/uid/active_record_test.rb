@@ -95,4 +95,53 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     assert_equal description, decoded.description
     assert_equal trigger, decoded.trigger
   end
+
+  # UIDs are implicitly "fingerprinted" based on the mtime (UTC) of the file that defined the object's class
+  # Fingerprint components are automatically decoded and yielded to the optional decode block
+  #
+  # Fingerprint Components:
+  # 1. `Class` - The encoded object's class
+  # 2. `Time` - The mtime (UTC) of the file that defined the object's class
+  #
+  # NOTE: The mtime timestamp will be nil for Ruby primitives
+  #
+  def test_persisted_model_with_custom_encode_and_decode_handlers
+    campaign = Campaign.create_for_test
+
+    # take control of encoding the uid payload to handle fingerprinting
+    # (i.e. implicit versioning based on the mtime of the model definition)
+    uid = URI::UID.build(campaign) do |encoder, record, options|
+      # NOTE: record == campaign (i.e. the 2nd arg is the object being converted to a uid)
+
+      # show an example of modifying the options as an example
+      options[:include] = %w[id custom]
+
+      # create a specialized payload to be encoded
+      # also, add something custom for demo purposes (note: this is not required)
+      data = {id: record.id, demo: true}
+
+      # encode just the attributes hash (this will become the uid payload)
+      encoder.encode data, options.merge(include: %w[id demo])
+    end
+
+    decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, klass, timestamp|
+      data = decoder.decode(payload)
+      record = klass.find_by(id: data[:id])
+      record.instance_variable_set(:@demo, data[:demo])
+
+      case timestamp
+      when 3.months.ago..Time.now
+        # current data format, return the record as-is
+        record
+      when 1.year.ago..3.months.ago
+        # outdated data format
+        # apply an ETL process to map the older data format to the current data format
+        # return the modified record when finished
+        record
+      end
+    end
+
+    assert_equal campaign, decoded
+    assert decoded.instance_variable_get(:@demo)
+  end
 end
