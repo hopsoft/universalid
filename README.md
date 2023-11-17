@@ -996,7 +996,7 @@ Fingerprints are comprised of the following components:
 1. `Class (Class)`  - The encoded object's class
 2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
 
-> :bulb: **Modification Timestamp**: The `mtime` is detected and captured the moment a UID is built or created.
+> :bulb: **Modification Timestamp**: The `mtime` is detected and captured the moment a UID is created.
 
 Fingerprints allow developers to manage different versions of serialized data effectively...**without the need for custom versioning**.
 Whenever the class definition changes, the mtime updates, resulting in a different fingerprint.
