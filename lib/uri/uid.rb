@@ -4,24 +4,40 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
   module URI
     class UID < ::URI::Generic
-      extend Forwardable
-
+      VERSION = UniversalID::VERSION
       SCHEME = "uid"
       HOST = "universal-id"
 
       class << self
+        def encoder
+          UniversalID::Encoder
+        end
+
+        def fingerprint(object)
+          encode fingerprint_components(object)
+        end
+
         def parse(value)
           components = ::URI.split(value.to_s)
           new(*components)
         end
 
-        def build_string(payload)
-          "#{SCHEME}://#{HOST}/#{payload}"
+        def build_string(payload, object = nil)
+          "#{SCHEME}://#{HOST}/#{payload}##{fingerprint(object)}"
         end
 
-        def build(object, options = {})
-          path = "/#{UniversalID::Encoder.encode(object, options)}"
-          parse "#{SCHEME}://#{HOST}#{path}"
+        def build(object, options = {}, &block)
+          path = "/#{encode(object, options, &block)}"
+          parse "#{SCHEME}://#{HOST}#{path}##{fingerprint(object)}"
+        end
+
+        def encode(object, options = {})
+          return yield(object, options) if block_given?
+          encoder.encode object, options
+        end
+
+        def decode(...)
+          encoder.decode(...)
         end
 
         # Creates a new URI::UID with the given URI components.
@@ -53,7 +69,25 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
             end
           end
         end
+
+        private
+
+        def fingerprint_components(object)
+          klass = object.is_a?(Class) ? object : object.class
+          tokens = [klass]
+
+          begin
+            path = const_source_location(klass.name).first.to_s
+            tokens << ::File.mtime(path).utc if ::File.exist?(path)
+          rescue => e
+            UniversalID.logger&.warn "URI::UID#fingerprint: Unable to determine the source location for #{klass.name}!\n#{e.message}}"
+          end
+
+          tokens
+        end
       end
+
+      alias_method :fingerprint, :fragment
 
       def payload(truncate: false)
         (truncate && path.length > 80) ? "#{path[1..77]}..." : path[1..]
@@ -61,7 +95,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
       def valid?
         case self
-        in scheme: SCHEME, host: HOST, path: p if p.size >= 8 then return true
+        in scheme: SCHEME, host: HOST, path: p, fragment: _ if p.size >= 8 then return true
         else false
         end
       end
@@ -71,15 +105,28 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       end
 
       def decode
-        UniversalID::Encoder.decode(payload) if valid?
+        return nil unless valid?
+        return yield(decode_payload, *decode_fingerprint) if block_given?
+
+        decode_payload
       end
 
       def deconstruct_keys(_keys)
-        {scheme: scheme, host: host, path: path}
+        {scheme: scheme, host: host, path: path, fragment: fragment}
       end
 
       def inspect
         "#<URI::UID scheme=#{scheme}, host=#{host}, payload=#{payload truncate: true}>"
+      end
+
+      private
+
+      def decode_payload
+        self.class.decode payload
+      end
+
+      def decode_fingerprint
+        self.class.decode fingerprint
       end
     end
 

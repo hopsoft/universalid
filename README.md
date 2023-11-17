@@ -2,7 +2,7 @@
   <h1 align="center">Universal ID</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-721-47d299.svg" />
+      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-750-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
       <img src="https://api.codeclimate.com/v1/badges/567624cbe733fafc2330/maintainability" />
@@ -56,6 +56,7 @@ MessagePack + Brotli is up to 30% faster and within 2-5% compression rates compa
   - [Advanced ActiveRecord](#advanced-activerecord)
   - [ActiveRecord::Relation Support](#activerecordrelation-support)
   - [SignedGlobalID](#signedglobalid)
+  - [Fingerprinting (Implicit Versioning)](#fingerprinting-implicit-versioning)
   - [Performance and Benchmarks](#performance-and-benchmarks)
   - [Sponsors](#sponsors)
   - [License](#license)
@@ -601,7 +602,7 @@ It's also possible to register frequently used options as reusable settings to f
   ```
 
   ```ruby
-  UniversalID::Settings.register :unsaved, YAML.safe_load("app/config/unsaved.yml")
+  UniversalID::Settings.register :unsaved, File.expand_path("app/config/unsaved.yml", __dir__)
   URI::UID.build @record, UniversalID::Settings[:small_record]
   ```
 </details>
@@ -982,6 +983,74 @@ simply convert your UniversalID to a SignedGlobalID to add these features to any
   #=> nil
   ```
 </details>
+
+## Fingerprinting (Implicit Versioning)
+
+Fingerprinting adds an extra layer of intelligence to the serialization process.
+UIDs automatically include a "fingerprint" for each serialized object based on the target object's class and
+its modification time _(mtime)_.
+
+Fingerprints are comprised of the following components:
+
+1. `Class (Class)`  - The encoded object's class
+2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
+
+> :bulb: **Modification Timestamp**: The `mtime` is detected and captured the moment a UID is created.
+
+Fingerprints allow developers to manage different versions of serialized data effectively...**without the need for custom versioning**.
+Whenever the class definition changes, the mtime updates, resulting in a different fingerprint.
+This is especially useful in scenarios where the data format evolves over time, such as in long-lived applications.
+
+<details>
+  <summary><b>How to Use Fingerprinting</b>... ▾</summary>
+  <p></p>
+
+  1. Build a UID using a custom handler _(optional Ruby block)_. This allows you to take control of the encoding process.
+
+  ```ruby
+  # NOTE: The campaign model instance was setup earlier in the "Model Instances" section above
+  campaign.save!
+
+  #           the uid build target (campaign in this case)
+  #                                    |
+  #                                    |  encoding options (whatever was passed to URI::UID.build or {})
+  #                                    |        |
+  uid = URI::UID.build(campaign) do |record, options|
+    data = { id: record.id, demo: true }
+    URI::UID.encode data, options.merge(include: %w[id demo]) # block returns the encoded payload
+  end
+  ```
+
+  2. Decode the UID using a custom handler _(optional Ruby block)_. This allows you to take control of the decoding process.
+
+  ```ruby
+  #                                              fingerprint components
+  #                                                     ____|______
+  #                     the decoded payload from above  |         |
+  #                                              |      |         |
+  decoded = URI::UID.parse(uid.to_s).decode do |data, klass, timestamp|
+    record = klass.find_by(id: data[:id])
+    record.instance_variable_set(:@demo, data[:demo])
+
+    case Time.parse(timestamp)
+    when 3.months.ago..Time.now
+      # current data format
+      # return the record as-is
+      record
+    when 1.year.ago..3.months.ago
+      # outdated data format
+      # apply an ETL process to bring the outdated data current
+      # then return the modified record
+      record
+    end
+  end
+  ```
+</details>
+
+Fingerprinting allows for seamless handling of different data versions and formats,
+so you can maintain consistency and reliability in applications dealing with serialized data over time.
+
+> :bulb: **Optional Usage**: While fingerpint creation is automatic and implicit, using it is optional... ready whenever you want more control.
 
 ## Performance and Benchmarks
 

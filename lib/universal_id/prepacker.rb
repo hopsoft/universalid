@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "refinements"
-
 class UniversalID::Prepacker
-  using UniversalID::Refinements::KernelRefinement
   using UniversalID::Refinements::ArrayRefinement
   using UniversalID::Refinements::HashRefinement
   using UniversalID::Refinements::SetRefinement

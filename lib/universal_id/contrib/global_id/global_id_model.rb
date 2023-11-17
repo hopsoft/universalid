@@ -15,7 +15,7 @@ class UniversalID::Contrib::GlobalIDModel
     when String
       case universal_id
       when /\A#{URI::UID::SCHEME}/o then URI::UID.parse(universal_id)
-      else URI::UID.parse(URI::UID.build_string(universal_id))
+      else URI::UID.parse(URI::UID.build_string(universal_id, self))
       end
     end
 

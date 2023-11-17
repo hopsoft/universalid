@@ -11,6 +11,7 @@ require_relative "message_pack_types/ruby/scalars/range"
 require_relative "message_pack_types/ruby/scalars/regexp"
 
 # composites
+require_relative "message_pack_types/ruby/composites/module"
 require_relative "message_pack_types/ruby/composites/open_struct"
 require_relative "message_pack_types/ruby/composites/struct"
 require_relative "message_pack_types/ruby/composites/set"
