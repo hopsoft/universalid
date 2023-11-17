@@ -1016,10 +1016,10 @@ This is especially useful in scenarios where the data format evolves over time, 
   #                                    |  encoding options (whatever was passed to URI::UID.build or {})
   #                                    |        |
   uid = URI::UID.build(campaign) do |record, options|
-    data = { id: record.id, demo: true }
-
     # NOTE: this feature is compatible with other tools like kiba, amoeba, etc.
     #       that can be leveraged to generate the data to be encoded
+
+    data = { id: record.id, demo: true }
 
     URI::UID.encode data, options.merge(include: %w[id demo]) # block returns the encoded payload
   end
