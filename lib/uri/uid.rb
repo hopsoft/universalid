@@ -68,11 +68,11 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
         def fingerprint_components(object)
           klass = object.is_a?(Class) ? object : object.class
-          tokens = [klass.name]
+          tokens = [klass]
 
           begin
             path = const_source_location(klass.name).first.to_s
-            tokens << ::File.mtime(path).utc.iso8601(9) if ::File.exist?(path)
+            tokens << ::File.mtime(path).utc if ::File.exist?(path)
           rescue => e
             UniversalID.logger&.warn "URI::UID#fingerprint: Unable to determine the source location for #{klass.name}!\n#{e.message}}"
           end

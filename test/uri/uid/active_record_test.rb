@@ -124,12 +124,12 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       encoder.encode data, options.merge(include: %w[id demo])
     end
 
-    decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, class_name, timestamp|
+    decoded = URI::UID.parse(uid.to_s).decode do |decoder, payload, klass, timestamp|
       data = decoder.decode(payload)
-      record = Object.const_get(class_name).find_by(id: data[:id])
+      record = klass.find_by(id: data[:id])
       record.instance_variable_set(:@demo, data[:demo])
 
-      case Time.parse(timestamp)
+      case timestamp
       when 3.months.ago..Time.now
         # current data format, return the record as-is
         record
