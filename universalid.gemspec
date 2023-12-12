@@ -35,6 +35,8 @@ Gem::Specification.new do |s|
   s.add_dependency "config", ">= 5.0"
 
   s.add_development_dependency "activerecord"
+  s.add_development_dependency "activesupport"
+  s.add_development_dependency "actionview"
   s.add_development_dependency "awesome_print"
   s.add_development_dependency "faker"
   s.add_development_dependency "globalid", ">= 1.1"
