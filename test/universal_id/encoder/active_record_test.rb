@@ -55,14 +55,14 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   def test_changed_persisted_model_with_registered_custom_config
     yaml = <<~YAML
       prepack:
-      exclude:
-      - description
-      - trigger
-      include_blank: false
+        exclude:
+          - description
+          - trigger
+        include_blank: false
 
-      database:
-      include_unsaved_changes: true
-      include_timestamps: false
+        database:
+          include_unsaved_changes: true
+          include_timestamps: false
     YAML
 
     _, settings = UniversalID::Settings.register("test_#{SecureRandom.alphanumeric(8)}", YAML.safe_load(yaml))
