@@ -17,8 +17,8 @@ module Testable
       records
     end
 
-    def create_for_test(count = 1, **)
-      records = build_for_test(count, **)
+    def create_for_test(count = 1, **attributes)
+      records = build_for_test(count, **attributes)
       records = [records] if count == 1
 
       records.each_with_index do |record, i|

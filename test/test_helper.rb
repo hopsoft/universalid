@@ -8,14 +8,14 @@ require "date"
 require "etc"
 require "faker"
 require "minitest/autorun"
-# require "minitest/parallel"
+require "minitest/parallel"
 require "minitest/reporters"
 require "pry-byebug"
 require "pry-doc"
 require "simplecov"
 
 # MiniTest setup
-# Minitest.parallel_executor = Minitest::Parallel::Executor.new([Etc.nprocessors, 1].max) # thread count
+Minitest.parallel_executor = Minitest::Parallel::Executor.new([Etc.nprocessors, 1].max) # thread count
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 
 # Bring in a minimal subset of Rails tooling for testing purposes
