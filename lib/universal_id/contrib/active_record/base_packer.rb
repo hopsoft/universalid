@@ -88,7 +88,8 @@ class UniversalID::Contrib::ActiveRecordBasePacker
     loaded_has_many_relations_by_name.each do |name, relation|
       descendants = relation.map do |descendant|
         descendant.instance_variable_set(:@_uid_depth, prepack_database_options.current_depth + 1)
-        UniversalID::Encoder.encode descendant, prepack_options
+        prepacked = UniversalID::Prepacker.prepack(descendant, prepack_options.to_h)
+        UniversalID::MessagePackFactory.msgpack_pool.dump prepacked
       ensure
         prepack_database_options.decrement_current_depth!
         descendant.remove_instance_variable :@_uid_depth

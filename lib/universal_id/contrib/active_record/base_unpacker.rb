@@ -37,7 +37,7 @@ class UniversalID::Contrib::ActiveRecordBaseUnpacker
       descendants.each do |name, list|
         next unless record.respond_to?(name) && record.respond_to?("#{name}=")
 
-        models = list.map { |encoded| UniversalID::Encoder.decode encoded }
+        models = list.map { |packed| UniversalID::MessagePackFactory.msgpack_pool.load(packed) }
         models.compact!
         next unless models.any?
 
