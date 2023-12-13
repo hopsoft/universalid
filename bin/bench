@@ -12,11 +12,11 @@ require_relative "../lib/universal_id/contrib/rails"
 
 include ActionView::Helpers::NumberHelper
 
-@iterations = 1
+@iterations = 500
 @line_length = 98
 @campaign_count = 1
-@email_count = 100
-@attachment_count = 10
+@email_count = 10
+@attachment_count = 3
 
 # seed data ..................................................................................................
 campaign = Campaign.create_for_test do |c|
@@ -60,7 +60,7 @@ print Rainbow(number_with_delimiter(@iterations)).lime
 print Rainbow(" #{"iteration".pluralize(@iterations)} ").cyan
 print Rainbow("with ").cyan
 print Rainbow(number_with_delimiter(record_count)).lime
-puts Rainbow(" records").cyan
+puts Rainbow(" related records marshaled as an atomic singular unit").cyan
 puts Rainbow("".ljust(@line_length, "=")).cyan.faint
 run("URI::UID.build Hash") { URI::UID.build hash }
 run("URI::UID.build Hash, include_blank: false") { URI::UID.build hash, include_blank: false }
