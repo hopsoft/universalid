@@ -97,7 +97,6 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
 
   def test_persisted_model_deep_copy_customized
     campaign = Campaign.create_for_test
-    campaign.emails = Email.create_for_test(3)
     campaign.emails = Email.create_for_test(3) do |email|
       email.attachments = Attachment.create_for_test(2)
     end

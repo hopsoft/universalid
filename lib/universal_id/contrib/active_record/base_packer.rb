@@ -42,6 +42,13 @@ class UniversalID::Contrib::ActiveRecordBasePacker
     return record.attributes.slice(record.class.primary_key) if id_only?(prepack_database_options)
 
     hash = record.attributes
+
+    if !record.changed? && prepack_database_options.include_keys?
+      keys = prepack_options.includes.none? ? [] : hash.keys.select { |key| prepack_options.keep_key? key }
+      keys.prepend record.class.primary_key
+      hash = hash.slice(*keys)
+    end
+
     reject_keys! hash if prepack_database_options.exclude_keys?
     reject_timestamps! hash if prepack_database_options.exclude_timestamps?
     reject_unsaved_changes! hash if prepack_database_options.exclude_unsaved_changes?

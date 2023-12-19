@@ -5,7 +5,6 @@ require_relative "../test_helper"
 class UniversalID::UniversalIDTest < Minitest::Test
   def test_uid_to_gid_back_to_uid
     campaign = Campaign.create_for_test
-    campaign.emails = Email.create_for_test(3)
     campaign.emails = Email.create_for_test(3) do |email|
       email.attachments = Attachment.create_for_test(2)
     end

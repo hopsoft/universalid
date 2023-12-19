@@ -26,11 +26,11 @@ class UniversalID::ReadmeTest < Minitest::Test
 
     assert_persisted_record campaign
 
-    campaign.name = "Changed Name #{SecureRandom.hex}"
+    campaign.name = "Campaign #{SecureRandom.hex}"
     campaign.emails.each do |email|
-      email.subject = "Changed Subject #{SecureRandom.hex}"
+      email.subject = "Email #{SecureRandom.hex}"
       email.attachments.each do |attachment|
-        attachment.file_name = "changed_file_name#{SecureRandom.hex}.pdf"
+        attachment.file_name = "Attachment-#{SecureRandom.hex}.pdf"
       end
     end
 

@@ -103,11 +103,16 @@ class URI::UID::ActiveRecordTest < Minitest::Test
 
   def test_persisted_model_with_loaded_has_many_associations_2_deep_with_changes
     campaign = Campaign.create_for_test
-    campaign.name = "Changed Campaign"
     campaign.emails = Email.create_for_test(3) do |email|
-      email.subject = "Changed Subject #{email.id}"
-      email.attachments = Attachment.create_for_test(2) do |attachment|
-        attachment.file_name = "changed.txt"
+      email.attachments = Attachment.create_for_test(2)
+    end
+
+    # make changes to all records
+    campaign.name = "Campaign #{SecureRandom.hex}"
+    campaign.emails.each do |email|
+      email.subject = "Email #{SecureRandom.hex}"
+      email.attachments.each do |attachment|
+        attachment.file_name = "Attachment-#{SecureRandom.hex}.txt"
       end
     end
 
@@ -117,8 +122,8 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       descendant_depth: 2
     }
 
-    uid = URI::UID.build(campaign, options)
-    decoded = URI::UID.parse(uid.to_s).decode
+    encoded = URI::UID.build(campaign, options).to_s
+    decoded = URI::UID.parse(encoded).decode
 
     # verify in-memory records have changes
     assert campaign.changed?
