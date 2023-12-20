@@ -39,20 +39,20 @@ class UniversalID::Contrib::ActiveRecordBasePacker
   private
 
   def packable_attributes
-    return record.attributes.slice(record.class.primary_key) if id_only?
-
-    hash = record.attributes
-
-    if !record.changed? && prepack_database_options.include_keys?
-      keys = hash.keys.select { |key| keep_key? key, asker: __method__ }
-      keys.prepend record.class.primary_key
-      hash = hash.slice(*keys)
+    hash = if id_only?
+      record.attributes.slice record.class.primary_key
+    else
+      record.attributes.select { |name, _| prepack_options.keep_key? name }.tap do |attrs|
+        reject_keys! attrs if prepack_database_options.exclude_keys?
+        reject_timestamps! attrs if prepack_database_options.exclude_timestamps?
+        reject_unsaved_changes! attrs if prepack_database_options.exclude_unsaved_changes?
+      end
     end
 
-    reject_keys! hash if prepack_database_options.exclude_keys?
-    reject_timestamps! hash if prepack_database_options.exclude_timestamps?
-    reject_unsaved_changes! hash if prepack_database_options.exclude_unsaved_changes?
-    add_descendants! hash if include_descendants?
+    if include_descendants?
+      add_descendants! hash
+      hash.delete DESCENDANTS_KEY if hash[DESCENDANTS_KEY].empty?
+    end
 
     hash.prepack prepack_options
   end
@@ -60,19 +60,23 @@ class UniversalID::Contrib::ActiveRecordBasePacker
   # helpers ..................................................................................................
   def id_only?
     return false if record.new_record?
-    return false if prepack_database_options.include_descendants?
-    prepack_database_options.exclude_unsaved_changes?
-  end
 
-  def keep_key?(key, asker:)
-    key = key.to_s
-    return true if id_only? && key == record.class.primary_key
-    return true if prepack_options.includes.any?(key)
+    # explicit exclusion of primary key
+    return false if prepack_options.reject_key?(record.class.primary_key)
 
-    # keep the key if explicitly included
-    return prepack_options.includes[key] if asker.start_with?("reject")
+    # explicit exclusion of all db keys and primary key is not explicitly included
+    return false if prepack_database_options.exclude_keys? && !prepack_options.keep_key?(record.class.primary_key)
 
-    prepack_options.keep_key? key
+    # non-pk attribute names
+    attribute_names = record.attributes.keys - [record.class.primary_key]
+
+    # explicit inclusion of non-pk attributes
+    return false if (attribute_names & prepack_options.includes.keys).any?
+
+    # record has unsaved non-pk changes and we want to keep them
+    return false if prepack_database_options.include_unsaved_changes? && (attribute_names & record.changes.keys).any?
+
+    prepack_database_options.include_keys?
   end
 
   def include_descendants?
@@ -86,17 +90,17 @@ class UniversalID::Contrib::ActiveRecordBasePacker
   # attribute mutators .......................................................................................
 
   def reject_keys!(hash)
-    hash.delete record.class.primary_key unless keep_key?(record.class.primary_key, asker: __method__)
-    foreign_key_column_names.each { |key| hash.delete(key) unless keep_key?(key, asker: __method__) }
+    hash.delete record.class.primary_key unless prepack_options.includes[record.class.primary_key]
+    foreign_key_column_names.each { |key| hash.delete(key) unless prepack_options.includes[key] }
   end
 
   def reject_timestamps!(hash)
-    timestamp_column_names.each { |key| hash.delete key unless keep_key?(key, asker: __method__) }
+    timestamp_column_names.each { |key| hash.delete key unless prepack_options.includes[key] }
   end
 
   def reject_unsaved_changes!(hash)
     record.changes_to_save.each do |key, (original_value, _)|
-      hash[key] = original_value if keep_key?(key, asker: __method__)
+      hash[key] = original_value if prepack_options.keep_key?(key)
     end
   end
 

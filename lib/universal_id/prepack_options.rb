@@ -37,7 +37,7 @@ class UniversalID::PrepackOptions
   end
 
   def reject_key?(key)
-    excludes[key.to_s]
+    !!excludes[key.to_s]
   end
 
   def keep_value?(value)

@@ -4,7 +4,7 @@
 require "active_support/all"
 require "action_view/helpers/number_helper"
 require "benchmark"
-require "pry"
+require "pry-byebug"
 require "rainbow"
 require_relative "../test/rails_kit/setup"
 require_relative "../lib/universal_id"
@@ -12,44 +12,58 @@ require_relative "../lib/universal_id/contrib/rails"
 
 include ActionView::Helpers::NumberHelper
 
-@iterations = 10
+@iterations = 1
 @line_length = 98
-@campaign_count = 10
-@email_count = 100
-@attachment_count = 10
+@max_record_count = 1_000
 
 # seed data ..................................................................................................
+
 def campaigns
   @campaigns ||= begin
-    Campaign.create_for_test @campaign_count do |c|
-      Email.create_for_test @email_count, campaign: c do |email|
-        Attachment.create_for_test @attachment_count, email: email
+    puts Rainbow("Creating records...").magenta
+    i = 0
+
+    Campaign.create_for_test do |c|
+      print Rainbow("#{i += 1} ").magenta.faint
+
+      while i < @max_record_count
+        Email.create_for_test campaign: c do |email|
+          print Rainbow("#{i += 1} ").magenta.faint
+
+          if i < @max_record_count
+            Attachment.create_for_test email: email do |attachment|
+              print Rainbow("#{i += 1} ").magenta.faint
+            end
+          end
+        end
       end
+
       # load associations into memory so they can be included in the pack or UID
       c.emails.each { |email| email.attachments.load }
     end
   end
+  @campaigns.is_a?(Array) ? @campaigns : [@campaigns]
 end
 
-def prepack_options_with_descendants
-  @campaign_prepack_options_with_descendants ||= {
+def prepack_options_copy_descendants
+  @campaign_prepack_options_copy_descendants ||= {
     include_keys: false,
     include_timestamps: false,
-    include_unsaved_changes: true,
     include_descendants: true,
     descendant_depth: 2
   }
 end
 
 ## setup ......................................................................................................
+puts Rainbow("Setup...").magenta
 campaign = campaigns.sample
-record_count = 1 + campaign.emails.count + Attachment.where(email: campaign.emails).count
+puts
 campaign_hash = campaign.as_json(include: {emails: {include: :attachments}})
 campaign_hash_uid = URI::UID.build(campaign_hash)
 campaign_hash_uid_string = campaign_hash_uid.to_s
 campaign_uid = URI::UID.build(campaign, include_descendants: true, descendant_depth: 1)
 campaign_uid_string = campaign_uid.to_s
-campaign_prepacked_with_descendants = UniversalID::Prepacker.prepack(campaign, prepack_options_with_descendants)
+campaign_prepacked_with_descendants = UniversalID::Prepacker.prepack(campaign, prepack_options_copy_descendants)
 campaign_packed_with_descendants = UniversalID::MessagePackFactory.msgpack_pool.dump(campaign_prepacked_with_descendants)
 
 # runner .....................................................................................................
@@ -67,43 +81,85 @@ print Rainbow("Benchmarking ").cyan
 print Rainbow(number_with_delimiter(@iterations)).lime
 print Rainbow(" #{"iteration".pluralize(@iterations)} ").cyan
 print Rainbow("with ").cyan
-print Rainbow(number_with_delimiter(record_count)).lime
+print Rainbow(number_with_delimiter(Campaign.count + Email.count + Attachment.count)).lime
 puts Rainbow(" related records marshaled as an atomic singular unit").cyan
 puts Rainbow("".ljust(@line_length, "=")).cyan.faint
 
-run("UID.build Hash") { URI::UID.build campaign_hash }
-run("UID.build Hash, exclude_blank") { URI::UID.build campaign_hash, include_blank: false }
-run("UID.parse Hash[String]") { URI::UID.parse campaign_hash_uid_string }
-run("UID.decode Hash") { campaign_hash_uid.decode }
-run("UID.build ActiveRecord") { URI::UID.build campaign }
-run("UID.build ActiveRecord, exclude_blank") { URI::UID.build campaign, include_blank: false }
-run("UID.build ActiveRecord") { URI::UID.build campaign, include_descendants: true, descendant_depth: 2 }
-run("UID.parse ActiveRecord[String]") { URI::UID.parse campaign_uid_string }
-run("UID.decode ActiveRecord") { campaign_uid.decode }
+run("UID.build Hash ....... +descendants") { URI::UID.build campaign_hash }
+run("UID.build ActiveRecord +descendants") { URI::UID.build campaign, include_descendants: true, descendant_depth: 2 }
+run("UID.build ActiveRecord +descendants copy") { URI::UID.build campaign, include_keys: false, include_descendants: true, descendant_depth: 2 }
 
-run("UID → GID → UID.from_gid → UID.decode") do
+puts
+puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
+puts
+
+run("UID.build Hash ....... +descendants -blank") { URI::UID.build campaign_hash, include_blank: false }
+run("UID.build ActiveRecord +descendants -blank") { URI::UID.build campaign, include_blank: false, include_descendants: true, descendant_depth: 2 }
+run("UID.build ActiveRecord +descendants -blank copy") { URI::UID.build campaign, include_keys: false, include_blanks: false, include_descendants: true, descendant_depth: 2 }
+
+puts
+puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
+puts
+
+run("UID.parse Hash ....... +descendants") { URI::UID.parse campaign_hash_uid_string }
+run("UID.parse ActiveRecord +descendants") { URI::UID.parse campaign_uid_string }
+
+puts
+puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
+puts
+
+run("UID.decode Hash ....... +descendants") { campaign_hash_uid.decode }
+run("UID.decode ActiveRecord +descendants") { campaign_uid.decode }
+
+puts
+puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
+puts
+
+run("UID.build ActiveRecord -descentants") { URI::UID.build campaign }
+run("UID.build ActiveRecord -descentants -blank") { URI::UID.build campaign, include_blank: false }
+run("UID.build ActiveRecord -descentants -blank copy") { URI::UID.build campaign, include_blank: false, include_keys: false }
+
+puts
+puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
+puts
+
+run("UID → GID → UID.from_gid → UID.decode  +descendants") do
   URI::UID.from_gid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_gid_param).decode
 end
 
-run("UID → SGID → UID.from_sgid → UID.decode") do
+run("UID → SGID → UID.from_sgid → UID.decode +descendants") do
   URI::UID
     .from_sgid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2)
     .to_sgid_param(for: "benchmarks"), for: "benchmarks").decode
 end
 
-run "prepack ActiveRecord" do
-  UniversalID::Prepacker.prepack campaign, prepack_options_with_descendants
+run "prepack ActiveRecord . +descendants copy" do
+  UniversalID::Prepacker.prepack campaign, prepack_options_copy_descendants
 end
 
-run "msgpack.dump prepacked" do
+run "prepack → msgpack.dump +descendants copy" do
   UniversalID::MessagePackFactory.msgpack_pool.dump campaign_prepacked_with_descendants
 end
 
-run "prepack → msgpack.dump" do
-  prepacked = UniversalID::Prepacker.prepack(campaign, prepack_options_with_descendants)
+run "prepack → msgpack.dump +descendants copy" do
+  prepacked = UniversalID::Prepacker.prepack(campaign, prepack_options_copy_descendants)
   UniversalID::MessagePackFactory.msgpack_pool.dump prepacked
 end
 
-run "msgpack.load packed" do
+run "prepack → msgpack.dump -descendants copy" do
+  prepacked = UniversalID::Prepacker.prepack(campaign, include_keys: false, include_timestamps: false)
+  UniversalID::MessagePackFactory.msgpack_pool.dump prepacked
+end
+
+run "prepack → msgpack.dump -descendants (==marshal.dump)" do
+  prepacked = UniversalID::Prepacker.prepack(campaign)
+  UniversalID::MessagePackFactory.msgpack_pool.dump prepacked
+end
+
+run "prepack → marshal.dump +descendants" do
+  Marshal.dump UniversalID::Prepacker.prepack(campaign, prepack_options_copy_descendants)
+end
+
+run "packed → msgpack.load  +descendants copy" do
   UniversalID::MessagePackFactory.msgpack_pool.load campaign_packed_with_descendants
 end

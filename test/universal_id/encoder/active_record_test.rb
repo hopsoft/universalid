@@ -3,12 +3,13 @@
 require_relative "../../test_helper"
 
 class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
-  def test_new_model
+  def test_new_model_exclude_unsaved_changes
     campaign = Campaign.build_for_test
     encoded = UniversalID::Encoder.encode(campaign)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign.class, decoded.class
-    assert_equal campaign.attributes, decoded.attributes
+    refute_equal campaign.attributes, decoded.attributes
+    assert_empty decoded.attributes.compact
   end
 
   def test_new_model_include_unsaved_changes
@@ -106,7 +107,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
       exclude: [:description, :body, :file_data],
       include_keys: false,
       include_timestamps: false,
-      include_unsaved_changes: true,
+      include_unsaved_changes: false,
       include_descendants: true,
       descendant_depth: 2
     }

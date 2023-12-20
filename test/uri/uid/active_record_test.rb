@@ -3,12 +3,13 @@
 require_relative "../../test_helper"
 
 class URI::UID::ActiveRecordTest < Minitest::Test
-  def test_new_model
+  def test_new_model_exclude_unsaved_changes
     campaign = Campaign.build_for_test
     uid = URI::UID.build(campaign)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign.class, decoded.class
-    assert_equal campaign.attributes, decoded.attributes
+    refute_equal campaign.attributes, decoded.attributes
+    assert_empty decoded.attributes.compact
   end
 
   def test_new_model_include_unsaved_changes
