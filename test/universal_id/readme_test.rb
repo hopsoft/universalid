@@ -15,9 +15,9 @@ class UniversalID::ReadmeTest < Minitest::Test
     }
 
     encoded = URI::UID.build(campaign, options).to_s
-    restored = URI::UID.parse(encoded).decode
+    decoded = URI::UID.parse(encoded).decode
 
-    assert_new_record restored
+    assert_new_record decoded
   end
 
   def test_unsaved_changes_on_persisted_records
@@ -41,9 +41,9 @@ class UniversalID::ReadmeTest < Minitest::Test
     }
 
     encoded = URI::UID.build(campaign, options).to_s
-    restored = URI::UID.parse(encoded).decode
+    decoded = URI::UID.parse(encoded).decode
 
-    assert_persisted_record restored, changes_expected: true
+    assert_persisted_record decoded, changes_expected: true
   end
 
   def test_copy_persisted_records
@@ -61,17 +61,17 @@ class UniversalID::ReadmeTest < Minitest::Test
     }
 
     encoded = URI::UID.build(campaign, options).to_s
-    copy = URI::UID.parse(encoded).decode
+    decoded = URI::UID.parse(encoded).decode
 
-    assert_new_record copy
-    copy.save!
-    assert_persisted_record copy
+    assert_new_record decoded
+    decoded.save!
+    assert_persisted_record decoded
 
-    refute_equal campaign.id, copy.id
+    refute_equal campaign.id, decoded.id
 
     campaign.emails.each do |email|
-      assert (campaign.emails.map(&:id) & copy.emails.map(&:id)).none?
-      assert (campaign.emails.map(&:attachments).flatten.map(&:id) & copy.emails.map(&:attachments).flatten.map(&:id)).none?
+      assert (campaign.emails.map(&:id) & decoded.emails.map(&:id)).none?
+      assert (campaign.emails.map(&:attachments).flatten.map(&:id) & decoded.emails.map(&:attachments).flatten.map(&:id)).none?
     end
   end
 

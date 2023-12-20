@@ -18,8 +18,13 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         end
 
         def parse(value)
-          components = ::URI.split(value.to_s)
-          new(*components)
+          return nil if value.nil?
+          return value if value.is_a?(self)
+
+          value = value.to_s
+          return nil if value.strip.empty?
+
+          new(*::URI.split(value))
         end
 
         def build_string(payload, object = nil)

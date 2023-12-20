@@ -39,12 +39,12 @@ class UniversalID::Contrib::ActiveRecordBasePacker
   private
 
   def packable_attributes
-    return record.attributes.slice(record.class.primary_key) if id_only?(prepack_database_options)
+    return record.attributes.slice(record.class.primary_key) if id_only?
 
     hash = record.attributes
 
     if !record.changed? && prepack_database_options.include_keys?
-      keys = prepack_options.includes.none? ? [] : hash.keys.select { |key| prepack_options.keep_key? key }
+      keys = hash.keys.select { |key| keep_key? key, asker: __method__ }
       keys.prepend record.class.primary_key
       hash = hash.slice(*keys)
     end
@@ -58,10 +58,21 @@ class UniversalID::Contrib::ActiveRecordBasePacker
   end
 
   # helpers ..................................................................................................
-  def id_only?(prepack_database_options)
+  def id_only?
     return false if record.new_record?
     return false if prepack_database_options.include_descendants?
     prepack_database_options.exclude_unsaved_changes?
+  end
+
+  def keep_key?(key, asker:)
+    key = key.to_s
+    return true if id_only? && key == record.class.primary_key
+    return true if prepack_options.includes.any?(key)
+
+    # keep the key if explicitly included
+    return prepack_options.includes[key] if asker.start_with?("reject")
+
+    prepack_options.keep_key? key
   end
 
   def include_descendants?
@@ -75,17 +86,17 @@ class UniversalID::Contrib::ActiveRecordBasePacker
   # attribute mutators .......................................................................................
 
   def reject_keys!(hash)
-    hash.delete record.class.primary_key
-    foreign_key_column_names.each { |key| hash.delete key }
+    hash.delete record.class.primary_key unless keep_key?(record.class.primary_key, asker: __method__)
+    foreign_key_column_names.each { |key| hash.delete(key) unless keep_key?(key, asker: __method__) }
   end
 
   def reject_timestamps!(hash)
-    timestamp_column_names.each { |key| hash.delete key }
+    timestamp_column_names.each { |key| hash.delete key unless keep_key?(key, asker: __method__) }
   end
 
   def reject_unsaved_changes!(hash)
     record.changes_to_save.each do |key, (original_value, _)|
-      hash[key] = original_value
+      hash[key] = original_value if keep_key?(key, asker: __method__)
     end
   end
 

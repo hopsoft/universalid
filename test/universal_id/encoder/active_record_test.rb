@@ -8,7 +8,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     encoded = UniversalID::Encoder.encode(campaign)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign.class, decoded.class
-    refute_equal campaign.attributes, decoded.attributes
+    assert_equal campaign.attributes, decoded.attributes
   end
 
   def test_new_model_include_unsaved_changes
