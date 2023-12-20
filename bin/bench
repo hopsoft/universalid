@@ -12,9 +12,9 @@ require_relative "../lib/universal_id/contrib/rails"
 
 include ActionView::Helpers::NumberHelper
 
-@iterations = 1
+@iterations = 10
 @line_length = 98
-@max_record_count = 1_000
+@max_record_count = 500
 
 # seed data ..................................................................................................
 
@@ -89,39 +89,32 @@ run("UID.build Hash ....... +descendants") { URI::UID.build campaign_hash }
 run("UID.build ActiveRecord +descendants") { URI::UID.build campaign, include_descendants: true, descendant_depth: 2 }
 run("UID.build ActiveRecord +descendants copy") { URI::UID.build campaign, include_keys: false, include_descendants: true, descendant_depth: 2 }
 
-puts
-puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
-puts
+puts Rainbow("".ljust(@line_length, "=")).cyan.faint
 
 run("UID.build Hash ....... +descendants -blank") { URI::UID.build campaign_hash, include_blank: false }
 run("UID.build ActiveRecord +descendants -blank") { URI::UID.build campaign, include_blank: false, include_descendants: true, descendant_depth: 2 }
 run("UID.build ActiveRecord +descendants -blank copy") { URI::UID.build campaign, include_keys: false, include_blanks: false, include_descendants: true, descendant_depth: 2 }
 
-puts
-puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
-puts
+puts Rainbow("".ljust(@line_length, "=")).cyan.faint
 
 run("UID.parse Hash ....... +descendants") { URI::UID.parse campaign_hash_uid_string }
 run("UID.parse ActiveRecord +descendants") { URI::UID.parse campaign_uid_string }
 
-puts
-puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
-puts
+puts Rainbow("".ljust(@line_length, "=")).cyan.faint
 
 run("UID.decode Hash ....... +descendants") { campaign_hash_uid.decode }
 run("UID.decode ActiveRecord +descendants") { campaign_uid.decode }
 
-puts
-puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
-puts
+puts Rainbow("".ljust(@line_length, "=")).cyan.faint
 
+run("ActiveRecord → GlobalID") { campaign.to_gid_param }
+run("ActiveRecord → SignedGlobalID") { campaign.to_sgid_param }
+run("Encoder.encode ActiveRecord -descentants (== gid)") { UniversalID::Encoder.encode campaign }
 run("UID.build ActiveRecord -descentants") { URI::UID.build campaign }
 run("UID.build ActiveRecord -descentants -blank") { URI::UID.build campaign, include_blank: false }
 run("UID.build ActiveRecord -descentants -blank copy") { URI::UID.build campaign, include_blank: false, include_keys: false }
 
-puts
-puts Rainbow("".ljust(@line_length, "#")).dimgray.faint
-puts
+puts Rainbow("".ljust(@line_length, "=")).cyan.faint
 
 run("UID → GID → UID.from_gid → UID.decode  +descendants") do
   URI::UID.from_gid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_gid_param).decode
