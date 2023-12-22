@@ -11,132 +11,130 @@ require_relative "../lib/universalid"
 
 include ActionView::Helpers::NumberHelper
 
-@iterations = 100
-@max_record_count = 1_000
-@divider = Rainbow("".ljust(98, ".")).faint
-@group_divider = Rainbow("".ljust(98, "=")).cyan.faint
+@iterations = 10
+@max_record_count = 100
 
 # seed data ..................................................................................................
 
 def increment(reset: false)
   @number = 0 if reset
   print "\e[A\e[K"
-  puts Rainbow(@number).lime
+  print Rainbow("Creating ").cyan
+  print Rainbow(@number).lime
+  puts Rainbow(" records").cyan
   @number += 1
 end
 
-def campaigns
-  return @campaigns if @campaigns
-
+@campaign ||= begin
   done = false
   increment(reset: true)
-  campaign = Campaign.create_for_test
-  emails = Email.create_for_test(@max_record_count / 4, campaign: campaign) { increment }
+  Campaign.create_for_test do |c|
+    emails = Email.create_for_test(@max_record_count / 4, campaign: c) { increment }
 
-  emails.each do |email|
-    break if done
-    rand(2..8).times do
-      done = increment > @max_record_count
+    emails.each do |email|
       break if done
-      Attachment.create_for_test email: email
+      rand(2..8).times do
+        done = increment > @max_record_count
+        break if done
+        Attachment.create_for_test email: email
+      end
     end
   end
-
-  # load associations into memory so they can be included in the pack or UID
-  campaign.emails.each { |email| email.attachments.load }
-
-  @campaigns = [campaign]
 end
 
-def prepack_options_copy_descendants
-  @campaign_prepack_options_copy_descendants ||= {
-    include_keys: false,
-    include_timestamps: false,
-    include_descendants: true,
-    descendant_depth: 2
-  }
+# load associations into memory so they can be included in the pack or UID
+@campaign.emails.each { |e| e.attachments.load }
+
+def publish(label)
+  puts "\n#{label}"
+  yield if block_given?
 end
 
-## setup ......................................................................................................
-puts @group_divider
-puts Rainbow("Creating database records:\n").cyan
-campaign = campaigns.sample
-#campaign_hash = campaign.as_json(include: {emails: {include: :attachments}})
-#campaign_hash_uid = URI::UID.build(campaign_hash)
-#campaign_hash_uid_string = campaign_hash_uid.to_s
-#campaign_uid = URI::UID.build(campaign, include_descendants: true, descendant_depth: 1)
-#campaign_uid_string = campaign_uid.to_s
-#campaign_packed_with_descendants = UniversalID::Packer.pack(campaign, prepack_options_copy_descendants)
-
-# runner .....................................................................................................
-
-def run(label, iterations: @iterations, line: "")
+def run(label, iterations: @iterations)
   GC.disable
-  Benchmark.benchmark(Benchmark::CAPTION, 52, Benchmark::FORMAT, "AVG PER ITERATION", "AVG PER RECORD") do |x|
-    time = x.report(Rainbow(label.ljust(53, " ")).limegreen) { iterations.times { yield } }
-    avg_per_iteration = time / iterations
-    avg_per_record = avg_per_iteration / @max_record_count
-
-    [avg_per_iteration, avg_per_record]
+  Benchmark.benchmark(Benchmark::CAPTION, 52, Benchmark::FORMAT, "Avg Milliseconds per/iteration", "Avg Milliseconds per/record") do |x|
+    time = x.report(Rainbow("#{label} ".ljust(53, ".")).cyan) { iterations.times { yield } }
+    avg_seconds_per_iteration = time / iterations
+    avg_seconds_per_record = avg_seconds_per_iteration / @max_record_count
+    [avg_seconds_per_iteration * 1_000, avg_seconds_per_record * 1_000]
   end
-  puts line
 ensure
   GC.enable
 end
 
-
 # benchmarks .................................................................................................
-puts @group_divider
-print Rainbow("Benchmarking ").cyan
-print Rainbow(number_with_delimiter(@iterations)).lime
-print Rainbow(" #{"iteration".pluralize(@iterations)} ").cyan
-print Rainbow("with ").cyan
-print Rainbow(number_with_delimiter(Campaign.count + Email.count + Attachment.count)).lime
-puts Rainbow(" related records marshaled as an atomic singular unit").cyan
-puts @group_divider
+publish(
+  [
+    Rainbow("Benchmarking ").cyan.bright,
+    Rainbow(number_with_delimiter(@iterations)).lime,
+    Rainbow(" #{"iteration".pluralize(@iterations)} ").cyan.bright,
+    Rainbow("with ").cyan.bright,
+    Rainbow(number_with_delimiter(Campaign.count + Email.count + Attachment.count)).lime,
+    Rainbow(" related records marshaled as an atomic singular unit").cyan.bright
+  ].join
+)
 
 # ............................................................................................................
 #run("UID.build Hash ....... +descendants") { URI::UID.build campaign_hash }
 #run("UID.build ActiveRecord +descendants") { URI::UID.build campaign, include_descendants: true, descendant_depth: 2 }
-#run("UID.build ActiveRecord +descendants copy", line: @group_divider) { URI::UID.build campaign, include_keys: false, include_descendants: true, descendant_depth: 2 }
+#run("UID.build ActiveRecord +descendants copy") { URI::UID.build campaign, include_keys: false, include_descendants: true, descendant_depth: 2 }
 ## ............................................................................................................
 #run("UID.build Hash ....... +descendants -blank") { URI::UID.build campaign_hash, include_blank: false }
 #run("UID.build ActiveRecord +descendants -blank") { URI::UID.build campaign, include_blank: false, include_descendants: true, descendant_depth: 2 }
-#run("UID.build ActiveRecord +descendants -blank copy", line: @group_divider) { URI::UID.build campaign, include_keys: false, include_blanks: false, include_descendants: true, descendant_depth: 2 }
+#run("UID.build ActiveRecord +descendants -blank copy") { URI::UID.build campaign, include_keys: false, include_blanks: false, include_descendants: true, descendant_depth: 2 }
 ## ............................................................................................................
 #run("UID.parse Hash ....... +descendants") { URI::UID.parse campaign_hash_uid_string }
-#run("UID.parse ActiveRecord +descendants", line: @group_divider) { URI::UID.parse campaign_uid_string }
+#run("UID.parse ActiveRecord +descendants") { URI::UID.parse campaign_uid_string }
 ## ............................................................................................................
 #run("UID.decode Hash ....... +descendants") { campaign_hash_uid.decode }
-#run("UID.decode ActiveRecord +descendants", line: @group_divider) { campaign_uid.decode }
+#run("UID.decode ActiveRecord +descendants") { campaign_uid.decode }
 ## ............................................................................................................
 #run("ActiveRecord → GlobalID") { campaign.to_gid_param }
 #run("ActiveRecord → SignedGlobalID") { campaign.to_sgid_param }
 #run("Encoder.encode ActiveRecord -descentants (== gid)") { UniversalID::Encoder.encode campaign }
 #run("UID.build ActiveRecord -descentants") { URI::UID.build campaign }
 #run("UID.build ActiveRecord -descentants -blank") { URI::UID.build campaign, include_blank: false }
-#run("UID.build ActiveRecord -descentants -blank copy", line: @group_divider) { URI::UID.build campaign, include_blank: false, include_keys: false }
+#run("UID.build ActiveRecord -descentants -blank copy") { URI::UID.build campaign, include_blank: false, include_keys: false }
 ## ............................................................................................................
 #run("UID → GID → UID.from_gid → UID.decode  +descendants") do
   #URI::UID.from_gid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_gid_param).decode
 #end
 
-#run("UID → SGID → UID.from_sgid → UID.decode +descendants", line: @group_divider) do
+#run("UID → SGID → UID.from_sgid → UID.decode +descendants") do
   #URI::UID
     #.from_sgid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2)
     #.to_sgid_param(for: "benchmarks"), for: "benchmarks").decode
 #end
 
-run("UniversalID::Packer.pack -descendants") { @packed_without_descendants = UniversalID::Packer.pack campaign }
-run("UniversalID::Packer.unpack -descendants", line: @group_divider) { UniversalID::Packer.unpack @packed_without_descendants }
+publish Rainbow("ActiveRecord +pks ".ljust(98, ".")).lime.bright do
+  packed = UniversalID::Packer.pack(@campaign)
+  run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign }
+  run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+end
 
-run("UniversalID::Packer.pack -descendants copy") { @packed_without_descendants_copy = UniversalID::Packer.pack campaign, include_keys: false, include_timestamps: false }
-run("UniversalID::Packer.unpack -descendants copy", line: @group_divider) { UniversalID::Packer.unpack @packed_without_descendants_copy }
+publish Rainbow("ActiveRecord +pks, +descendants ".ljust(98, ".")).lime.bright do
+  options = {include_descendants: true, descendant_depth: 2}
+  packed = UniversalID::Packer.pack(@campaign, options)
+  run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+  run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+end
 
-run("UniversalID::Packer.pack +descendants") { @packed_with_descendants = UniversalID::Packer.pack campaign, include_descendants: true, descendant_depth: 2 }
-run("UniversalID::Packer.unpack +descendants", line: @group_divider) { UniversalID::Packer.unpack @packed_with_descendants }
+publish Rainbow("ActiveRecord -pks, -fks, -timestamps ".ljust(98, ".")).lime.bright do
+  options = {include_keys: false, include_timestamps: false}
+  packed = UniversalID::Packer.pack(@campaign, options)
+  run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+  run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+end
 
-run("UniversalID::Packer.pack +descendants copy") { @packed_with_descendants_copy = UniversalID::Packer.pack campaign, prepack_options_copy_descendants }
-run("UniversalID::Packer.unpack +descendants copy", line: @group_divider) { UniversalID::Packer.unpack @packed_with_descendants_copy }
+publish Rainbow("ActiveRecord -pks, -fks, -timestamps, +descendants ".ljust(98, ".")).lime.bright do
+  options = {include_keys: false, include_timestamps: false, include_descendants: true, descendant_depth: 2}
+  packed = UniversalID::Packer.pack(@campaign, options)
+  run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+  run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+end
 
-run("marshal.dump") { Marshal.dump campaign }
+publish Rainbow("Native Ruby ".ljust(98, ".")).red.bright do
+  dumped = Marshal.dump @campaign
+  run("Marshal.dump") { Marshal.dump @campaign }
+  run("Marshal.load") { Marshal.load dumped }
+end

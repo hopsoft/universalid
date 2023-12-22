@@ -73,10 +73,10 @@ if defined? ActiveRecord
       attribute_names = record.attributes.keys - [record.class.primary_key]
 
       # explicit inclusion of non-pk attributes
-      return false if prepack_options.includes.any? && (attribute_names & prepack_options.includes.keys).any?
+      return false if prepack_options.includes.any? && attribute_names.any? { |attr| prepack_options.includes[attr] }
 
       # record has unsaved non-pk changes and we want to keep them
-      return false if prepack_database_options.include_unsaved_changes? && record.changes.any? && (attribute_names & record.changes.keys).any?
+      return false if prepack_database_options.include_unsaved_changes? && attribute_names.any? { |attr| record.changes[attr] }
 
       prepack_database_options.include_keys?
     end
