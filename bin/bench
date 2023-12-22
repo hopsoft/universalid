@@ -70,7 +70,8 @@ campaign = campaigns.sample
 
 # runner .....................................................................................................
 
-def run(label, iterations: @iterations, line: @divider)
+def run(label, iterations: @iterations, line: "")
+  GC.disable
   Benchmark.benchmark(Benchmark::CAPTION, 52, Benchmark::FORMAT, "AVG PER ITERATION", "AVG PER RECORD") do |x|
     time = x.report(Rainbow(label.ljust(53, " ")).limegreen) { iterations.times { yield } }
     avg_per_iteration = time / iterations
@@ -79,6 +80,8 @@ def run(label, iterations: @iterations, line: @divider)
     [avg_per_iteration, avg_per_record]
   end
   puts line
+ensure
+  GC.enable
 end
 
 
@@ -136,4 +139,4 @@ run("UniversalID::Packer.unpack +descendants", line: @group_divider) { Universal
 run("UniversalID::Packer.pack +descendants copy") { @packed_with_descendants_copy = UniversalID::Packer.pack campaign, prepack_options_copy_descendants }
 run("UniversalID::Packer.unpack +descendants copy", line: @group_divider) { UniversalID::Packer.unpack @packed_with_descendants_copy }
 
-run("marshal.dump +descendants") { Marshal.dump campaign }
+run("marshal.dump") { Marshal.dump campaign }
