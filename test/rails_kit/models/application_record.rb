@@ -2,7 +2,7 @@
 
 require "model_probe"
 require_relative "concerns/testable"
-require_relative "../../../lib/universal_id/version"
+require_relative "../../../lib/universalid/version"
 
 class ApplicationRecord < ActiveRecord::Base
   extend ModelProbe

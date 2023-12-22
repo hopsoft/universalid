@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "lib/universal_id/version"
+require_relative "lib/universalid/version"
 
 Gem::Specification.new do |s|
   s.name = "universalid"
@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency "brotli", ">= 0.4"
   s.add_dependency "msgpack", ">= 1.7"
   s.add_dependency "config", ">= 5.0"
+  s.add_dependency "zeitwerk"
 
   s.add_development_dependency "activerecord"
   s.add_development_dependency "activesupport"

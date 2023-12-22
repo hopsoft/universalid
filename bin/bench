@@ -7,13 +7,12 @@ require "benchmark"
 require "pry-byebug"
 require "rainbow"
 require_relative "../test/rails_kit/setup"
-require_relative "../lib/universal_id"
-require_relative "../lib/universal_id/contrib/rails"
+require_relative "../lib/universalid"
 
 include ActionView::Helpers::NumberHelper
 
-@iterations = 1
-@max_record_count = 100_000
+@iterations = 100
+@max_record_count = 1_000
 @divider = Rainbow("".ljust(98, ".")).faint
 @group_divider = Rainbow("".ljust(98, "=")).cyan.faint
 
@@ -62,20 +61,22 @@ end
 puts @group_divider
 puts Rainbow("Creating database records:\n").cyan
 campaign = campaigns.sample
-campaign_hash = campaign.as_json(include: {emails: {include: :attachments}})
-campaign_hash_uid = URI::UID.build(campaign_hash)
-campaign_hash_uid_string = campaign_hash_uid.to_s
-campaign_uid = URI::UID.build(campaign, include_descendants: true, descendant_depth: 1)
-campaign_uid_string = campaign_uid.to_s
-campaign_prepacked_with_descendants = UniversalID::Prepacker.prepack(campaign, prepack_options_copy_descendants)
-campaign_packed_with_descendants = UniversalID::MessagePackFactory.msgpack_pool.dump(campaign_prepacked_with_descendants)
+#campaign_hash = campaign.as_json(include: {emails: {include: :attachments}})
+#campaign_hash_uid = URI::UID.build(campaign_hash)
+#campaign_hash_uid_string = campaign_hash_uid.to_s
+#campaign_uid = URI::UID.build(campaign, include_descendants: true, descendant_depth: 1)
+#campaign_uid_string = campaign_uid.to_s
+#campaign_packed_with_descendants = UniversalID::Packer.pack(campaign, prepack_options_copy_descendants)
 
 # runner .....................................................................................................
 
 def run(label, iterations: @iterations, line: @divider)
-  Benchmark.benchmark Benchmark::CAPTION, 52, Benchmark::FORMAT, "Average" do |x|
-    time = x.report(label) { iterations.times { yield } }
-    [time / iterations.to_f]
+  Benchmark.benchmark(Benchmark::CAPTION, 52, Benchmark::FORMAT, "AVG PER ITERATION", "AVG PER RECORD") do |x|
+    time = x.report(Rainbow(label.ljust(53, " ")).limegreen) { iterations.times { yield } }
+    avg_per_iteration = time / iterations
+    avg_per_record = avg_per_iteration / @max_record_count
+
+    [avg_per_iteration, avg_per_record]
   end
   puts line
 end
@@ -92,64 +93,47 @@ puts Rainbow(" related records marshaled as an atomic singular unit").cyan
 puts @group_divider
 
 # ............................................................................................................
-run("UID.build Hash ....... +descendants") { URI::UID.build campaign_hash }
-run("UID.build ActiveRecord +descendants") { URI::UID.build campaign, include_descendants: true, descendant_depth: 2 }
-run("UID.build ActiveRecord +descendants copy", line: @group_divider) { URI::UID.build campaign, include_keys: false, include_descendants: true, descendant_depth: 2 }
-# ............................................................................................................
-run("UID.build Hash ....... +descendants -blank") { URI::UID.build campaign_hash, include_blank: false }
-run("UID.build ActiveRecord +descendants -blank") { URI::UID.build campaign, include_blank: false, include_descendants: true, descendant_depth: 2 }
-run("UID.build ActiveRecord +descendants -blank copy", line: @group_divider) { URI::UID.build campaign, include_keys: false, include_blanks: false, include_descendants: true, descendant_depth: 2 }
-# ............................................................................................................
-run("UID.parse Hash ....... +descendants") { URI::UID.parse campaign_hash_uid_string }
-run("UID.parse ActiveRecord +descendants", line: @group_divider) { URI::UID.parse campaign_uid_string }
-# ............................................................................................................
-run("UID.decode Hash ....... +descendants") { campaign_hash_uid.decode }
-run("UID.decode ActiveRecord +descendants", line: @group_divider) { campaign_uid.decode }
-# ............................................................................................................
-run("ActiveRecord → GlobalID") { campaign.to_gid_param }
-run("ActiveRecord → SignedGlobalID") { campaign.to_sgid_param }
-run("Encoder.encode ActiveRecord -descentants (== gid)") { UniversalID::Encoder.encode campaign }
-run("UID.build ActiveRecord -descentants") { URI::UID.build campaign }
-run("UID.build ActiveRecord -descentants -blank") { URI::UID.build campaign, include_blank: false }
-run("UID.build ActiveRecord -descentants -blank copy", line: @group_divider) { URI::UID.build campaign, include_blank: false, include_keys: false }
-# ............................................................................................................
-run("UID → GID → UID.from_gid → UID.decode  +descendants") do
-  URI::UID.from_gid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_gid_param).decode
-end
+#run("UID.build Hash ....... +descendants") { URI::UID.build campaign_hash }
+#run("UID.build ActiveRecord +descendants") { URI::UID.build campaign, include_descendants: true, descendant_depth: 2 }
+#run("UID.build ActiveRecord +descendants copy", line: @group_divider) { URI::UID.build campaign, include_keys: false, include_descendants: true, descendant_depth: 2 }
+## ............................................................................................................
+#run("UID.build Hash ....... +descendants -blank") { URI::UID.build campaign_hash, include_blank: false }
+#run("UID.build ActiveRecord +descendants -blank") { URI::UID.build campaign, include_blank: false, include_descendants: true, descendant_depth: 2 }
+#run("UID.build ActiveRecord +descendants -blank copy", line: @group_divider) { URI::UID.build campaign, include_keys: false, include_blanks: false, include_descendants: true, descendant_depth: 2 }
+## ............................................................................................................
+#run("UID.parse Hash ....... +descendants") { URI::UID.parse campaign_hash_uid_string }
+#run("UID.parse ActiveRecord +descendants", line: @group_divider) { URI::UID.parse campaign_uid_string }
+## ............................................................................................................
+#run("UID.decode Hash ....... +descendants") { campaign_hash_uid.decode }
+#run("UID.decode ActiveRecord +descendants", line: @group_divider) { campaign_uid.decode }
+## ............................................................................................................
+#run("ActiveRecord → GlobalID") { campaign.to_gid_param }
+#run("ActiveRecord → SignedGlobalID") { campaign.to_sgid_param }
+#run("Encoder.encode ActiveRecord -descentants (== gid)") { UniversalID::Encoder.encode campaign }
+#run("UID.build ActiveRecord -descentants") { URI::UID.build campaign }
+#run("UID.build ActiveRecord -descentants -blank") { URI::UID.build campaign, include_blank: false }
+#run("UID.build ActiveRecord -descentants -blank copy", line: @group_divider) { URI::UID.build campaign, include_blank: false, include_keys: false }
+## ............................................................................................................
+#run("UID → GID → UID.from_gid → UID.decode  +descendants") do
+  #URI::UID.from_gid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_gid_param).decode
+#end
 
-run("UID → SGID → UID.from_sgid → UID.decode +descendants") do
-  URI::UID
-    .from_sgid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2)
-    .to_sgid_param(for: "benchmarks"), for: "benchmarks").decode
-end
+#run("UID → SGID → UID.from_sgid → UID.decode +descendants", line: @group_divider) do
+  #URI::UID
+    #.from_sgid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2)
+    #.to_sgid_param(for: "benchmarks"), for: "benchmarks").decode
+#end
 
-run "prepack ActiveRecord . +descendants copy" do
-  UniversalID::Prepacker.prepack campaign, prepack_options_copy_descendants
-end
+run("UniversalID::Packer.pack -descendants") { @packed_without_descendants = UniversalID::Packer.pack campaign }
+run("UniversalID::Packer.unpack -descendants", line: @group_divider) { UniversalID::Packer.unpack @packed_without_descendants }
 
-run "prepack → msgpack.dump +descendants copy" do
-  UniversalID::MessagePackFactory.msgpack_pool.dump campaign_prepacked_with_descendants
-end
+run("UniversalID::Packer.pack -descendants copy") { @packed_without_descendants_copy = UniversalID::Packer.pack campaign, include_keys: false, include_timestamps: false }
+run("UniversalID::Packer.unpack -descendants copy", line: @group_divider) { UniversalID::Packer.unpack @packed_without_descendants_copy }
 
-run "prepack → msgpack.dump +descendants copy" do
-  prepacked = UniversalID::Prepacker.prepack(campaign, prepack_options_copy_descendants)
-  UniversalID::MessagePackFactory.msgpack_pool.dump prepacked
-end
+run("UniversalID::Packer.pack +descendants") { @packed_with_descendants = UniversalID::Packer.pack campaign, include_descendants: true, descendant_depth: 2 }
+run("UniversalID::Packer.unpack +descendants", line: @group_divider) { UniversalID::Packer.unpack @packed_with_descendants }
 
-run "prepack → msgpack.dump -descendants copy" do
-  prepacked = UniversalID::Prepacker.prepack(campaign, include_keys: false, include_timestamps: false)
-  UniversalID::MessagePackFactory.msgpack_pool.dump prepacked
-end
+run("UniversalID::Packer.pack +descendants copy") { @packed_with_descendants_copy = UniversalID::Packer.pack campaign, prepack_options_copy_descendants }
+run("UniversalID::Packer.unpack +descendants copy", line: @group_divider) { UniversalID::Packer.unpack @packed_with_descendants_copy }
 
-run "prepack → msgpack.dump -descendants (==marshal.dump)" do
-  prepacked = UniversalID::Prepacker.prepack(campaign)
-  UniversalID::MessagePackFactory.msgpack_pool.dump prepacked
-end
-
-run "prepack → marshal.dump +descendants" do
-  Marshal.dump UniversalID::Prepacker.prepack(campaign, prepack_options_copy_descendants)
-end
-
-run "packed → msgpack.load  +descendants copy" do
-  UniversalID::MessagePackFactory.msgpack_pool.load campaign_packed_with_descendants
-end
+run("marshal.dump +descendants") { Marshal.dump campaign }

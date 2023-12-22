@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "ostruct"
+
 module UniversalID::Refinements::OpenStructRefinement
   refine OpenStruct do
     using UniversalID::Refinements::HashRefinement

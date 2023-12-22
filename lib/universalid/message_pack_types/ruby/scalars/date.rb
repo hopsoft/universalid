@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "date"
+
 UniversalID::MessagePackFactory.register_scalar(
   type: Date,
   recreate_pool: false,

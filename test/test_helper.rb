@@ -27,15 +27,11 @@ require_relative "test_extension"
 SimpleCov.start do
   project_name "UniversalID"
   add_filter [
-    "lib/universal_id/message_pack/types", # coverage doesn't work on these
-    "lib/universal_id/message_pack_types", # coverage not needed
-    "lib/universal_id/refinements", # coverage doesn't work on these
+    "lib/universalid/message_pack/types", # coverage doesn't work on these
+    "lib/universalid/message_pack_types", # coverage not needed
+    "lib/universalid/refinements", # coverage doesn't work on these
     "test" # coverage not wanted
   ]
 end
 
-# Load UniversalID
-require "universal_id"
-
-# Load contribs
-require "universal_id/contrib/rails"
+require "universalid"

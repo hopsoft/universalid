@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "uri"
+
 unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
 
   module URI

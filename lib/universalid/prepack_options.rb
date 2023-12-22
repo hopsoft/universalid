@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "prepack_database_options"
-
 class UniversalID::PrepackOptions
   attr_reader :excludes, :includes, :database_options
 

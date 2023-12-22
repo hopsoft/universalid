@@ -6,12 +6,6 @@ require "awesome_print"
 require "pry-byebug"
 require "pry-doc"
 require_relative "../test/rails_kit/setup"
-require "universal_id"
-
-# load contribs
-require "universal_id/contrib/active_record"
-require "universal_id/contrib/active_support"
-require "universal_id/contrib/global_id"
-require "universal_id/contrib/signed_global_id"
+require "universalid"
 
 Pry.start
