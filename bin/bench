@@ -3,38 +3,39 @@
 
 require "active_support/all"
 require "action_view/helpers/number_helper"
+require "awesome_print"
 require "benchmark"
 require "pry-byebug"
 require "rainbow"
+require_relative "lib/runner"
 require_relative "../test/rails_kit/setup"
 require_relative "../lib/universalid"
 
 include ActionView::Helpers::NumberHelper
+include Writer
+include Runner
 
-@iterations = 10
-@max_record_count = 100
+ITERATIONS = 10
+MAX_RECORD_COUNT = 100
 
 # seed data ..................................................................................................
-
-def increment(reset: false)
-  @number = 0 if reset
-  print "\e[A\e[K"
-  print Rainbow("Creating ").cyan
-  print Rainbow(@number).lime
-  puts Rainbow(" records").cyan
-  @number += 1
-end
-
 @campaign ||= begin
   done = false
-  increment(reset: true)
+
+  increment = -> do
+    @count ||= 0
+    rewrite "#{style("Creating", :cyan)} #{style(@count, :lime)} #{style("records", :cyan)}"
+    @count += 1
+  end
+
+  increment.call
   Campaign.create_for_test do |c|
-    emails = Email.create_for_test(@max_record_count / 4, campaign: c) { increment }
+    emails = Email.create_for_test(MAX_RECORD_COUNT / 4, campaign: c) { increment.call }
 
     emails.each do |email|
       break if done
       rand(2..8).times do
-        done = increment > @max_record_count
+        done = increment.call > MAX_RECORD_COUNT
         break if done
         Attachment.create_for_test email: email
       end
@@ -45,32 +46,15 @@ end
 # load associations into memory so they can be included in the pack or UID
 @campaign.emails.each { |e| e.attachments.load }
 
-def publish(label)
-  puts "\n#{label}"
-  yield if block_given?
-end
-
-def run(label, iterations: @iterations)
-  GC.disable
-  Benchmark.benchmark(Benchmark::CAPTION, 52, Benchmark::FORMAT, "Avg Milliseconds per/iteration", "Avg Milliseconds per/record") do |x|
-    time = x.report(Rainbow("#{label} ".ljust(53, ".")).cyan) { iterations.times { yield } }
-    avg_seconds_per_iteration = time / iterations
-    avg_seconds_per_record = avg_seconds_per_iteration / @max_record_count
-    [avg_seconds_per_iteration * 1_000, avg_seconds_per_record * 1_000]
-  end
-ensure
-  GC.enable
-end
-
 # benchmarks .................................................................................................
-publish(
+write(
   [
-    Rainbow("Benchmarking ").cyan.bright,
-    Rainbow(number_with_delimiter(@iterations)).lime,
-    Rainbow(" #{"iteration".pluralize(@iterations)} ").cyan.bright,
-    Rainbow("with ").cyan.bright,
-    Rainbow(number_with_delimiter(Campaign.count + Email.count + Attachment.count)).lime,
-    Rainbow(" related records marshaled as an atomic singular unit").cyan.bright
+    style("Benchmarking ", :cyan, :bright),
+    style(number_with_delimiter(ITERATIONS), :lime),
+    style(" #{"iteration".pluralize(ITERATIONS)} ", :cyan, :bright),
+    style("with ", :cyan, :bright),
+    style(number_with_delimiter(Campaign.count + Email.count + Attachment.count), :lime),
+    style(" related records marshaled as an atomic singular unit", :cyan, :bright)
   ].join
 )
 
@@ -106,35 +90,58 @@ publish(
     #.to_sgid_param(for: "benchmarks"), for: "benchmarks").decode
 #end
 
-publish Rainbow("ActiveRecord +pks ".ljust(98, ".")).lime.bright do
-  packed = UniversalID::Packer.pack(@campaign)
-  run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign }
-  run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
-end
+# ............................................................................................................
 
-publish Rainbow("ActiveRecord +pks, +descendants ".ljust(98, ".")).lime.bright do
-  options = {include_descendants: true, descendant_depth: 2}
-  packed = UniversalID::Packer.pack(@campaign, options)
-  run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
-  run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
-end
+dumped = Marshal.dump(@campaign)
+loaded = Marshal.load(dumped)
+write "Marshal", :yellow, :bright, pad: "⎯", subtext: <<~DESC
+  Creates a deep COPY of the record and it's associations using Ruby's native Marshal.
+  This serves as the baseline for comparison with UniversalID serialization.
+DESC
+baseline = {
+  dump: run("Marshal.dump") { Marshal.dump @campaign },
+  load: run("Marshal.load") { Marshal.load dumped }
+}
+puts
+puts "#{style "Payload size", :faint, width: Runner::WIDTH, pad: "."}  #{number_to_human_size dumped.bytesize} #{style "(baseline)", :faint}"
 
-publish Rainbow("ActiveRecord -pks, -fks, -timestamps ".ljust(98, ".")).lime.bright do
-  options = {include_keys: false, include_timestamps: false}
-  packed = UniversalID::Packer.pack(@campaign, options)
-  run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
-  run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
-end
+# ............................................................................................................
 
-publish Rainbow("ActiveRecord -pks, -fks, -timestamps, +descendants ".ljust(98, ".")).lime.bright do
-  options = {include_keys: false, include_timestamps: false, include_descendants: true, descendant_depth: 2}
-  packed = UniversalID::Packer.pack(@campaign, options)
-  run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
-  run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
-end
+packed = UniversalID::Packer.pack(@campaign)
+write "UniversalID::Packer", :cyan, :bright, pad: "⎯", subtext: <<~DESC
+  Creates a shallow COPY of the record without associations.
+  Only serializes the primary key and does not include unsaved changes.
+  Unpack performs a database query to retrieve the record and hydrates an ActiveRecord model.
+  NOTE: This acts like a deep copy because the associations can be lazy loaded from the database.
+DESC
+results = {
+  pack: run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign },
+  unpack: run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+}
+compare packed.bytesize, dumped.bytesize,
+  formatted: number_to_human_size(packed.bytesize, precision: 2), label: "Payload size", baseline_label: "Marshal.dump", header: true
+compare results[:pack][:avg_ms_per_record].real, baseline[:dump][:avg_ms_per_record].real,
+  formatted: number_to_human(results[:pack][:avg_ms_per_record].real, precision: 2) + "ms", label: "Pack avg ms/record", baseline_label: "Marshal.dump"
+compare results[:unpack][:avg_ms_per_record].real, baseline[:load][:avg_ms_per_record].real,
+  formatted: number_to_human(results[:unpack][:avg_ms_per_record].real, precision: 2) + "ms", label: "Unpack avg ms/record", baseline_label: "Marshal.load"
 
-publish Rainbow("Native Ruby ".ljust(98, ".")).red.bright do
-  dumped = Marshal.dump @campaign
-  run("Marshal.dump") { Marshal.dump @campaign }
-  run("Marshal.load") { Marshal.load dumped }
-end
+#publish Rainbow("ActiveRecord +pks, +descendants ".ljust(98, ".")).lime.bright do
+  #options = {include_descendants: true, descendant_depth: 2}
+  #packed = UniversalID::Packer.pack(@campaign, options)
+  #run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+  #run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+#end
+
+#publish Rainbow("ActiveRecord -pks, -fks, -timestamps ".ljust(98, ".")).lime.bright do
+  #options = {include_keys: false, include_timestamps: false}
+  #packed = UniversalID::Packer.pack(@campaign, options)
+  #run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+  #run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+#end
+
+#publish Rainbow("ActiveRecord -pks, -fks, -timestamps, +descendants ".ljust(98, ".")).lime.bright do
+  #options = {include_keys: false, include_timestamps: false, include_descendants: true, descendant_depth: 2}
+  #packed = UniversalID::Packer.pack(@campaign, options)
+  #run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+  #run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+#end
