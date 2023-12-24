@@ -18,13 +18,12 @@ module Writer
     yield if block_given?
   end
 
-  def compare(value, baseline, formatted:, label:, baseline_label:, header: false)
-    diff = (value / baseline.to_f) * 100
+  def compare(label, value, baseline_value, formatted:, baseline_label: "baseline")
+    diff = (value.to_f / baseline_value.to_f) * 100
     percentage = number_to_percentage(100 - diff, precision: 2)
-    puts "\nComparisons" if header
     print "#{style label, :faint, width: Runner::WIDTH, pad: "."}  "
-    print "#{formatted} ".ljust(8, " ")
-    puts (value > baseline) ? style("(#{percentage} > #{baseline_label})", :red) : style("(#{percentage} < #{baseline_label})", :green)
+    print "#{formatted} ".ljust(10, " ")
+    puts (value > baseline_value) ? style("(#{percentage} > #{baseline_label})", :red) : style("(#{percentage} < #{baseline_label})", :green)
   end
 
   def style(string, *styles, width: WIDTH, pad: nil)

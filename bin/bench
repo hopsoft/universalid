@@ -1,12 +1,25 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "active_support/all"
-require "action_view/helpers/number_helper"
-require "awesome_print"
 require "benchmark"
 require "pry-byebug"
-require "rainbow"
+
+Gem::Specification.load("universalid.gemspec").tap do |spec|
+  spec.dependencies.map(&:name).each do |name|
+    case name
+    when "actionview" then require "action_view"
+    when "activerecord" then require "active_record"
+    when "activesupport" then require "active_support/all"
+    when "pry-byebug", "pry-doc" then require name
+    when /-/ then require name.gsub("-", "/")
+    when "magic_frozen_string_literal" then # skip
+    else require name
+    end
+  rescue LoadError => error
+    puts "Failed to auto require #{name}! #{error.message}"
+  end
+end
+
 require_relative "lib/runner"
 require_relative "../test/rails_kit/setup"
 require_relative "../lib/universalid"
@@ -92,38 +105,33 @@ write(
 
 # ............................................................................................................
 
-dumped = Marshal.dump(@campaign)
-loaded = Marshal.load(dumped)
 write "Marshal", :yellow, :bright, pad: "⎯", subtext: <<~DESC
-  Creates a deep COPY of the record and it's associations using Ruby's native Marshal.
+  Creates a deep COPY of the record and it's associations and unsaved changes using Ruby's native Marshal.
   This serves as the baseline for comparison with UniversalID serialization.
+  NOTE: This isn't an apples/apples comparison UniversalID serialization but it serves as our baseline for now.
 DESC
-baseline = {
-  dump: run("Marshal.dump") { Marshal.dump @campaign },
-  load: run("Marshal.load") { Marshal.load dumped }
-}
+baseline = { payload: Marshal.dump(@campaign) }
+baseline[:dump] = run("Marshal.dump") { Marshal.dump @campaign }
+baseline[:load] = run("Marshal.load") { Marshal.load baseline[:payload] }
 puts
-puts "#{style "Payload size", :faint, width: Runner::WIDTH, pad: "."}  #{number_to_human_size dumped.bytesize} #{style "(baseline)", :faint}"
+puts "#{style "Payload size", :faint, width: Runner::WIDTH, pad: "."}  #{number_to_human_size baseline[:payload].bytesize} #{style "(baseline)", :faint}"
 
 # ............................................................................................................
 
-packed = UniversalID::Packer.pack(@campaign)
 write "UniversalID::Packer", :cyan, :bright, pad: "⎯", subtext: <<~DESC
   Creates a shallow COPY of the record without associations.
   Only serializes the primary key and does not include unsaved changes.
   Unpack performs a database query to retrieve the record and hydrates an ActiveRecord model.
   NOTE: This acts like a deep copy because the associations can be lazy loaded from the database.
 DESC
-results = {
-  pack: run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign },
-  unpack: run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
-}
-compare packed.bytesize, dumped.bytesize,
-  formatted: number_to_human_size(packed.bytesize, precision: 2), label: "Payload size", baseline_label: "Marshal.dump", header: true
-compare results[:pack][:avg_ms_per_record].real, baseline[:dump][:avg_ms_per_record].real,
-  formatted: number_to_human(results[:pack][:avg_ms_per_record].real, precision: 2) + "ms", label: "Pack avg ms/record", baseline_label: "Marshal.dump"
-compare results[:unpack][:avg_ms_per_record].real, baseline[:load][:avg_ms_per_record].real,
-  formatted: number_to_human(results[:unpack][:avg_ms_per_record].real, precision: 2) + "ms", label: "Unpack avg ms/record", baseline_label: "Marshal.load"
+result = { payload: UniversalID::Packer.pack(@campaign) }
+result[:dump] = run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign }
+result[:load] = run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack result[:payload] }
+puts "\nComparisons"
+compare "Payload size", result[:payload].bytesize, baseline[:payload].bytesize, formatted: number_to_human_size(result[:payload].bytesize.round, precision: 2), baseline_label: "Marshal.dump"
+compare "UniversalID::Packer.pack", result[:dump].real, baseline[:dump].real, formatted: number_to_human(result[:dump].real, precision: 2), baseline_label: "Marshal.dump"
+compare "UniversalID::Packer.unpack", result[:load].real, baseline[:load].real, formatted: number_to_human(result[:load].real, precision: 2), baseline_label: "Marshal.load"
+# ............................................................................................................
 
 #publish Rainbow("ActiveRecord +pks, +descendants ".ljust(98, ".")).lime.bright do
   #options = {include_descendants: true, descendant_depth: 2}

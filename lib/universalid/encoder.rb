@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "base64"
-require "brotli"
 
 # This module provides the ability to encode and decode objects into a compressed, URL-safe string
 module UniversalID::Encoder

@@ -2,7 +2,6 @@
 
 require "monitor"
 require "singleton"
-require "config"
 
 class UniversalID::Settings
   include MonitorMixin
