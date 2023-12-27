@@ -30,14 +30,14 @@ if defined? ActiveRecord
 
       def assign_attributes(record, attributes)
         attributes.each do |key, value|
-          record.public_send "#{key}=", value if record.respond_to? "#{key}="
+          record.public_send :"#{key}=", value if record.respond_to? :"#{key}="
         end
       end
 
       def assign_descendants(record, attributes)
         descendants = attributes[UniversalID::Contrib::ActiveRecordBasePacker::DESCENDANTS_KEY] || {}
         descendants.each do |name, list|
-          next unless record.respond_to?(name) && record.respond_to?("#{name}=")
+          next unless record.respond_to?(name) && record.respond_to?(:"#{name}=")
 
           models = list.map { |packed| UniversalID::MessagePackFactory.msgpack_pool.load(packed) }
           models.compact!
@@ -45,7 +45,7 @@ if defined? ActiveRecord
 
           # NOTE: ActiveRecord is smart enough to not re-create or re-add
           #       existing records for has_many associations
-          record.public_send "#{name}=", models
+          record.public_send :"#{name}=", models
         end
       end
     end

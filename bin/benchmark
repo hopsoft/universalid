@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "benchmark"
-require "pry-byebug"
-
 Gem::Specification.load("universalid.gemspec").tap do |spec|
   spec.dependencies.map(&:name).each do |name|
     case name
@@ -20,44 +17,17 @@ Gem::Specification.load("universalid.gemspec").tap do |spec|
   end
 end
 
-require_relative "lib/runner"
 require_relative "../test/rails_kit/setup"
 require_relative "../lib/universalid"
 
-include ActionView::Helpers::NumberHelper
-include Writer
-include Runner
+BENCHMARK = ARGV[0] || "packer_shallow"
 
-ITERATIONS = 10
-MAX_RECORD_COUNT = 100
+require_relative "benchmarks/#{BENCHMARK}"
+exit 0
+
+
 
 # seed data ..................................................................................................
-@campaign ||= begin
-  done = false
-
-  increment = -> do
-    @count ||= 0
-    rewrite "#{style("Creating", :cyan)} #{style(@count, :lime)} #{style("records", :cyan)}"
-    @count += 1
-  end
-
-  increment.call
-  Campaign.create_for_test do |c|
-    emails = Email.create_for_test(MAX_RECORD_COUNT / 4, campaign: c) { increment.call }
-
-    emails.each do |email|
-      break if done
-      rand(2..8).times do
-        done = increment.call > MAX_RECORD_COUNT
-        break if done
-        Attachment.create_for_test email: email
-      end
-    end
-  end
-end
-
-# load associations into memory so they can be included in the pack or UID
-@campaign.emails.each { |e| e.attachments.load }
 
 # benchmarks .................................................................................................
 write(
@@ -105,40 +75,48 @@ write(
 
 # ............................................................................................................
 
-write "Marshal", :yellow, :bright, pad: "⎯", subtext: <<~DESC
-  Creates a deep COPY of the record and it's associations and unsaved changes using Ruby's native Marshal.
-  This serves as the baseline for comparison with UniversalID serialization.
-  NOTE: This isn't an apples/apples comparison UniversalID serialization but it serves as our baseline for now.
-DESC
-baseline = { payload: Marshal.dump(@campaign) }
-baseline[:dump] = run("Marshal.dump") { Marshal.dump @campaign }
-baseline[:load] = run("Marshal.load") { Marshal.load baseline[:payload] }
-puts
-puts "#{style "Payload size", :faint, width: Runner::WIDTH, pad: "."}  #{number_to_human_size baseline[:payload].bytesize} #{style "(baseline)", :faint}"
+#write "Marshal", :yellow, :bright, pad: "⎯", subtext: <<~DESC
+  #Creates a deep COPY of the record and it's associations and unsaved changes using Ruby's native Marshal.
+  #This serves as the baseline for comparison with UniversalID serialization.
+  #NOTE: This isn't an apples/apples comparison UniversalID serialization but it serves as our baseline for now.
+#DESC
+#baseline = { payload: Marshal.dump(@campaign) }
+#baseline[:dump] = run("Marshal.dump") { Marshal.dump @campaign }
+#baseline[:load] = run("Marshal.load") { Marshal.load baseline[:payload] }
+#puts
+#puts "#{style "Payload size", :faint, width: Runner::WIDTH, pad: "."}  #{number_to_human_size baseline[:payload].bytesize} #{style "(baseline)", :faint}"
+
+# ............................................................................................................
+
+#write "UniversalID::Packer", :cyan, :bright, pad: "⎯", subtext: <<~DESC
+  #Creates a shallow COPY of the record without associations.
+  #Only serializes the primary key and does not include unsaved changes.
+  #Unpack performs a database query to retrieve the record and hydrates an ActiveRecord model.
+  #NOTE: This acts like a deep copy because the associations can be lazy loaded from the database.
+#DESC
+#result = { payload: UniversalID::Packer.pack(@campaign) }
+#result[:dump] = run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign }
+#result[:load] = run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack result[:payload] }
+#puts "\nComparisons"
+#compare "Payload size", result[:payload].bytesize, baseline[:payload].bytesize, formatted: number_to_human_size(result[:payload].bytesize.round, precision: 2), baseline_label: "Marshal.dump"
+#compare "UniversalID::Packer.pack", result[:dump].real, baseline[:dump].real, formatted: number_to_human(result[:dump].real, precision: 2), baseline_label: "Marshal.dump"
+#compare "UniversalID::Packer.unpack", result[:load].real, baseline[:load].real, formatted: number_to_human(result[:load].real, precision: 2), baseline_label: "Marshal.load"
 
 # ............................................................................................................
 
 write "UniversalID::Packer", :cyan, :bright, pad: "⎯", subtext: <<~DESC
-  Creates a shallow COPY of the record without associations.
-  Only serializes the primary key and does not include unsaved changes.
-  Unpack performs a database query to retrieve the record and hydrates an ActiveRecord model.
-  NOTE: This acts like a deep copy because the associations can be lazy loaded from the database.
+  TODO: Write this up...
 DESC
-result = { payload: UniversalID::Packer.pack(@campaign) }
-result[:dump] = run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign }
-result[:load] = run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack result[:payload] }
+options = { include_descendants: true, descendant_depth: 2 }
+result = { payload: UniversalID::Packer.pack(@campaign, options) }
+result[:dump] = run ("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+result[:load] = run ("UniversalID::Packer.pack") { UniversalID::Packer.unpack result[:payload] }
 puts "\nComparisons"
 compare "Payload size", result[:payload].bytesize, baseline[:payload].bytesize, formatted: number_to_human_size(result[:payload].bytesize.round, precision: 2), baseline_label: "Marshal.dump"
 compare "UniversalID::Packer.pack", result[:dump].real, baseline[:dump].real, formatted: number_to_human(result[:dump].real, precision: 2), baseline_label: "Marshal.dump"
 compare "UniversalID::Packer.unpack", result[:load].real, baseline[:load].real, formatted: number_to_human(result[:load].real, precision: 2), baseline_label: "Marshal.load"
-# ............................................................................................................
 
-#publish Rainbow("ActiveRecord +pks, +descendants ".ljust(98, ".")).lime.bright do
-  #options = {include_descendants: true, descendant_depth: 2}
-  #packed = UniversalID::Packer.pack(@campaign, options)
-  #run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
-  #run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
-#end
+# ............................................................................................................
 
 #publish Rainbow("ActiveRecord -pks, -fks, -timestamps ".ljust(98, ".")).lime.bright do
   #options = {include_keys: false, include_timestamps: false}

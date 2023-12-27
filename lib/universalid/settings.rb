@@ -59,7 +59,7 @@ class UniversalID::Settings
       config = self.class.build(**config) unless key == :default
       registry[key] = config
       self.class.define_method(key) { config }
-      self.class.define_method("#{key}_copy") { Marshal.load Marshal.dump(config) }
+      self.class.define_method(:"#{key}_copy") { Marshal.load Marshal.dump(config) }
       self.class.define_singleton_method(key) { instance.public_send key }
       [key, config]
     end
