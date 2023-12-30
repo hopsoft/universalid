@@ -103,6 +103,35 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     assert_equal trigger, decoded.trigger
   end
 
+  def test_persisted_model_deep_copy_with_unsaved_descendants
+    campaign = Campaign.create_for_test
+    emails = 3.times.map { |i| campaign.emails.build subject: "Unsaved Email: #{i}" }
+    emails.each do |email|
+      2.times { email.attachments.build file_name: "Unsaved Attachment: #{email.subject}" }
+    end
+
+    options = {
+      include_unsaved_changes: true,
+      include_descendants: true,
+      descendant_depth: 2
+    }
+
+    encoded = UniversalID::Encoder.encode(campaign, **options)
+    decoded = UniversalID::Encoder.decode(encoded)
+
+    assert_equal campaign, decoded
+
+    emails.each do |email|
+      decoded_email = decoded.emails.find { |e| e.subject == email.subject }
+      assert decoded_email
+
+      email.attachments.each do |attachment|
+        decoded_attachment = decoded_email.attachments.find { |a| a.file_name == attachment.file_name }
+        assert decoded_attachment
+      end
+    end
+  end
+
   def test_persisted_model_deep_copy_customized
     campaign = Campaign.create_for_test
     campaign.emails = Email.create_for_test(3) do |email|

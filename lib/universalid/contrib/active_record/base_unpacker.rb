@@ -44,9 +44,16 @@ if defined? ActiveRecord
           models.compact!
           next unless models.any?
 
+          new_models = models.select(&:new_record?)
+          models -= new_models
+
+          # restore persisted models
           # NOTE: ActiveRecord is smart enough to not re-create or re-add
           #       existing records for has_many associations
-          record.public_send :"#{name}=", models
+          record.public_send :"#{name}=", models if models.any?
+
+          # restore new unsaved models
+          record.public_send(name).target.concat new_models if new_models.any?
         end
       end
     end

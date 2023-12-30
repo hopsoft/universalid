@@ -135,13 +135,11 @@ class UniversalID::ReadmeTest < Minitest::Test
     assert campaign.new_record?
     assert campaign.changed?
     assert_equal 3, campaign.emails.size
-    assert campaign.emails.loaded?
 
     campaign.emails.each do |email|
       assert email.new_record?
       assert email.changed?
       assert_equal 2, email.attachments.size
-      assert email.attachments.loaded?
 
       email.attachments.each do |attachment|
         assert attachment.new_record?

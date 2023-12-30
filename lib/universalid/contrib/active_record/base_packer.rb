@@ -112,10 +112,12 @@ if defined? ActiveRecord
       hash[DESCENDANTS_KEY] ||= {}
 
       loaded_has_many_relations_by_name.each do |name, relation|
-        descendants = relation.map do |descendant|
+        descendants = relation.each_with_object([]) do |descendant, memo|
+          next unless descendant.persisted? || prepack_database_options.include_unsaved_changes?
+
           descendant.instance_variable_set(:@_uid_depth, prepack_database_options.current_depth + 1)
           prepacked = UniversalID::Prepacker.prepack(descendant, prepack_options.to_h)
-          UniversalID::MessagePackFactory.msgpack_pool.dump prepacked
+          memo << UniversalID::MessagePackFactory.msgpack_pool.dump(prepacked)
         ensure
           prepack_database_options.decrement_current_depth!
           descendant.remove_instance_variable :@_uid_depth
@@ -150,8 +152,12 @@ if defined? ActiveRecord
     def loaded_has_many_relations_by_name
       has_many_associations.each_with_object({}) do |association, memo|
         relation = record.public_send(association.name)
-        next unless relation.loaded?
-        memo[association.name] = relation
+
+        if relation.loaded?
+          memo[association.name] = relation
+        elsif relation.target.any? # new unsaved records
+          memo[association.name] = relation.target
+        end
       end
     end
   end
