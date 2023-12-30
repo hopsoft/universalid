@@ -3,6 +3,7 @@
 # NOTE: MessagePack scans registered type in linear order and first match wins
 
 # scalars
+require_relative "message_pack_types/ruby/scalars/bigdecimal"
 require_relative "message_pack_types/ruby/scalars/complex"
 require_relative "message_pack_types/ruby/scalars/rational"
 require_relative "message_pack_types/ruby/scalars/date_time"

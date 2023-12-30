@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
-
 class UniversalID::Encoder::RubyCompositesTest < Minitest::Test
   SCALARS = {
     complex: Complex(1, 2),

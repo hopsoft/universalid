@@ -27,7 +27,7 @@ FILE = ARGV[0]
 if FILE
   require_relative "benchmarks/#{FILE}"
 else
-  Dir["#{__dir__}/benchmarks/binary/**/*.rb"].each { |file| require file }
+  Dir["#{__dir__}/benchmarks/**/*.rb"].each { |file| require file }
 end
 
 exit 0

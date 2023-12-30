@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
-
 class URI::UID::RealWorldExampleTest < Minitest::Test
   def test_complex_data_structure
     # create some active record object

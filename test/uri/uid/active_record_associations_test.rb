@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
-
 class URI::UID::ActiveRecordTest < Minitest::Test
   def test_new_model_with_loaded_has_many_associations
     campaign = Campaign.build_for_test

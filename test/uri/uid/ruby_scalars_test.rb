@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
-
 class URI::UID::ScalarsTest < Minitest::Test
   SCALARS = {
     Complex => Complex(1, 2),

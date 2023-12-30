@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
-
 class UniversalID::ReadmeTest < Minitest::Test
   def test_unsaved_changes_on_new_records
     campaign = new_campaign

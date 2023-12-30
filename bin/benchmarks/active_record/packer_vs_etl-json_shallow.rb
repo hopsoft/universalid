@@ -1,34 +1,31 @@
 # frozen_string_literal: true
 
-runner = Runner.new "ActiveRecord Deep (binary)", <<-DESC
-   Serializes an ActiveRecord with it's loaded associations,
-   deserializes the payload, then reconstructs the record with associations.
+runner = Runner.new "bin/#{__FILE__.split("/bin/").last}", <<-DESC
+   Serializes an ActiveRecord (id only), deserializes the payload,
+   then reconstructs the record.
 
    Benchmark:
-   - dump: UniversalID::Packer.pack subject,
-           include_descendants: true, descendant_depth: 2
+   - dump: UniversalID::Packer.pack subject
    - load: UniversalID::Packer.unpack payload
 
    Control:
-   - dump: Marshal.dump subject
-   - load: Marshal.load payload
-
-   SEE: bin/#{__FILE__.split("/bin/").last}
+   - dump: ActiveRecordETL.new(subject).transform only: ["id"]
+   - load: subject.class.find_by id: ActiveRecordETL.parse(payload)["id"]
 DESC
 
 # serialize (control) ........................................................................................
-runner.control_dump "Marshal.dump" do
-  Marshal.dump subject
+runner.control_dump "ActiveRecordETL#tranform (id only)" do
+  ActiveRecordETL.new(subject).transform only: ["id"]
 end
 
 # deserialize (control) ......................................................................................
-runner.control_load "Marshal.load" do
-  Marshal.load control_payload
+runner.control_load "ActiveRecordETL.parse + AR find(id)" do
+  subject.class.find_by id: ActiveRecordETL.parse(payload)["id"]
 end
 
 # serialize ..................................................................................................
 runner.run_dump("UniversalID::Packer.pack") do
-  UniversalID::Packer.pack subject, include_descendants: true, descendant_depth: 2
+  UniversalID::Packer.pack subject
 end
 
 # deserialize ................................................................................................

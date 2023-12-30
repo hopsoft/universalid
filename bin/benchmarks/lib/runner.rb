@@ -6,15 +6,15 @@ class Runner
   extend Writer
   include Writer
 
-  ITERATIONS = (ARGV[1] || 200).to_i
+  ITERATIONS = (ARGV[1] || 50).to_i
   MAX_RECORD_COUNT = (ARGV[2] || 500).to_i
 
   class << self
     # Returns the object to be serialized in benchmarks
-    def subject
-      return @subject if @subject
+    def record
+      return @record if @record
 
-      @subject = begin
+      @record = begin
         done = false
         increment_record_count
 
@@ -48,28 +48,28 @@ class Runner
 
   def initialize(name, description)
     # setup...
-    self.class.subject # ensure subject is loaded
+    self.class.record # ensure record is loaded
 
     # header...
     puts
     puts
-    print line(:darkcyan, char: "▓", tail: " ", width: 3)
-    print style(name, :cyan, :bright)
-    puts line(:darkcyan, char: "▓", head: " ", width: Writer::LINE_WIDTH - name.size - 3)
+    puts line(:lime, :faint, char: "▓")
+    print line(:lime, :faint, char: "▓", tail: " ", width: 3)
+    print style(name, :lime, :bright)
+    puts line(:lime, :faint, char: "▓", head: " ", width: Writer::LINE_WIDTH - name.size - 3)
     puts
 
     # description...
     puts description, :slategray
 
     # iterations...
-    puts style("   Performing ", :magenta) + style(number_with_delimiter(ITERATIONS), :lime) + style(" iterations", :magenta) + style("...", :magenta, :faint)
-    puts
+    print style("   Performing ", :magenta) + style(number_with_delimiter(ITERATIONS), :lime) + style(" iterations", :magenta) + style("...", :magenta, :faint)
   end
 
   attr_writer :subject
 
   def subject
-    @subject ||= self.class.subject
+    @subject ||= self.class.record
   end
 
   attr_reader(
@@ -94,6 +94,13 @@ class Runner
   end
 
   def run_dump(label, &block)
+    # subject...
+    size = ObjectSpace.try(:memsize_of, subject)
+    size = size ? number_to_human_size(size).downcase : "N/A"
+    print " Subject: ", :magenta, :faint
+    puts "#{style subject.class.name, :magenta} #{style "(", :magenta, :faint}#{style size, :lime}#{style ")", :magenta, :faint}"
+    puts
+
     print line(:lime, char: "–", tail: " ", width: 3)
     print label, :lime
     puts line(:lime, char: "–", head: " ", width: Writer::LINE_WIDTH - label.size - 3)
@@ -219,14 +226,14 @@ class Runner
 
     # size...
     size = control_object.try(:bytesize) || ObjectSpace.try(:memsize_of, control_object) || 0.0
-    prefix = "   Size"
+    prefix = "   Payload Size"
     suffix = number_to_human_size(size).downcase
     print style(prefix, :dimgray)
     print line(:dimgray, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - suffix.size)
     puts suffix
 
     # performance...
-    prefix = "   Performance"
+    prefix = "   Benchmark Time"
     suffix = number_to_human(control.real, precision: 2) + " ms"
     print style(prefix, :dimgray)
     print line(:dimgray, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - suffix.size)
@@ -264,7 +271,7 @@ class Runner
 
     # performance...
     diff, ratio = difference(benchmark.real, control.real)
-    prefix = "   Performance"
+    prefix = "   Benchmark Time"
     suffix = number_to_human(benchmark.real, precision: 2) + " ms"
     print style(prefix, :darkcyan, :bright) + style(diff, (ratio <= 1) ? :lime : :darkorange)
     print line(:darkcyan, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - diff.size - suffix.size + 1)

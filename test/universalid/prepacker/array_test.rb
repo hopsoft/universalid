@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
-
 class UniversalID::Prepacker::ArrayTest < Minitest::Test
   def setup
     @array = [Date.today, nil, "", "          ", "\t", "\r", "\n", "\r\n", "string", true, false, 123, [], [nil, "", "string", true, false, 123], {}, {a: 1}]

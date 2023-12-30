@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 scalars = {
+  big_decimal: BigDecimal("123.45"),
   complex: Complex(1, 2),
   date: Date.today,
   date_time: DateTime.now,

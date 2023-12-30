@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../test_helper"
-
 module UniversalID::MessagePackTypes
   class GlobalIDTest < Minitest::Test
     def test_global_id

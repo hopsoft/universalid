@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "faker"
-
 module Testable
   extend ActiveSupport::Concern
 

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
-
 class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   def test_new_model_exclude_unsaved_changes
     campaign = Campaign.build_for_test

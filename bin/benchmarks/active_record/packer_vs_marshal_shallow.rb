@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-runner = Runner.new "ActiveRecord Shallow (binary)", <<-DESC
+runner = Runner.new "bin/#{__FILE__.split("/bin/").last}", <<-DESC
    Serializes an ActiveRecord (id only), deserializes the payload,
    then reconstructs the record.
 
@@ -11,8 +11,6 @@ runner = Runner.new "ActiveRecord Shallow (binary)", <<-DESC
    Control:
    - dump: Marshal.dump subject.attributes.slice("id")
    - load: subject.class.find_by id: Marshal.load(payload)["id"]
-
-   SEE: bin/#{__FILE__.split("/bin/").last}
 DESC
 
 # serialize (control) ........................................................................................

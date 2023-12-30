@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
-
 class UniversalID::UniversalIDTest < Minitest::Test
   def test_uid_to_gid_back_to_uid
     campaign = Campaign.create_for_test

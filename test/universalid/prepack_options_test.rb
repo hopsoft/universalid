@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
-
 class UniversalID::PrepackOptionsTest < Minitest::Test
   def test_new
     options = UniversalID::PrepackOptions.new

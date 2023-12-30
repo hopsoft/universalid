@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../test_helper"
-
 module UniversalID::MessagePackTypes
   class ActiveRecordRelationTest < Minitest::Test
     def test_global_id

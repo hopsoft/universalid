@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../../../test_helper"
-
 module UniversalID::MessagePackTypes
   class RubyCompositesTest < Minitest::Test
     SCALARS = {
+      bigdecimal: BigDecimal("123.45"),
       complex: Complex(1, 2),
       date: Date.today,
       datetime: DateTime.now,

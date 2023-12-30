@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
-
 # class UniversalID::CampaignDemoTest < Minitest::Test
 #   def test_campaign_demo
 #     # ........................................................................................................
