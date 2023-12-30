@@ -33,6 +33,15 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     assert_equal campaign, decoded
   end
 
+  def test_persisted_model_marked_for_destruction
+    campaign = Campaign.create_for_test
+    campaign.mark_for_destruction
+    encoded = UniversalID::Encoder.encode(campaign)
+    decoded = UniversalID::Encoder.decode(encoded)
+    assert_equal campaign, decoded
+    assert decoded.marked_for_destruction?
+  end
+
   def test_changed_persisted_model
     campaign = Campaign.create_for_test
     campaign.description = "Changed Description"

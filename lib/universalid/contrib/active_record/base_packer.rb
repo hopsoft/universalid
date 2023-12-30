@@ -56,6 +56,8 @@ if defined? ActiveRecord
         hash.delete DESCENDANTS_KEY if hash[DESCENDANTS_KEY].empty?
       end
 
+      hash["marked_for_destruction"] = true if record.marked_for_destruction?
+
       hash.prepack prepack_options
     end
 

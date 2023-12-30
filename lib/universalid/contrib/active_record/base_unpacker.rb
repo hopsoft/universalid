@@ -22,7 +22,8 @@ if defined? ActiveRecord
           klass.new
         end
 
-        assign_attributes record, attributes
+        assign_attributes record, attributes.except("marked_for_destruction")
+        record.mark_for_destruction if attributes["marked_for_destruction"]
         assign_descendants record, attributes
 
         record
