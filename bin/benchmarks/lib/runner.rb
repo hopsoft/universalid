@@ -6,8 +6,8 @@ class Runner
   extend Writer
   include Writer
 
-  ITERATIONS = (ARGV[1] || 10).to_i
-  MAX_RECORD_COUNT = (ARGV[2] || 5_000).to_i
+  ITERATIONS = (ARGV[1] || 100).to_i
+  MAX_RECORD_COUNT = (ARGV[2] || 500).to_i
 
   class << self
     # Returns the object to be serialized in benchmarks
@@ -115,7 +115,7 @@ class Runner
   private
 
   def run(&block)
-    GC.disable
+    # GC.disable
 
     execution_time = nil
 
@@ -151,8 +151,8 @@ class Runner
     end
 
     execution_time
-  ensure
-    GC.enable
+    # ensure
+    # GC.enable
   end
 
   def with_payload(value)
