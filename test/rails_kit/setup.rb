@@ -44,12 +44,4 @@ require_relative "models/email"
 require_relative "models/attachment"
 
 # Seed some data
-10.times do
-  Campaign.create_for_test do |campaign|
-    5.times do
-      Email.create_for_test campaign: campaign do |email|
-        3.times { Attachment.create_for_test email: email }
-      end
-    end
-  end
-end
+Campaign.create_for_test 10, emails: 5, attachments: 3

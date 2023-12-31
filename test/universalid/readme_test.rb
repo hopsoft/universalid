@@ -80,8 +80,9 @@ class UniversalID::ReadmeTest < Minitest::Test
       "Join Our Loyalty Program for Special Rewards",
       "New Arrivals You Can't Miss – Shop Now!"
     ]
-    Campaign.create_for_test(50) do |campaign, i|
-      campaign.emails = Email.create_for_test(5, subject: "#{email_subjects.sample} #{i + 1}")
+    campaigns = Campaign.create_for_test 50, emails: 5
+    campaigns.map(&:emails).flatten.each_with_index do |email, i|
+      email.update subject: "#{email_subjects.sample} #{i + 1}"
     end
 
     relation = Campaign.joins(:emails).where("emails.subject LIKE ?", "%Exclusive%")

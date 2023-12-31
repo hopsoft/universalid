@@ -35,26 +35,6 @@ require "universalid"
 require_relative "rails_kit/setup"
 
 class Minitest::Test
-  @@active_record_instance = nil
-
-  def initialize(...)
-    super(...)
-    return if @@active_record_instance
-
-    time = Benchmark.measure do
-      Campaign.create_for_test do |campaign|
-        self.class.class_variable_set(:@@active_record_instance, campaign)
-      end
-    end
-
-    time = time.real.round(5)
-    message = Rainbow("Flex ActiveRecord before run to prevent skewing individual test benchmarks (").yellow
-    message << Rainbow("#{"%.5f" % time}s").yellow.bright
-    message << Rainbow(")").yellow
-    puts message
-    puts
-  end
-
   alias_method :original_run, :run
 
   def run

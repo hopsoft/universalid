@@ -133,10 +133,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_deep_copy_customized
-    campaign = Campaign.create_for_test
-    campaign.emails = Email.create_for_test(3) do |email|
-      email.attachments = Attachment.create_for_test(2)
-    end
+    campaign = Campaign.create_for_test(emails: 3, attachments: 2)
 
     options = {
       include_blank: false,

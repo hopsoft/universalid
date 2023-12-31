@@ -4,31 +4,47 @@ module Testable
   extend ActiveSupport::Concern
 
   class_methods do
-    def build_for_test(count = 1, **attributes)
-      records = count.times.map { build generate_attributes.merge(attributes) }
+    def build_for_test(count = 1, **options)
+      options = options.stringify_keys
+      attribute_options = options.slice(*column_names)
+      association_options = options.slice(*association_names)
+
+      records = count.times.map { build generate_attributes.merge(attribute_options) }
 
       records.each_with_index do |record, i|
-        yield record, i if block_given?
+        association_options.each do |association_name, association_count|
+          association_count.times do
+            association_record = association(association_name).klass.build_for_test(**options)
+            record.public_send(association_name) << association_record
+          end
+        end
       end
 
-      return records.first if count == 1
-      records
+      (records.size == 1) ? records.first : records
     end
 
-    def create_for_test(count = 1, **attributes)
-      records = build_for_test(count, **attributes)
-      records = [records] if count == 1
-
-      records.each_with_index do |record, i|
-        record.save!
-        yield record, i if block_given?
-      end
-
-      return records.first if count == 1
-      records
+    def create_for_test(count = 1, **options)
+      records = build_for_test(count, **options)
+      records = [records] unless records.is_a?(Array)
+      records.each(&:save!)
+      (records.size == 1) ? records.first : records
     end
 
     private
+
+    def association(name)
+      associations.find { |a| a.name.to_s == name.to_s }
+    end
+
+    def associations(macro: nil)
+      list = reflect_on_all_associations
+      list = list.select { |a| a.macro == macro.to_sym } if macro
+      list
+    end
+
+    def association_names(macro: nil)
+      associations(macro: macro).map { |a| a.name.to_s }
+    end
 
     def foreign_key_column_names
       reflections.each_with_object([]) do |(name, reflection), memo|

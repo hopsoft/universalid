@@ -4,8 +4,8 @@ module Writer
   extend self
   include ActionView::Helpers::NumberHelper
 
-  LINE_WIDTH = 80
-  LABEL_WIDTH = 35
+  LINE_WIDTH = 95
+  LABEL_WIDTH = 50
   MOVE_UP = "\e[A"
   REPLACE = "\e[K"
 

@@ -6,8 +6,8 @@ class Runner
   extend Writer
   include Writer
 
-  ITERATIONS = (ARGV[1] || 50).to_i
-  MAX_RECORD_COUNT = (ARGV[2] || 500).to_i
+  ITERATIONS = (ARGV[1] || 10).to_i
+  MAX_RECORD_COUNT = (ARGV[2] || 5_000).to_i
 
   class << self
     # Returns the object to be serialized in benchmarks
@@ -15,34 +15,14 @@ class Runner
       return @record if @record
 
       @record = begin
-        done = false
-        increment_record_count
+        email_count = (MAX_RECORD_COUNT / 4.to_f).round
+        attachment_count = ((MAX_RECORD_COUNT - email_count) / email_count.to_f).round
 
-        model = Campaign.create_for_test do |campaign|
-          emails = Email.create_for_test(MAX_RECORD_COUNT / 4, campaign: campaign) { increment_record_count }
-
-          emails.each do |email|
-            break if done
-            rand(2..8).times do
-              done = increment_record_count > MAX_RECORD_COUNT
-              break if done
-              Attachment.create_for_test email: email
-            end
-          end
-        end
+        campaign = Campaign.create_for_test(emails: email_count, attachments: attachment_count)
 
         # load associations into memory so they can be included during serialization...
-        model.tap { |m| m.emails.each { |e| e.attachments.load } }
+        campaign.tap { |c| c.emails.each { |c| c.attachments.load } }
       end
-    end
-
-    private
-
-    def increment_record_count
-      @record_count ||= 0
-      puts if @record_count.zero?
-      print "#{style "SETUP: Creating", :magenta} #{style @record_count, :lime} #{style "ActiveRecord database records", :magenta}#{style "...", :magenta, :faint} ", replace: true
-      @record_count += 1
     end
   end
 
@@ -69,9 +49,11 @@ class Runner
     print style("   Performing ", :magenta) + style(number_with_delimiter(ITERATIONS), :lime) + style(" iterations", :magenta) + style("...", :magenta, :faint)
 
     # subject...
-    size = ObjectSpace.try(:memsize_of, subject)
-    size = size ? number_to_human_size(size).downcase : "N/A"
-    puts " with #{style subject.class.name, :magenta} #{style "(", :magenta, :faint}#{style size, :lime}#{style ")", :magenta, :faint}"
+    record_count = 1 + subject.emails.size + subject.emails.map(&:attachments).flatten.size if subject.is_a?(Campaign)
+    print " with #{subject.class.name}", :magenta, :bright
+    print style " (", :lime, :faint
+    print style "#{number_with_delimiter(record_count)} records", :lime if record_count
+    puts style ")", :lime, :faint
     puts
   end
 
@@ -231,7 +213,7 @@ class Runner
 
     # performance...
     prefix = "   Benchmark Time"
-    suffix = number_to_human(control.real, precision: 2) + " ms"
+    suffix = number_to_human(control.real, precision: 2) + " secs"
     print style(prefix, :dimgray)
     print line(:dimgray, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - suffix.size)
     puts suffix
@@ -269,7 +251,7 @@ class Runner
     # performance...
     diff, ratio = difference(benchmark.real, control.real)
     prefix = "   Benchmark Time"
-    suffix = number_to_human(benchmark.real, precision: 2) + " ms"
+    suffix = number_to_human(benchmark.real, precision: 2) + " secs"
     print style(prefix, :darkcyan, :bright) + style(diff, (ratio <= 1) ? :lime : :darkorange)
     print line(:darkcyan, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - diff.size - suffix.size + 1)
     puts suffix
