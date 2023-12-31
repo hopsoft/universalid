@@ -36,7 +36,7 @@ end
 
 # ............................................................................................................
 
-runner = Runner.new "Deep Nested Hash with Composites (binary)", <<-DESC
+runner = Runner.new subject: scalars, desc: <<-DESC
    Serializes a deeply nested Ruby Hash that contains Composite values then
    deserializes the payload.
 
@@ -47,11 +47,7 @@ runner = Runner.new "Deep Nested Hash with Composites (binary)", <<-DESC
    Control:
    - serialize: Marshal.dump subject
    - deserialize: Marshal.load subject
-
-   SEE: bin/#{__FILE__.split("/bin/").last}
 DESC
-
-runner.subject = composites
 
 # serialize (control) ........................................................................................
 runner.control_dump "Marshal.dump" do

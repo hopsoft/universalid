@@ -18,7 +18,7 @@ scalars = {
   true_class: true
 }
 
-runner = Runner.new "Hash with Scalar Values (binary)", <<-DESC
+runner = Runner.new subject: scalars, desc: <<-DESC
    Serializes a Ruby Hash that contains scalar values (primitives)
    then deserializes the payload.
 
@@ -29,11 +29,7 @@ runner = Runner.new "Hash with Scalar Values (binary)", <<-DESC
    Control:
    - serialize: Marshal.dump subject
    - deserialize: Marshal.load subject
-
-   SEE: bin/#{__FILE__.split("/bin/").last}
 DESC
-
-runner.subject = scalars
 
 # serialize (control) ........................................................................................
 runner.control_dump "Marshal.dump" do

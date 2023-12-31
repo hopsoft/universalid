@@ -46,41 +46,45 @@ class Runner
     end
   end
 
-  def initialize(name, description)
+  def initialize(desc:, subject: self.class.record)
+    @subject = subject
+
     # setup...
     self.class.record # ensure record is loaded
 
     # header...
+    caller_path = caller(1..1).first.split(":").first.split("universalid").last
     puts
     puts
     puts line(:lime, :faint, char: "▓")
     print line(:lime, :faint, char: "▓", tail: " ", width: 3)
-    print style(name, :lime, :bright)
-    puts line(:lime, :faint, char: "▓", head: " ", width: Writer::LINE_WIDTH - name.size - 3)
+    print style(caller_path, :lime, :bright)
+    puts line(:lime, :faint, char: "▓", head: " ", width: Writer::LINE_WIDTH - caller_path.size - 3)
     puts
 
     # description...
-    puts description, :slategray
+    puts desc, :slategray
 
     # iterations...
     print style("   Performing ", :magenta) + style(number_with_delimiter(ITERATIONS), :lime) + style(" iterations", :magenta) + style("...", :magenta, :faint)
-  end
 
-  attr_writer :subject
-
-  def subject
-    @subject ||= self.class.record
+    # subject...
+    size = ObjectSpace.try(:memsize_of, subject)
+    size = size ? number_to_human_size(size).downcase : "N/A"
+    puts " with #{style subject.class.name, :magenta} #{style "(", :magenta, :faint}#{style size, :lime}#{style ")", :magenta, :faint}"
+    puts
   end
 
   attr_reader(
-    :payload, # ...................serialized payload from the benchmark
-    :payload_restored, # ..........deserialized object from the benchmark's serialized payload
-    :control_dump_label, # ........label for control serialization
-    :control_dump_proc, # .........proc used for control serialization
-    :control_load_label, # ........label for control deserialization
-    :control_load_proc, # .........proc used for control deserialization
-    :control_payload, # ...........serialized payload from the control
-    :control_payload_restored # ...deserialized object from the control's serialized payload
+    :payload, # ....................serialized payload from the benchmark
+    :payload_restored, # ...........deserialized object from the benchmark's serialized payload
+    :control_dump_label, # .........label for control serialization
+    :control_dump_proc, # ..........proc used for control serialization
+    :control_load_label, # .........label for control deserialization
+    :control_load_proc, # ..........proc used for control deserialization
+    :control_payload, # ............serialized payload from the control
+    :control_payload_restored, # ...deserialized object from the control's serialized payload
+    :subject # .....................the object to be serialized/deserialized in the benchmark
   )
 
   def control_dump(label, &block)
@@ -94,13 +98,6 @@ class Runner
   end
 
   def run_dump(label, &block)
-    # subject...
-    size = ObjectSpace.try(:memsize_of, subject)
-    size = size ? number_to_human_size(size).downcase : "N/A"
-    print " Subject: ", :magenta, :faint
-    puts "#{style subject.class.name, :magenta} #{style "(", :magenta, :faint}#{style size, :lime}#{style ")", :magenta, :faint}"
-    puts
-
     print line(:lime, char: "–", tail: " ", width: 3)
     print label, :lime
     puts line(:lime, char: "–", head: " ", width: Writer::LINE_WIDTH - label.size - 3)

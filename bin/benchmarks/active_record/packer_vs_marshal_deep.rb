@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-runner = Runner.new "bin/#{__FILE__.split("/bin/").last}", <<-DESC
+runner = Runner.new desc: <<-DESC
    Serializes an ActiveRecord with it's loaded associations,
    deserializes the payload, then reconstructs the record with associations.
 

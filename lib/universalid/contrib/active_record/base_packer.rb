@@ -111,7 +111,7 @@ if defined? ActiveRecord
     def add_descendants!(hash)
       hash[DESCENDANTS_KEY] ||= {}
 
-      loaded_has_many_relations_by_name.each do |name, relation|
+      has_many_descendant_instances_by_association_name.each do |name, relation|
         descendants = relation.each_with_object([]) do |descendant, memo|
           next unless descendant.persisted? || prepack_database_options.include_unsaved_changes?
 
@@ -149,15 +149,20 @@ if defined? ActiveRecord
       associations.select { |a| HAS_MANY_ASSOCIATIONS.include? a.class }
     end
 
-    def loaded_has_many_relations_by_name
+    # Returns a has of the current in-memory `has_many` associated records keyed by name
+    def has_many_descendant_instances_by_association_name
       has_many_associations.each_with_object({}) do |association, memo|
         relation = record.public_send(association.name)
 
-        if relation.loaded?
-          memo[association.name] = relation
-        elsif relation.target.any? # new unsaved records
-          memo[association.name] = relation.target
-        end
+        descendants = Set.new
+
+        # persisted records
+        relation.each { |descendant| descendants << descendant } if relation.loaded?
+
+        # new records
+        relation.target.each { |descendant| descendants << descendant } if relation.target.any?
+
+        memo[association.name] = descendants.to_a if descendants.any?
       end
     end
   end

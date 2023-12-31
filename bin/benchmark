@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+srand ENV.fetch("TEST_SEED", Time.now).to_i
+
 Gem::Specification.load("universalid.gemspec").tap do |spec|
   spec.dependencies.map(&:name).each do |name|
     case name
@@ -27,7 +29,7 @@ FILE = ARGV[0]
 if FILE
   require_relative "benchmarks/#{FILE}"
 else
-  Dir["#{__dir__}/benchmarks/**/*.rb"].each { |file| require file }
+  Dir["#{__dir__}/benchmarks/**/*.rb"].shuffle.each { |file| require file }
 end
 
 exit 0
