@@ -18,7 +18,7 @@ class Runner
         email_count = (MAX_RECORD_COUNT / 4.to_f).round
         attachment_count = ((MAX_RECORD_COUNT - email_count) / email_count.to_f).round
 
-        campaign = Campaign.create_for_test(emails: email_count, attachments: attachment_count)
+        campaign = Campaign.forge! emails: email_count, attachments: attachment_count
 
         # load associations into memory so they can be included during serialization...
         campaign.tap { |c| c.emails.each { |c| c.attachments.load } }
@@ -50,10 +50,16 @@ class Runner
 
     # subject...
     record_count = 1 + subject.emails.size + subject.emails.map(&:attachments).flatten.size if subject.is_a?(Campaign)
-    print " with #{subject.class.name}", :magenta, :bright
-    print style " (", :lime, :faint
-    print style "#{number_with_delimiter(record_count)} records", :lime if record_count
-    puts style ")", :lime, :faint
+    print " with subject: ", :magenta
+    print subject.class.name, :magenta, :bright
+    if record_count
+      print style " (", :lime, :faint
+      print style "#{number_with_delimiter(record_count)} records", :lime
+      puts style ")", :lime, :faint
+    else
+      puts
+    end
+
     puts
   end
 
@@ -124,7 +130,7 @@ class Runner
     # setup calculation labels...
     calculation_labels = [
       style("   Avg secs/iteration", :cyan, line: "·", width: Writer::LABEL_WIDTH),
-      style("   Avg ms/iteration", :cyan, line: "·", width: Writer::LABEL_WIDTH)
+      style("   Avg ms/iteration", :turquoise, line: "·", width: Writer::LABEL_WIDTH)
       # style("   Avg secs/record", :cyan, line: "·", width: Writer::LABEL_WIDTH),
       # style("   Avg ms/record", :cyan, line: "·", width: Writer::LABEL_WIDTH)
     ]
@@ -164,12 +170,12 @@ class Runner
   end
 
   def difference(value, other)
-    return ["(N/A)", 0] if other.zero?
+    return [" (N/A)", 0] if other.to_r.zero?
 
     diff = value.to_r / other.to_r
 
     label = if diff < 1
-      return ["(N/A)", 0] if diff.zero?
+      return [" (N/A)", 0] if diff.zero?
       " ⬇︎ (#{number_with_precision 1 / diff, delimiter: ",", precision: 1}x)"
     elsif diff > 1
       " ⬆︎ (#{number_with_precision diff, delimiter: ",", precision: 1}x)"
@@ -204,9 +210,9 @@ class Runner
     end
 
     # size...
-    size = control_object.try(:bytesize) || ObjectSpace.try(:memsize_of, control_object) || 0.0
+    control_size = control_object.try(:bytesize)
     prefix = "   Payload Size"
-    suffix = number_to_human_size(size).downcase
+    suffix = control_size ? number_to_human_size(control_size, precision: 1).downcase : "(N/A)"
     print style(prefix, :dimgray)
     print line(:dimgray, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - suffix.size)
     puts suffix
@@ -239,11 +245,11 @@ class Runner
     end
 
     # size...
-    size = object.try(:bytesize) || ObjectSpace.try(:memsize_of, object) || 0.0
-    control_size = control_object.try(:bytesize) || ObjectSpace.try(:memsize_of, control_object) || 0.0
-    diff, ratio = difference(size, control_size)
+    subject_size = object.try(:bytesize)
+    control_size = control_object.try(:bytesize)
+    diff, ratio = difference(subject_size, control_size)
     prefix = "   Size"
-    suffix = number_to_human_size(size, precision: 1).downcase
+    suffix = (subject_size && control_size) ? number_to_human_size(subject_size, precision: 1).downcase : "(N/A)"
     print style(prefix, :darkcyan, :bright) + style(diff, (ratio <= 1) ? :lime : :darkorange)
     print line(:darkcyan, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - diff.size - suffix.size + (diff.size.zero? ? 0 : 1))
     puts suffix

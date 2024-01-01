@@ -80,7 +80,7 @@ class UniversalID::ReadmeTest < Minitest::Test
       "Join Our Loyalty Program for Special Rewards",
       "New Arrivals You Can't Miss – Shop Now!"
     ]
-    campaigns = Campaign.create_for_test 50, emails: 5
+    campaigns = Campaign.forge! 50, emails: 5
     campaigns.map(&:emails).flatten.each_with_index do |email, i|
       email.update subject: "#{email_subjects.sample} #{i + 1}"
     end

@@ -2,7 +2,7 @@
 
 class URI::UID::ActiveRecordTest < Minitest::Test
   def test_new_model_exclude_unsaved_changes
-    campaign = Campaign.build_for_test
+    campaign = Campaign.forge
     uid = URI::UID.build(campaign)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign.class, decoded.class
@@ -11,7 +11,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_new_model_include_unsaved_changes
-    campaign = Campaign.build_for_test
+    campaign = Campaign.forge
     uid = URI::UID.build(campaign, include_unsaved_changes: true)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign.class, decoded.class
@@ -19,7 +19,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_new_model_include_unsaved_changes_exclude_blanks
-    campaign = Campaign.build_for_test
+    campaign = Campaign.forge
     uid = URI::UID.build(campaign, include_unsaved_changes: true, include_blank: false)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign.class, decoded.class
@@ -27,14 +27,14 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     uid = URI::UID.build(campaign)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign, decoded
   end
 
   def test_persisted_model_marked_for_destruction
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     campaign.mark_for_destruction
     uid = URI::UID.build(campaign)
     decoded = URI::UID.parse(uid.to_s).decode
@@ -43,7 +43,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_changed_persisted_model
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     campaign.description = "Changed Description"
     uid = URI::UID.build(campaign)
     decoded = URI::UID.parse(uid.to_s).decode
@@ -52,7 +52,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_changed_persisted_model_include_unsaved_changes
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     campaign.description = "Changed Description"
     uid = URI::UID.build(campaign, include_unsaved_changes: true)
     decoded = URI::UID.parse(uid.to_s).decode
@@ -75,7 +75,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
 
     _, settings = UniversalID::Settings.register("test_#{SecureRandom.alphanumeric(8)}", YAML.safe_load(yaml))
 
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
 
     # remember orig values
     description = campaign.description
@@ -114,7 +114,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   # NOTE: The mtime timestamp will be nil for Ruby primitives
   #
   def test_persisted_model_with_custom_encode_and_decode_handlers
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
 
     # take control of encoding the uid payload to handle fingerprinting
     # (i.e. implicit versioning based on the mtime of the model definition)

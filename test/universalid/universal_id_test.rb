@@ -2,7 +2,7 @@
 
 class UniversalID::UniversalIDTest < Minitest::Test
   def test_uid_to_gid_back_to_uid
-    campaign = Campaign.create_for_test emails: 3, attachments: 2
+    campaign = Campaign.forge! emails: 3, attachments: 2
 
     uid = URI::UID.build(campaign)
     gid_param = uid.to_gid_param
@@ -20,7 +20,7 @@ class UniversalID::UniversalIDTest < Minitest::Test
   end
 
   def test_uid_to_sgid_back_to_uid
-    campaign = Campaign.create_for_test emails: 3, attachments: 2
+    campaign = Campaign.forge! emails: 3, attachments: 2
 
     uid = URI::UID.build(campaign)
     gid_param = uid.to_sgid_param

@@ -10,7 +10,7 @@ runner = Runner.new desc: <<-DESC
    - load: UniversalID::Packer.unpack payload
 
    Control:
-   - dump: ActiveRecordETL.new(subject).transform nested_attributes: true
+   - dump: ActiveRecordETL::Pipeline.new(subject).transform nested_attributes: true
    - load: (apples -vs- oranges)
        UID implicitly does a lot under the hood
        I approximate that behavior for control load
@@ -18,8 +18,8 @@ runner = Runner.new desc: <<-DESC
 DESC
 
 # serialize (control) ........................................................................................
-runner.control_dump "ActiveRecordETL#tranform" do
-  ActiveRecordETL.new(subject).transform nested_attributes: true
+runner.control_dump "ActiveRecordETL::Pipeline#tranform" do
+  subject.transform nested_attributes: true
 end
 
 # deserialize (control) ......................................................................................

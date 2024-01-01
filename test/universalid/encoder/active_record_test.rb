@@ -2,7 +2,7 @@
 
 class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   def test_new_model_exclude_unsaved_changes
-    campaign = Campaign.build_for_test
+    campaign = Campaign.forge
     encoded = UniversalID::Encoder.encode(campaign)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign.class, decoded.class
@@ -11,7 +11,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   end
 
   def test_new_model_include_unsaved_changes
-    campaign = Campaign.build_for_test
+    campaign = Campaign.forge
     encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign.class, decoded.class
@@ -19,7 +19,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   end
 
   def test_new_model_include_unsaved_changes_exclude_blanks
-    campaign = Campaign.build_for_test
+    campaign = Campaign.forge
     encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true, include_blank: false)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign.class, decoded.class
@@ -27,14 +27,14 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     encoded = UniversalID::Encoder.encode(campaign)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign, decoded
   end
 
   def test_persisted_model_marked_for_destruction
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     campaign.mark_for_destruction
     encoded = UniversalID::Encoder.encode(campaign)
     decoded = UniversalID::Encoder.decode(encoded)
@@ -43,7 +43,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   end
 
   def test_changed_persisted_model
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     campaign.description = "Changed Description"
     encoded = UniversalID::Encoder.encode(campaign)
     decoded = UniversalID::Encoder.decode(encoded)
@@ -52,7 +52,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   end
 
   def test_changed_persisted_model_include_unsaved_changes
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     campaign.description = "Changed Description"
     encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true)
     decoded = UniversalID::Encoder.decode(encoded)
@@ -75,7 +75,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
 
     _, settings = UniversalID::Settings.register("test_#{SecureRandom.alphanumeric(8)}", YAML.safe_load(yaml))
 
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     # remember orig values
     description = campaign.description
     trigger = campaign.trigger
@@ -104,7 +104,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_deep_copy_with_unsaved_descendants
-    campaign = Campaign.create_for_test
+    campaign = Campaign.forge!
     emails = 3.times.map { |i| campaign.emails.build subject: "Unsaved Email: #{i}" }
     emails.each do |email|
       2.times { email.attachments.build file_name: "Unsaved Attachment: #{email.subject}" }
@@ -133,7 +133,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_deep_copy_customized
-    campaign = Campaign.create_for_test(emails: 3, attachments: 2)
+    campaign = Campaign.forge! emails: 3, attachments: 2
 
     options = {
       include_blank: false,

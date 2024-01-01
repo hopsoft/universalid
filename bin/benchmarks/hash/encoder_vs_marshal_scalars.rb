@@ -4,12 +4,12 @@ scalars = {
   big_decimal: BigDecimal("123.45"),
   complex: Complex(1, 2),
   date: Date.today,
-  datetime: DateTime.now,
+  date_time: DateTime.now,
   false_class: false,
   float: 123.45,
   integer: 123,
   nil_class: nil,
-  # range: 1..100, # TODO: Marshal.load fails on the Range
+  range: 1..100,
   rational: Rational(3, 4),
   regexp: /abc/,
   string: "hello",
@@ -18,31 +18,13 @@ scalars = {
   true_class: true
 }
 
-NamedStructPacker = Struct.new(*scalars.keys)
-
-composites = {
-  array: scalars.values,
-  hash: scalars,
-  open_struct: OpenStruct.new(scalars),
-  set: Set.new(scalars.values),
-  struct: NamedStructPacker.new(*scalars.values)
-}
-
-5.times do |i|
-  composites[:nested_array] ||= []
-  composites[:nested_array] << composites.deep_dup
-  composites[:"nested_hash_#{i}"] = composites.deep_dup
-end
-
-# ............................................................................................................
-
-runner = Runner.new subject: composites, desc: <<-DESC
-   Serializes a deeply nested Ruby Hash that contains Composite (i.e. compound) values
+runner = Runner.new subject: scalars, desc: <<-DESC
+   Encodes a Ruby Hash that contains Scalar (i.e. primitive) values
    then deserializes the payload.
 
    Benchmark:
-   - serialize: UniversalID::Packer.pack subject
-   - deserialize: UniversalID::Packer.unpack payload
+   - serialize: UniversalID::Encoder.encode subject
+   - deserialize: UniversalID::Encoder.decode payload
 
    Control:
    - serialize: Marshal.dump subject
@@ -60,11 +42,11 @@ runner.control_load "Marshal.load" do
 end
 
 # serialize ..................................................................................................
-runner.run_dump("UniversalID::Packer.pack") do
-  UniversalID::Packer.pack subject
+runner.run_dump("UniversalID::Encoder.encode") do
+  UniversalID::Encoder.encode subject
 end
 
 # deserialize ................................................................................................
-runner.run_load("UniversalID::Packer.unpack") do
-  UniversalID::Packer.unpack payload
+runner.run_load("UniversalID::Encoder.decode") do
+  UniversalID::Encoder.decode payload
 end

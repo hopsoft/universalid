@@ -1,20 +1,36 @@
 # frozen_string_literal: true
 
-module Testable
-  extend ActiveSupport::Concern
+require "forwardable"
+require "active_record"
+require "faker"
 
-  class_methods do
-    def build_for_test(count = 1, **options)
+module ActiveRecordForge
+  def self.included(klass)
+    klass.define_singleton_method(:foundry) { @foundry ||= ActiveRecordForge::Foundry.new(self) }
+    klass.define_singleton_method(:forge) { |*args, **kwargs| foundry.forge(*args, **kwargs) }
+    klass.define_singleton_method(:forge!) { |*args, **kwargs| foundry.forge!(*args, **kwargs) }
+  end
+
+  class Foundry
+    extend Forwardable
+
+    attr_reader :klass
+
+    def initialize(klass)
+      @klass = klass
+    end
+
+    def forge(count = 1, **options)
       options = options.stringify_keys
       attribute_options = options.slice(*column_names)
       association_options = options.slice(*association_names)
 
-      records = count.times.map { build generate_attributes.merge(attribute_options) }
+      records = count.times.map { klass.build generate_attributes.merge(attribute_options) }
 
       records.each_with_index do |record, i|
         association_options.each do |association_name, association_count|
           association_count.times do
-            association_record = association(association_name).klass.build_for_test(**options)
+            association_record = association(association_name).klass.forge(**options)
             record.public_send(association_name) << association_record
           end
         end
@@ -23,14 +39,13 @@ module Testable
       (records.size == 1) ? records.first : records
     end
 
-    def create_for_test(count = 1, **options)
-      records = build_for_test(count, **options)
-      records = [records] unless records.is_a?(Array)
-      records.each(&:save!)
-      (records.size == 1) ? records.first : records
+    def forge!(...)
+      forge(...).tap { |forged| forged.is_a?(Array) ? forged.each(&:save!) : forged.save! }
     end
 
     private
+
+    def_delegators :klass, :columns, :column_names, :primary_key, :reflections, :reflect_on_all_associations
 
     def association(name)
       associations.find { |a| a.name.to_s == name.to_s }

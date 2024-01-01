@@ -9,13 +9,13 @@ runner = Runner.new desc: <<-DESC
    - load: UniversalID::Packer.unpack payload
 
    Control:
-   - dump: ActiveRecordETL.new(subject).transform only: ["id"]
+   - dump: ActiveRecordETL::Pipeline.new(subject).transform only: ["id"]
    - load: subject.class.find_by id: ActiveRecordETL.parse(payload)["id"]
 DESC
 
 # serialize (control) ........................................................................................
-runner.control_dump "ActiveRecordETL#tranform (id only)" do
-  ActiveRecordETL.new(subject).transform only: ["id"]
+runner.control_dump "ActiveRecordETL::Pipeline#tranform (id only)" do
+  subject.transform only: ["id"]
 end
 
 # deserialize (control) ......................................................................................

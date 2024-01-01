@@ -44,4 +44,4 @@ require_relative "models/email"
 require_relative "models/attachment"
 
 # Seed some data
-Campaign.create_for_test 10, emails: 5, attachments: 3
+Campaign.forge! 10, emails: 5, attachments: 3

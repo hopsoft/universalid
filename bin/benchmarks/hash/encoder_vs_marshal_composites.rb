@@ -18,14 +18,14 @@ scalars = {
   true_class: true
 }
 
-NamedStructPacker = Struct.new(*scalars.keys)
+NamedStructEncoder = Struct.new(*scalars.keys)
 
 composites = {
   array: scalars.values,
   hash: scalars,
   open_struct: OpenStruct.new(scalars),
   set: Set.new(scalars.values),
-  struct: NamedStructPacker.new(*scalars.values)
+  struct: NamedStructEncoder.new(*scalars.values)
 }
 
 5.times do |i|
@@ -37,12 +37,12 @@ end
 # ............................................................................................................
 
 runner = Runner.new subject: composites, desc: <<-DESC
-   Serializes a deeply nested Ruby Hash that contains Composite (i.e. compound) values
+   Encodes a deeply nested Ruby Hash that contains Composite (i.e. compound) values
    then deserializes the payload.
 
    Benchmark:
-   - serialize: UniversalID::Packer.pack subject
-   - deserialize: UniversalID::Packer.unpack payload
+   - serialize: UniversalID::Encoder.encode subject
+   - deserialize: UniversalID::Encoder.decode payload
 
    Control:
    - serialize: Marshal.dump subject
@@ -60,11 +60,11 @@ runner.control_load "Marshal.load" do
 end
 
 # serialize ..................................................................................................
-runner.run_dump("UniversalID::Packer.pack") do
-  UniversalID::Packer.pack subject
+runner.run_dump("UniversalID::Encoder.encode") do
+  UniversalID::Encoder.encode subject
 end
 
 # deserialize ................................................................................................
-runner.run_load("UniversalID::Packer.unpack") do
-  UniversalID::Packer.unpack payload
+runner.run_load("UniversalID::Encoder.decode") do
+  UniversalID::Encoder.decode payload
 end

@@ -19,12 +19,12 @@ scalars = {
 }
 
 runner = Runner.new subject: scalars, desc: <<-DESC
-   Serializes a Ruby Hash that contains Scalar (i.e. primitive) values
-   then deserializes the payload.
+   Builds a UID for a Ruby Hash that contains Scalar (i.e. primitive) values
+   then parses and decodes the payload.
 
    Benchmark:
-   - serialize: UniversalID::Packer.pack subject
-   - deserialize: UniversalID::Packer.unpack payload
+   - serialize: URI::UID.build(subject).to_s
+   - deserialize: URI::UID.parse(payload).decode
 
    Control:
    - serialize: Marshal.dump subject
@@ -42,11 +42,11 @@ runner.control_load "Marshal.load" do
 end
 
 # serialize ..................................................................................................
-runner.run_dump("UniversalID::Packer.pack") do
-  UniversalID::Packer.pack subject
+runner.run_dump("URI::UID.build + to_s") do
+  URI::UID.build(subject).to_s
 end
 
 # deserialize ................................................................................................
-runner.run_load("UniversalID::Packer.unpack") do
-  UniversalID::Packer.unpack payload
+runner.run_load("URI::UID.parse + decode") do
+  URI::UID.parse(payload).decode
 end

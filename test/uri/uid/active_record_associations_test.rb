@@ -2,7 +2,7 @@
 
 class URI::UID::ActiveRecordTest < Minitest::Test
   def test_new_model_with_loaded_has_many_associations
-    campaign = Campaign.build_for_test emails: 3
+    campaign = Campaign.forge emails: 3
 
     # verify that nothing is persisted
     refute campaign.persisted?
@@ -27,7 +27,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_new_model_with_loaded_has_many_associations_exclude_descendants
-    campaign = Campaign.build_for_test emails: 3
+    campaign = Campaign.forge emails: 3
 
     options = {
       include_unsaved_changes: true, # required to support new records
@@ -42,7 +42,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_with_loaded_has_many_associations
-    campaign = Campaign.create_for_test emails: 3
+    campaign = Campaign.forge! emails: 3
 
     # verify that everything is persisted
     assert campaign.persisted?
@@ -63,7 +63,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_with_loaded_has_many_associations_exclude_descendants
-    campaign = Campaign.create_for_test emails: 3
+    campaign = Campaign.forge! emails: 3
     uid = URI::UID.build(campaign, descendant_depth: 1) # include_descendants: false (default)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign, decoded
@@ -71,7 +71,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_with_loaded_has_many_associations_include_descendants_descendant_depth_0
-    campaign = Campaign.create_for_test emails: 3
+    campaign = Campaign.forge! emails: 3
     uid = URI::UID.build(campaign, include_descendants: true) # descendant_depth: 0 (default)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign, decoded
@@ -79,7 +79,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_with_loaded_has_many_associations_2_deep
-    campaign = Campaign.create_for_test emails: 3, attachments: 2
+    campaign = Campaign.forge! emails: 3, attachments: 2
 
     uid = URI::UID.build(campaign, include_descendants: true, descendant_depth: 2)
     decoded = URI::UID.parse(uid.to_s).decode
@@ -92,7 +92,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   end
 
   def test_persisted_model_with_loaded_has_many_associations_2_deep_with_changes
-    campaign = Campaign.create_for_test emails: 3, attachments: 2
+    campaign = Campaign.forge! emails: 3, attachments: 2
 
     # make changes to all records
     campaign.name = "Campaign #{SecureRandom.hex}"
