@@ -26,10 +26,11 @@ require_relative "benchmarks/lib/runner"
 
 FILE = ARGV[0]
 
-if FILE
-  require_relative "benchmarks/#{FILE}"
-else
-  Dir["#{__dir__}/benchmarks/**/*.rb"].shuffle.each { |file| require file }
+case FILE
+when nil then Dir["#{__dir__}/benchmarks/**/*.rb"].shuffle.each { |file| require file }
+when "active_record" then Dir["#{__dir__}/benchmarks/active_record/**/*.rb"].shuffle.each { |file| require file }
+when "hash" then Dir["#{__dir__}/benchmarks/hash/**/*.rb"].shuffle.each { |file| require file }
+else require_relative "benchmarks/#{FILE}"
 end
 
 exit 0
