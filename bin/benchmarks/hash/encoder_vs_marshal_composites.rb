@@ -28,7 +28,7 @@ composites = {
   struct: NamedStructEncoder.new(*scalars.values)
 }
 
-5.times do |i|
+3.times do |i|
   composites[:nested_array] ||= []
   composites[:nested_array] << composites.deep_dup
   composites[:"nested_hash_#{i}"] = composites.deep_dup
@@ -37,8 +37,8 @@ end
 # ............................................................................................................
 
 runner = Runner.new subject: composites, desc: <<-DESC
-   Encodes a deeply nested Ruby Hash that contains Composite (i.e. compound) values
-   then deserializes the payload.
+   Encodes a deeply nested Ruby Hash that contains Composite (i.e. compound) values,
+   then decodes the payload.
 
    Benchmark:
    - serialize: UniversalID::Encoder.encode subject

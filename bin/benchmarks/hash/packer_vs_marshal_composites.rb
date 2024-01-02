@@ -28,7 +28,7 @@ composites = {
   struct: NamedStructPacker.new(*scalars.values)
 }
 
-5.times do |i|
+3.times do |i|
   composites[:nested_array] ||= []
   composites[:nested_array] << composites.deep_dup
   composites[:"nested_hash_#{i}"] = composites.deep_dup
@@ -37,8 +37,8 @@ end
 # ............................................................................................................
 
 runner = Runner.new subject: composites, desc: <<-DESC
-   Serializes a deeply nested Ruby Hash that contains Composite (i.e. compound) values
-   then deserializes the payload.
+   Packs a deeply nested Ruby Hash that contains Composite (i.e. compound) values,
+   then unpacks the payload.
 
    Benchmark:
    - serialize: UniversalID::Packer.pack subject

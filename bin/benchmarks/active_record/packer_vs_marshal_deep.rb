@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 runner = Runner.new desc: <<-DESC
-   Serializes an ActiveRecord with it's loaded associations,
-   deserializes the payload, then reconstructs the record with associations.
+   Packs an ActiveRecord with it's loaded associations, then unpacks the payload.
 
    Benchmark:
    - dump: UniversalID::Packer.pack subject,

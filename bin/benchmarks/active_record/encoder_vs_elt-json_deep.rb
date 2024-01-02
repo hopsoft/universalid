@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 runner = Runner.new desc: <<-DESC
-   Packs an ActiveRecord with it's loaded associations, then unpacks the payload.
+   Encodes an ActiveRecord with it's loaded associations, then decodes the payload.
 
    Benchmark:
-   - dump: UniversalID::Packer.pack subject,
-           include_descendants: true, descendant_depth: 2
-   - load: UniversalID::Packer.unpack payload
+   - dump: UniversalID::Encoder.encode subject, include_descendants: true, descendant_depth: 2
+   - load: UniversalID::Encoder.decode payload
 
    Control:
    - dump: ActiveRecordETL::Pipeline.new(subject).transform nested_attributes: true
@@ -41,10 +40,10 @@ end
 
 # serialize ..................................................................................................
 runner.run_dump("UniversalID::Packer.pack") do
-  UniversalID::Packer.pack subject, include_descendants: true, descendant_depth: 2
+  UniversalID::Encoder.encode subject, include_descendants: true, descendant_depth: 2
 end
 
 # deserialize ................................................................................................
 runner.run_load("UniversalID::Packer.unpack") do
-  UniversalID::Packer.unpack payload
+  UniversalID::Encoder.decode payload
 end

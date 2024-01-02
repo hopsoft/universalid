@@ -19,8 +19,8 @@ scalars = {
 }
 
 runner = Runner.new subject: scalars, desc: <<-DESC
-   Builds a UID for a Ruby Hash that contains Scalar (i.e. primitive) values
-   then parses and decodes the payload.
+   Builds a UID for a Ruby Hash that contains Scalar (i.e. primitive) values,
+   then parses the UID and decodes the payload.
 
    Benchmark:
    - serialize: URI::UID.build(subject).to_s

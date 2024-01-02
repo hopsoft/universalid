@@ -1,33 +1,33 @@
 # frozen_string_literal: true
 
 runner = Runner.new desc: <<-DESC
-   Packs an ActiveRecord (id only), then unpacks the payload.
+   Builds a UID for an ActiveRecord (id only), then parses the UID and decodes the payload.
 
    Benchmark:
-   - dump: UniversalID::Packer.pack subject
-   - load: UniversalID::Packer.unpack payload
+   - serialize: URI::UID.build(subject).to_s
+   - deserialize: URI::UID.parse(payload).decode
 
    Control:
-   - dump: Marshal.dump subject.attributes.slice("id")
-   - load: subject.class.find_by id: Marshal.load(payload)["id"]
+   - dump: ActiveRecordETL::Pipeline.new(subject).transform only: ["id"]
+   - load: subject.class.find_by id: ActiveRecordETL.parse(payload)["id"]
 DESC
 
 # serialize (control) ........................................................................................
-runner.control_dump "Marshal.dump (id only)" do
-  Marshal.dump subject.attributes.slice("id")
+runner.control_dump "ActiveRecordETL::Pipeline#tranform (id only)" do
+  subject.transform only: ["id"]
 end
 
 # deserialize (control) ......................................................................................
-runner.control_load "Marshal.load + AR find(id)" do
-  subject.class.find_by id: Marshal.load(control_payload)["id"]
+runner.control_load "ActiveRecordETL.parse + AR find(id)" do
+  subject.class.find_by id: ActiveRecordETL.parse(payload)["id"]
 end
 
 # serialize ..................................................................................................
 runner.run_dump("UniversalID::Packer.pack") do
-  UniversalID::Packer.pack subject
+  URI::UID.build(subject).to_s
 end
 
 # deserialize ................................................................................................
 runner.run_load("UniversalID::Packer.unpack") do
-  UniversalID::Packer.unpack payload
+  URI::UID.parse(payload).decode
 end

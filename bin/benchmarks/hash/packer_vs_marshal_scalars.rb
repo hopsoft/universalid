@@ -19,8 +19,8 @@ scalars = {
 }
 
 runner = Runner.new subject: scalars, desc: <<-DESC
-   Serializes a Ruby Hash that contains Scalar (i.e. primitive) values
-   then deserializes the payload.
+   Packs a Ruby Hash that contains Scalar (i.e. primitive) values,
+   then unpacks the payload.
 
    Benchmark:
    - serialize: UniversalID::Packer.pack subject

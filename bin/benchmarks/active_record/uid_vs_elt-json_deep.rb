@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 runner = Runner.new desc: <<-DESC
-   Packs an ActiveRecord with it's loaded associations, then unpacks the payload.
+   Builds a UID for an ActiveRecord  with it's loaded associations,
+   then parses the UID and decodes the payload.
 
    Benchmark:
-   - dump: UniversalID::Packer.pack subject,
-           include_descendants: true, descendant_depth: 2
-   - load: UniversalID::Packer.unpack payload
+   - serialize: URI::UID.build(subject, include_descendants: true, descendant_depth: 2).to_s
+   - deserialize: URI::UID.parse(payload).decode
 
    Control:
    - dump: ActiveRecordETL::Pipeline.new(subject).transform nested_attributes: true
@@ -41,10 +41,10 @@ end
 
 # serialize ..................................................................................................
 runner.run_dump("UniversalID::Packer.pack") do
-  UniversalID::Packer.pack subject, include_descendants: true, descendant_depth: 2
+  URI::UID.build(subject, include_descendants: true, descendant_depth: 2).to_s
 end
 
 # deserialize ................................................................................................
 runner.run_load("UniversalID::Packer.unpack") do
-  UniversalID::Packer.unpack payload
+  URI::UID.parse(payload).decode
 end

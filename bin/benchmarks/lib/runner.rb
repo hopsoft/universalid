@@ -7,7 +7,7 @@ class Runner
   include Writer
 
   ITERATIONS = (ARGV[1] || 100).to_i
-  MAX_RECORD_COUNT = (ARGV[2] || 500).to_i
+  MAX_RECORD_COUNT = (ARGV[2] || 10).to_i
 
   class << self
     # Returns the object to be serialized in benchmarks
@@ -187,7 +187,6 @@ class Runner
   end
 
   def puts_control(label, control, object, control_object, equivalence: false)
-    puts
     print "   Control: ", :dimgray
     puts label, :dimgray, :bright
 
@@ -197,7 +196,7 @@ class Runner
     suffix = control_object.class.name
     print style(prefix, :dimgray) + style(mismatch, :red)
     print line(:dimgray, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - mismatch.size - suffix.size)
-    puts suffix
+    puts suffix, :dimgray, :bright
 
     # equivalence...
     if equivalence
@@ -206,7 +205,7 @@ class Runner
       suffix = (object == control_object).to_s
       print style(prefix, :dimgray) + style(mismatch, :red)
       print line(:dimgray, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - mismatch.size - suffix.size)
-      puts suffix
+      puts suffix, :dimgray, :bright
     end
 
     # size...
@@ -215,14 +214,14 @@ class Runner
     suffix = control_size ? number_to_human_size(control_size, precision: 1).downcase : "(N/A)"
     print style(prefix, :dimgray)
     print line(:dimgray, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - suffix.size)
-    puts suffix
+    puts suffix, :dimgray, :bright
 
     # performance...
     prefix = "   Benchmark Time"
     suffix = number_to_human(control.real, precision: 2) + " secs"
     print style(prefix, :dimgray)
     print line(:dimgray, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - suffix.size)
-    puts suffix
+    puts suffix, :dimgray, :bright
   end
 
   def puts_comparison(benchmark, control, object, control_object, equivalence: false)
@@ -232,7 +231,7 @@ class Runner
     suffix = object.class.name
     print style(prefix, :darkcyan, :bright) + style(mismatch, :red)
     print line(:darkcyan, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - mismatch.size - suffix.size)
-    puts suffix
+    puts suffix, :turquoise
 
     # equivalence...
     if equivalence
@@ -241,7 +240,7 @@ class Runner
       suffix = (object == control_object).to_s
       print style(prefix, :darkcyan) + style(mismatch, :red)
       print line(:darkcyan, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - mismatch.size - suffix.size)
-      puts suffix
+      puts suffix, :turquoise
     end
 
     # size...
@@ -252,7 +251,7 @@ class Runner
     suffix = (subject_size && control_size) ? number_to_human_size(subject_size, precision: 1).downcase : "(N/A)"
     print style(prefix, :darkcyan, :bright) + style(diff, (ratio <= 1) ? :lime : :darkorange)
     print line(:darkcyan, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - diff.size - suffix.size + (diff.size.zero? ? 0 : 1))
-    puts suffix
+    puts suffix, :turquoise
 
     # performance...
     diff, ratio = difference(benchmark.real, control.real)
@@ -260,6 +259,6 @@ class Runner
     suffix = number_to_human(benchmark.real, precision: 2) + " secs"
     print style(prefix, :darkcyan, :bright) + style(diff, (ratio <= 1) ? :lime : :darkorange)
     print line(:darkcyan, char: "·", head: " ", tail: " ", width: Writer::LINE_WIDTH - prefix.size - diff.size - suffix.size + 1)
-    puts suffix
+    puts suffix, :turquoise
   end
 end
