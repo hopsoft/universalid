@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require "stringio"
+require "active_record"
+require "globalid"
+
 GlobalID.app = SignedGlobalID.app = "universal-id"
 SignedGlobalID.verifier = GlobalID::Verifier.new("4ae705a3f0f0c675236cc7067d49123d")
 

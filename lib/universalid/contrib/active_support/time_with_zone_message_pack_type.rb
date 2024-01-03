@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-if defined? ActiveSupport
+if defined? ActiveSupport::TimeWithZone
 
   UniversalID::MessagePackFactory.register(
     type: ActiveSupport::TimeWithZone,

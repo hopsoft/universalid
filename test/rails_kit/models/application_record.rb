@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "model_probe"
 require_relative "active_record_etl"
 require_relative "active_record_forge"
 require_relative "../../../lib/universalid/version"

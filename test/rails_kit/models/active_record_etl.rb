@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "oj"
+
 module ActiveRecordETL
   class << self
     def included(klass)
@@ -140,10 +142,10 @@ module ActiveRecordETL
     # @param :reject_blank [Boolean] Indicates if blank values should be omitted (optional, defaults to false)
     # @return [String] the transformed data
     # @raise [NotImplementedError] if the specified format is not supported
-    def transform(format: :json, **options)
+    def transform(format: :json, **)
       case format
       # when :json then extract(**options).to_json
-      when :json then Oj.dump extract(**options), symbol_keys: false
+      when :json then Oj.dump extract(**), symbol_keys: false
       else raise NotImplementedError
       end
     end
@@ -154,8 +156,8 @@ module ActiveRecordETL
 
     private
 
-    def extract_next(record, **options)
-      self.class.new(record).extract(**options)
+    def extract_next(record, **)
+      self.class.new(record).extract(**)
     end
 
     def normalize_only_values(**options)

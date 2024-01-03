@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-if defined? GlobalID && defined? SignedGlobalID
+if defined? GlobalID::Identification && defined? SignedGlobalID
 
   require "forwardable"
   require_relative "global_id_model"

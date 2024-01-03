@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "etc"
+require "msgpack"
 
 UniversalID::MessagePackFactory = MessagePack::Factory.new.tap do |factory|
   class << factory

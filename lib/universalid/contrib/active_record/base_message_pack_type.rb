@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-if defined? ActiveRecord
+if defined? ActiveRecord::Base
 
   require_relative "base_packer"
   require_relative "base_unpacker"

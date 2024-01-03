@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-if defined? GlobalID
+if defined? GlobalID::Identification
 
   class UniversalID::Contrib::GlobalIDModel
     include GlobalID::Identification

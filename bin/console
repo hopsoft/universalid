@@ -1,22 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-Gem::Specification.load("universalid.gemspec").tap do |spec|
-  spec.dependencies.map(&:name).each do |name|
-    case name
-    when "actionview" then require "action_view"
-    when "activerecord" then require "active_record"
-    when "activesupport" then require "active_support/all"
-    when "pry-byebug", "pry-doc" then require name
-    when /-/ then require name.gsub("-", "/")
-    when "magic_frozen_string_literal" then # skip
-    else require name
-    end
-  rescue LoadError => error
-    puts "Failed to auto require #{name}! #{error.message}"
-  end
-end
-
 require_relative "../test/rails_kit/setup"
 require_relative "../lib/universalid"
 

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "zeitwerk"
+
 module UniversalID
   module Contrib; end
 
@@ -10,12 +12,6 @@ module UniversalID
       @logger ||= defined?(Rails) ? Rails.logger : Logger.new(File::NULL)
     end
   end
-end
-
-Gem::Specification.load("universalid.gemspec").tap do |spec|
-  spec.runtime_dependencies.each { |dep| require dep.name }
-rescue LoadError => error
-  puts "Failed to auto require #{depenency.name}! #{error.message}"
 end
 
 Zeitwerk::Loader.for_gem(warn_on_extra_files: false).tap do |loader|

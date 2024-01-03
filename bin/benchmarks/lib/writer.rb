@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "action_view/helpers/number_helper"
+
 module Writer
   extend self
   include ActionView::Helpers::NumberHelper

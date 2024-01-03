@@ -6,7 +6,7 @@ class Runner
   extend Writer
   include Writer
 
-  ITERATIONS = (ARGV[1] || 100).to_i
+  ITERATIONS = (ARGV[1] || 10).to_i
   MAX_RECORD_COUNT = (ARGV[2] || 10).to_i
 
   class << self
