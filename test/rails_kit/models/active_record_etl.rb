@@ -142,10 +142,10 @@ module ActiveRecordETL
     # @param :reject_blank [Boolean] Indicates if blank values should be omitted (optional, defaults to false)
     # @return [String] the transformed data
     # @raise [NotImplementedError] if the specified format is not supported
-    def transform(format: :json, **)
+    def transform(format: :json, **options)
       case format
       # when :json then extract(**options).to_json
-      when :json then Oj.dump extract(**), symbol_keys: false
+      when :json then Oj.dump extract(**options), symbol_keys: false
       else raise NotImplementedError
       end
     end
@@ -156,8 +156,8 @@ module ActiveRecordETL
 
     private
 
-    def extract_next(record, **)
-      self.class.new(record).extract(**)
+    def extract_next(record, **options)
+      self.class.new(record).extract(**options)
     end
 
     def normalize_only_values(**options)

@@ -122,7 +122,7 @@ if defined? ActiveRecord
           prepack_database_options.decrement_current_depth!
           descendant.remove_instance_variable :@_uid_depth
         end
-        hash[DESCENDANTS_KEY][name] = descendants
+        hash[DESCENDANTS_KEY][name.to_s] = descendants
       end
 
       prepack_database_options.increment_current_depth!

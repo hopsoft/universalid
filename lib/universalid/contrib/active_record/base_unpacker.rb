@@ -18,9 +18,8 @@ if defined? ActiveRecord
 
         record = if attributes[klass.primary_key]
           klass.find_by(klass.primary_key => attributes[klass.primary_key])
-        else
-          klass.new
         end
+        record ||= klass.new
 
         assign_attributes record, attributes.except("marked_for_destruction")
         record.mark_for_destruction if attributes["marked_for_destruction"]
