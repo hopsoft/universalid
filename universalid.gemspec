@@ -8,11 +8,10 @@ Gem::Specification.new do |s|
   s.authors = ["Nate Hopkins (hopsoft)"]
   s.email = ["natehop@gmail.com"]
 
-  s.summary = "URL-Safe String Serialization for any Ruby Object"
+  s.summary = "Fast, recursive, and URL-Safe serialization for any Ruby object."
   s.description = <<~DESC
-    Universal ID is a Ruby library that can marshal/serialize any Ruby object to/from a URL-safe string.
-    It employs MessagePack and Brotli to this end and facilitates efficient data transfer across processes,
-    and it integrates seamlessly with any Ruby application.
+    Universal ID opens the flood gates with a deluge of profoundly powerful
+    yet easily implemented new use-cases for your apps and scripts.
   DESC
 
   s.homepage = "https://github.com/hopsoft/universalid"
