@@ -126,7 +126,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       end
 
       def inspect
-        "#<URI::UID scheme=#{scheme}, host=#{host}, payload=#{payload.truncate 40}, fingerprint=#{fingerprint.truncate 40}>"
+        "#<URI::UID payload=#{payload.truncate 40}, fingerprint=#{fingerprint.truncate 40}>"
       end
 
       private

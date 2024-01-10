@@ -88,14 +88,14 @@ Universal ID supports most Ruby primitive datatypes.
 - `Time`
 - `TrueClass`
 
-You can use Universal ID to serialize individual primitives, but this mostly serves as the foundation for more advanced use-cases.
+You can use Universal ID to serialize individual primitives, but this actually serves as the foundation for more advanced use-cases.
 
 ```ruby
 uri = URI::UID.build(:demo).to_s
 #=> "uid://universalid/iwKA1gBkZW1vAw#CwWAkccHf6ZTeW1ib2wD"
 
 uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=iwKA1gBkZW1vAw, fingerprint=CwWAkccHf6ZTeW1ib2wD>
+#=> #<URI::UID payload=iwKA1gBkZW1vAw, fingerprint=CwWAkccHf6ZTeW1ib2wD>
 
 uid.decode
 #=> :demo
@@ -119,7 +119,7 @@ uri = URI::UID.build(array).to_s
 #=> "uid://universalid/iweAlAECA5TUAGHUAGLUAGORwwM#iwSAkccGf6VBcnJheQM"
 
 uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=iweAlAECA5TUAGHUAGLUAGORwwM>
+#=> #<URI::UID payload=iweAlAECA5TUAGHUAGLUAGORwwM, fingerprint=iwSAkccGf6VBcnJheQM>
 
 uid.decode
 #=> [1, 2, 3, [:a, :b, :c, [true]]]
@@ -135,7 +135,7 @@ uri = URI::UID.build(hash).to_s
 #=> "uid://universalid/CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAECA5TUAGHUAGLUAGORwwM#CwS..."
 
 uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAECA..., fingerprint=CwSAkccFf6RIYXNoAw>
+#=> #<URI::UID payload=CxKAhNQAYQHUAGIC1ABjA8cFAGFycmF5lAECA..., fingerprint=CwSAkccFf6RIYXNoAw>
 
 uid.decode
 #=> {:a=>1, :b=>2, :c=>3, :array=>[1, 2, 3, [:a, :b, :c, [true]]]}
@@ -152,7 +152,7 @@ uri = URI::UID.build(book).to_s
 #=> "uid://universalid/G2YAoGTomv9tT1ilLRgVC9vIpmuBo-k84FZ0G8-siFMBNsbW0dpBE0Tnm96..."
 
 uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=G2YAoGTomv9tT1ilLRgVC9vIpmuBo-k84FZ0G..., fingerprint=CwSAkccFf6RCb29rAw>
+#=> #<URI::UID payload=G2YAoGTomv9tT1ilLRgVC9vIpmuBo-k84FZ0G..., fingerprint=CwSAkccFf6RCb29rAw>
 
 uid.decode
 #=> #<struct Book title="The Great Gatsby", author="F. Scott Fitzgerald", isbn="9780743273565", published_year=1925>
@@ -230,7 +230,7 @@ uri = URI::UID.build(campaign, options).to_s
 #=> "uid://universalid/GxYBYGT6_Xn_OrelIDRWhQQgvbS5gQxV7EJKe3paIiEFmEEc1gLKw8Pl2-k..."
 
 uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=GxYBYGT6_Xn_OrelIDRWhQQgvbS5gQxV7EJKe..., fingerprint=CwuAkscJf6hDYW1wYWlnbtf_ReuZnGWeG5MD>
+#=> #<URI::UID payload=GxYBYGT6_Xn_OrelIDRWhQQgvbS5gQxV7EJKe..., fingerprint=CwuAkscJf6hDYW1wYWlnbtf_ReuZnGWeG5MD>
 
 decoded = uid.decode
 #=> "#<Campaign id: 13, name: \"My Campaign\" ...>
@@ -288,7 +288,7 @@ uri = URI::UID.build(settings).to_s
 #=> "uid://universalid/G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7NV3bYttEww7xuUkzasu2HEO..."
 
 uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7N..., fingerprint=CwiAkccNf6xVc2VyU2V0dGluZ3MD>
+#=> #<URI::UID payload=G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7N..., fingerprint=CwiAkccNf6xVc2VyU2V0dGluZ3MD>
 
 uid.decode
 => #<UserSettings:0x000000011d0deb20 @preferences={:theme=>"dark", :notifications=>"email", :language=>"en", :layout=>"grid", :privacy=>"private"}, @user_id=1>
@@ -352,7 +352,7 @@ uri = URI::UID.build(hash, exclude: [:b]).to_s
 #=> "uid://universalid/CwSAgtQAYQHUAGMDAw#CwSAkccFf6RIYXNoAw"
 
 uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=CwSAgtQAYQHUAGMDAw, fingerprint=CwSAkccFf6RIYXNoAw>
+#=> #<URI::UID payload=CwSAgtQAYQHUAGMDAw, fingerprint=CwSAkccFf6RIYXNoAw>
 
 uid.decode
 #=> {:a=>1, :c=>3}
@@ -439,7 +439,7 @@ uri = URI::UID.build(campaign, options).to_s
 #=> "uid://universalid/G7kAIBylMxZa7MouY3gUqHKkIx3hk4s8NT5xWwQsDc7lKUkGWM4DHsCxQZK..."
 
 uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=G7kAIBylMxZa7MouY3gUqHKkIx3hk4s8NT5xW..., fingerprint=CwuAkscJf6hDYW1wYWlnbtf_ReuZnGWeG5MD>
+#=> #<URI::UID payload=G7kAIBylMxZa7MouY3gUqHKkIx3hk4s8NT5xW..., fingerprint=CwuAkscJf6hDYW1wYWlnbtf_ReuZnGWeG5MD>
 
 copy = uid.decode
 #=> #<Campaign:0x00000001135c7448 id: nil, name: "My Campaign", description: nil, trigger: nil, created_at: nil, updated_at: nil>
@@ -481,7 +481,7 @@ uri = URI::UID.build(relation).to_s
 #=> "uid://universalid/G90EQCwLeEP1oQtHFksrdN5YS4ju5TryFZwBJgh2toqS3SKEVSl1FoNtZjI..."
 
 uid = URI::UID.parse(encoded)
-#=> #<URI::UID scheme=uid, host=universalid, payload=G90EQCwLeEP1oQtHFksrdN5YS4ju5TryFZwBJ..., fingerprint=CxKAkscXf7ZBY3RpdmVSZWNvcmQ6OlJlbGF0a...>
+#=> #<URI::UID payload=G90EQCwLeEP1oQtHFksrdN5YS4ju5TryFZwBJ..., fingerprint=CxKAkscXf7ZBY3RpdmVSZWNvcmQ6OlJlbGF0a...>
 
 decoded = uid.decode
 
@@ -507,7 +507,7 @@ sgid = URI::UID.build(data).to_sgid_param(for: "purpose", expires_in: 1.hour)
 #=> "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJZ0plQTJkcFpEb3ZMM1Z1YVhabGNuTmhiQzFwWkM5V..."
 
 uid = URI::UID.from_sgid(sgid, for: "purpose")
-#=> #<URI::UID scheme=uid, host=universalid, payload=Cw-Axxx-gtYAbmFtZaREZW1vxwUAdmFsdWWnR..., fingerprint=ixqAkscof9kmVW5pdmVyc2FsSUQ6OkV4dGVuc...>
+#=> #<URI::UID payload=Cw-Axxx-gtYAbmFtZaREZW1vxwUAdmFsdWWnR..., fingerprint=ixqAkscof9kmVW5pdmVyc2FsSUQ6OkV4dGVuc...>
 
 decoded = uid.decode
 #=> #<OpenStruct name="Demo", value="Example">
