@@ -58,7 +58,7 @@ When combined, these libraries are up to 30% faster and within 2-5% compression 
   - [Options](#options)
   - [Advanced Usage](#advanced-usage)
     - [Fingerprinting](#fingerprinting)
-    - [Make Copies of ActiveRecord Models](#make-copies-of-activerecord-models)
+    - [Copy ActiveRecord Models](#copy-activerecord-models)
     - [ActiveRecord::Relations](#activerecordrelations)
     - [SignedGlobalID](#signedglobalid)
   - [Sponsors](#sponsors)
@@ -70,7 +70,7 @@ When combined, these libraries are up to 30% faster and within 2-5% compression 
 
 ### Primitive Types
 
-Universal ID supports most Ruby primitive datatypes.
+Universal ID supports most native Ruby primitives.
 
 - `NilClass`
 - `BigDecimal`
@@ -103,8 +103,8 @@ uid.decode
 
 ### Composite Types
 
-Composite _(compound, complex)_ datatype support is where things start to get interesting.
-Universal ID supports the following composite datatypes.
+Composite _(or compound, complex, etc.)_ datatype support is where things start to get interesting.
+Universal ID supports the following native Ruby composite datatypes.
 
 - `Array`
 - `Hash`
@@ -174,10 +174,12 @@ The following extension datatypes ship with Universal ID.
 > [!NOTE]
 > Extensions are autoloaded when the relaed datatype is detected.
 
-**Why Universal ID with ActiveRecord?**
+> [!IMPORTANT]
+> **Why Universal ID with ActiveRecord?**
+> ActiveRecord has GlobalID, a robust library for serializing individual ActiveRecord models.
+> Universal ID adds functionality to cover a **wider range of use cases**.
 
-While ActiveRecord already supports GlobalID, a robust library for serializing individual ActiveRecord models,
-Universal ID extends this functionality to cover a wider range of use cases. Here are a few reasons you may want to consider Universal ID.
+Here are a few reasons you may want to consider Universal ID with ActiveRecord.
 
 - **New Records**:
   Unlike GlobalID, Universal ID can serialize models that haven't been saved to the database yet.
@@ -380,7 +382,7 @@ uid = URI::UID.build(record, UniversalID::Settings[:changed])
 
 ### Fingerprinting
 
-Each UID is fingerprinted adds as part of the serialization process.
+Each UID is fingerprinted as part of the serialization process.
 
 Fingerprints are comprised of the following components:
 
@@ -409,7 +411,7 @@ Fingerprints can help you maintain consistency and reliability when working with
 > [!TIP]
 > While fingerpint creation is automatic and implicit, usage is optional... ready whenever you need it.
 
-### Make Copies of ActiveRecord Models
+### Copy ActiveRecord Models
 
 Make a copy of an ActiveRecord model _(with loaded associations)_.
 
