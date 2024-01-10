@@ -318,7 +318,7 @@ prepack:
   include: []
 
   # ..........................................................................................................
-  # Whether or not to omit blank values when packing (nil, {}, [], "", etc.)
+  # Whether or not to include blank values when packing (nil, {}, [], "", etc.)
   include_blank: true
 
   # ==========================================================================================================
@@ -395,7 +395,7 @@ Each UID is fingerprinted as part of the serialization process.
 Fingerprints are comprised of the following components:
 
 1. `Class (Class)`  - The encoded object's class
-2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
+2. `Timestamp (Time)` - The `mtime` (UTC) of the file that defined the object's class
 
 Fingerprints providate a simple mechanism to help manage versions of the data format... **without the need for explicit versioning**.
 Whenever the class definition changes, the `mtime` updates, resulting in a different fingerprint.
@@ -463,7 +463,7 @@ copy.emails.map(&:id) #=> [nil, nil]
 copy.emails.map(&:attachments).flatten.map(&:id)
 #=> [nil, nil, nil, nil]
 
-# save the copy
+# create the copy (new records) in the database
 copy.save #=> true
 ```
 
