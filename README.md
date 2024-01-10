@@ -43,7 +43,7 @@ It leverages [MessagePack](https://msgpack.org/) and [Brotli](https://github.com
 When combined, these libraries are up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
 
 > [!TIP]
-> All the code examples below can be tested on your local machine. Just clone the repo and run `bin/console` to begin exploring.
+> All the code examples below can be tested on your local machine. Just clone the repo _(↑ or use Gitpod above ↑)_ and run `bin/console` to begin exploring.
 > Don't forget to execute `bundle` first to ensure all dependencies are up to date. **Happy coding!**
 
 <!-- Tocer[start]: Auto-generated, don't remove. -->
