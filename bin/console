@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "pry-byebug"
 require_relative "../test/rails_kit/setup"
 require_relative "../lib/universalid"
 

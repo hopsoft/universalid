@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-if defined? ActiveRecord
+if defined? ActiveRecord::Relation
 
   # TODO: Revisit ActiveRecord::Relation serialization strategy,
   #       and attempt to optimize without falling back to Marshal.dump/load

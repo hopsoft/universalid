@@ -8,8 +8,8 @@ if defined? ActiveRecord::Base
   UniversalID::MessagePackFactory.register(
     type: ActiveRecord::Base,
     recreate_pool: false,
-    packer: ->(obj, packer) { UniversalID::Contrib::ActiveRecordBasePacker.new(obj).pack_with packer },
-    unpacker: ->(unpacker) { UniversalID::Contrib::ActiveRecordBaseUnpacker.unpack_with unpacker }
+    packer: ->(obj, packer) { UniversalID::Extensions::ActiveRecordBasePacker.new(obj).pack_with packer },
+    unpacker: ->(unpacker) { UniversalID::Extensions::ActiveRecordBaseUnpacker.unpack_with unpacker }
   )
 
 end

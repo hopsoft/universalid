@@ -5,7 +5,7 @@ if defined? GlobalID::Identification && defined? SignedGlobalID
   require "forwardable"
   require_relative "global_id_model"
 
-  module UniversalID::Contrib::GlobalIDUIDExtension
+  module UniversalID::Extensions::GlobalIDUIDExtension
     extend Forwardable
 
     def self.included(mixer)
@@ -15,10 +15,10 @@ if defined? GlobalID::Identification && defined? SignedGlobalID
     # Adds all GlobalID::Identification methods
     def_delegators(:to_global_id_model, *GlobalID::Identification.instance_methods(false))
 
-    # Returns a UniversalID::Contrib::GlobalIDModel instance
+    # Returns a UniversalID::Extensions::GlobalIDModel instance
     # which implements the GlobalID::Identification interface/protocol
     def to_global_id_model
-      UniversalID::Contrib::GlobalIDModel.new self
+      UniversalID::Extensions::GlobalIDModel.new self
     end
 
     module ClassMethods

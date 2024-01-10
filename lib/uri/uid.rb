@@ -8,7 +8,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
     class UID < ::URI::Generic
       VERSION = UniversalID::VERSION
       SCHEME = "uid"
-      HOST = "universal-id"
+      HOST = "universalid"
 
       class << self
         def encoder
@@ -94,10 +94,13 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         end
       end
 
-      alias_method :fingerprint, :fragment
+      def payload
+        path[1..]
+      end
 
-      def payload(truncate: false)
-        (truncate && path.length > 80) ? "#{path[1..77]}..." : path[1..]
+      def fingerprint(decode: false)
+        return decode_fingerprint if decode
+        fragment
       end
 
       def valid?
@@ -123,7 +126,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       end
 
       def inspect
-        "#<URI::UID scheme=#{scheme}, host=#{host}, payload=#{payload truncate: true}>"
+        "#<URI::UID scheme=#{scheme}, host=#{host}, payload=#{payload.truncate 40}, fingerprint=#{fingerprint.truncate 40}>"
       end
 
       private

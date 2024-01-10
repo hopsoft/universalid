@@ -2,7 +2,7 @@
 
 if defined? GlobalID::Identification
 
-  class UniversalID::Contrib::GlobalIDModel
+  class UniversalID::Extensions::GlobalIDModel
     include GlobalID::Identification
 
     def self.find(value)

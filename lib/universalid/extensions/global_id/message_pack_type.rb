@@ -4,7 +4,7 @@ if defined? GlobalID
 
   require_relative "global_id_uid_extension"
 
-  URI::UID.include UniversalID::Contrib::GlobalIDUIDExtension
+  URI::UID.include UniversalID::Extensions::GlobalIDUIDExtension
 
   UniversalID::MessagePackFactory.register(
     type: GlobalID,

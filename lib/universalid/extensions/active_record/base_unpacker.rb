@@ -2,7 +2,7 @@
 
 if defined? ActiveRecord
 
-  class UniversalID::Contrib::ActiveRecordBaseUnpacker
+  class UniversalID::Extensions::ActiveRecordBaseUnpacker
     class << self
       def unpack_with(unpacker)
         class_name = unpacker.read
@@ -35,7 +35,7 @@ if defined? ActiveRecord
       end
 
       def assign_descendants(record, attributes)
-        descendants = attributes[UniversalID::Contrib::ActiveRecordBasePacker::DESCENDANTS_KEY] || {}
+        descendants = attributes[UniversalID::Extensions::ActiveRecordBasePacker::DESCENDANTS_KEY] || {}
         descendants.each do |name, list|
           next unless record.respond_to?(name) && record.respond_to?(:"#{name}=")
 

@@ -2,7 +2,7 @@
 
 if defined? ActiveRecord
 
-  class UniversalID::Contrib::ActiveRecordBasePacker
+  class UniversalID::Extensions::ActiveRecordBasePacker
     using UniversalID::Refinements::HashRefinement
 
     # TODO: implement support for has_one

@@ -4,7 +4,7 @@ require "active_support/all"
 require "zeitwerk"
 
 module UniversalID
-  module Contrib; end
+  module Extensions; end
 
   class << self
     attr_writer :logger
@@ -18,7 +18,7 @@ end
 Zeitwerk::Loader.for_gem(warn_on_extra_files: false).tap do |loader|
   loader.inflector = Zeitwerk::GemInflector.new(__dir__)
   loader.ignore "#{__dir__}/universalid/**/*message_pack_type*"
-  loader.ignore "#{__dir__}/universalid/contrib"
+  loader.ignore "#{__dir__}/universalid/extensions"
   loader.inflector.inflect("universalid" => "UniversalID")
   loader.inflector.inflect("uri" => "URI")
   loader.inflector.inflect("uid" => "UID")
