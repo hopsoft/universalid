@@ -1,8 +1,7 @@
 <p align="center">
-  <h1 align="center">Universal ID</h1>
   <p align="center">
     <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-750-47d299.svg" />
+      <img alt="Lines of Code" src="https://img.shields.io/badge/loc-795-47d299.svg" />
     </a>
     <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
       <img src="https://api.codeclimate.com/v1/badges/567624cbe733fafc2330/maintainability" />
@@ -33,19 +32,33 @@
       <img alt="Twitter Follow" src="https://img.shields.io/twitter/url?label=%40hopsoft&style=social&url=https%3A%2F%2Ftwitter.com%2Fhopsoft">
     </a>
   </p>
-  <h2 align="center">URL-Safe Portability for any Ruby Object</h2>
 </p>
 
-**Universal ID provides recursive serialization for Ruby objects, allowing you to transoform any Ruby object
-to/from a URL-safe string. This enables efficient encoding and seamless data transfer across process boundaries.
-It opens a wide range of use-cases for your applications and scripts.
+# Universal ID
 
-UniversalI ID leverages [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
-Combined, these libraries are up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
+Universal ID provides recursive serialization for Ruby objects, allowing you to transform any object to/from a URL-safe string
+and enables a wide range of use-cases for your applications and scripts.
+
+It leverages [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
+When combined, these libraries are up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
 
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
+
+  - [Supported Data Types](#supported-data-types)
+    - [Primitives](#primitives)
+    - [Composites](#composites)
+    - [Extension Types](#extension-types)
+    - [Custom Types](#custom-types)
+  - [Options](#options)
+  - [Advanced Usage](#advanced-usage)
+    - [Fingerprinting](#fingerprinting)
+    - [Make Copies of ActiveRecord Models](#make-copies-of-activerecord-models)
+    - [ActiveRecord::Relations](#activerecordrelations)
+    - [SignedGlobalID](#signedglobalid)
+  - [Sponsors](#sponsors)
+  - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
 
@@ -146,52 +159,6 @@ uid.decode == book
 #=> true
 ```
 
-### Custom Types
-
-Universal ID is **extensible, enabling you to register your own datatypes with custom serialization rules.
-Simply convert the required data to a Ruby primitive or composite value.
-
-```ruby
-class UserSettings
-  attr_accessor :user_id, :preferences
-
-  def initialize(user_id, preferences = {})
-    @user_id = user_id
-    @preferences = preferences
-  end
-end
-
-UniversalID::MessagePackFactory.register(
-  type: UserSettings,
-  packer: ->(user_preferences, packer) do
-    packer.write user_preferences.user_id
-    packer.write user_preferences.preferences
-  end,
-  unpacker: ->(unpacker) do
-    user_id = unpacker.read
-    preferences = unpacker.read
-    UserSettings.new user_id, preferences
-  end
-)
-
-settings = UserSettings.new(1,
-  theme: "dark",
-  notifications: "email",
-  language: "en",
-  layout: "grid",
-  privacy: "private"
-)
-
-uri = URI::UID.build(settings).to_s
-#=> "uid://universalid/G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7NV3bYttEww7xuUkzasu2HEO..."
-
-uid = URI::UID.parse(uri)
-#=> #<URI::UID scheme=uid, host=universalid, payload=G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7N..., fingerprint=CwiAkccNf6xVc2VyU2V0dGluZ3MD>
-
-uid.decode
-=> #<UserSettings:0x000000011d0deb20 @preferences={:theme=>"dark", :notifications=>"email", :language=>"en", :layout=>"grid", :privacy=>"private"}, @user_id=1>
-```
-
 ### Extension Types
 
 The following extension datatypes ship with Universal ID.
@@ -278,7 +245,53 @@ decoded.save #=> true
 decoded.emails.last.persisted? #=> true
 ```
 
-## UID Options
+### Custom Types
+
+Universal ID is **extensible, enabling you to register your own datatypes with custom serialization rules.
+Simply convert the required data to a Ruby primitive or composite value.
+
+```ruby
+class UserSettings
+  attr_accessor :user_id, :preferences
+
+  def initialize(user_id, preferences = {})
+    @user_id = user_id
+    @preferences = preferences
+  end
+end
+
+UniversalID::MessagePackFactory.register(
+  type: UserSettings,
+  packer: ->(user_preferences, packer) do
+    packer.write user_preferences.user_id
+    packer.write user_preferences.preferences
+  end,
+  unpacker: ->(unpacker) do
+    user_id = unpacker.read
+    preferences = unpacker.read
+    UserSettings.new user_id, preferences
+  end
+)
+
+settings = UserSettings.new(1,
+  theme: "dark",
+  notifications: "email",
+  language: "en",
+  layout: "grid",
+  privacy: "private"
+)
+
+uri = URI::UID.build(settings).to_s
+#=> "uid://universalid/G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7NV3bYttEww7xuUkzasu2HEO..."
+
+uid = URI::UID.parse(uri)
+#=> #<URI::UID scheme=uid, host=universalid, payload=G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7N..., fingerprint=CwiAkccNf6xVc2VyU2V0dGluZ3MD>
+
+uid.decode
+=> #<UserSettings:0x000000011d0deb20 @preferences={:theme=>"dark", :notifications=>"email", :language=>"en", :layout=>"grid", :privacy=>"private"}, @user_id=1>
+```
+
+## Options
 
 Universal ID supports a small, but powerful, set of options used to "prepack" the object before it's packed with Msgpack.
 These options instruct Universal ID on how to prepare the object for serialization.
@@ -362,6 +375,35 @@ uid = URI::UID.build(record, UniversalID::Settings[:changed])
 
 ## Advanced Usage
 
+### Fingerprinting
+
+Each UID is fingerprinted adds as part of the serialization process.
+
+Fingerprints are comprised of the following components:
+
+1. `Class (Class)`  - The encoded object's class
+2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
+
+> :bulb: The timestamp or `mtime` is determined the moment a UID is created.
+
+Fingerprints providate a simple mechanic to help manage versions of the data format...** without the need for explicit versioning**.
+Whenever the class definition changes, the mtime updates, resulting in a different fingerprint.
+This is especially useful in scenarios where the data format evolves over time, such as in long-lived applications.
+
+```ruby
+uid = URI::UID.build(campaign)
+
+uid.fingerprint
+#=> "CwuAkscJf6hDYW1wYWlnbtf_ReuZnGWeG5MD"
+
+uid.fingerprint(decode: true)
+#=> [Campaign(id: integer, ...), <Time>]
+```
+
+Fingerprints can help you maintain consistency and reliability when working with serialized data over time.
+
+> :bulb: While fingerpint creation is automatic and implicit, usage is optional... ready whenever you need it.
+
 ### Make Copies of ActiveRecord Models
 
 Make a copy of an ActiveRecord model _(with loaded associations)_.
@@ -419,7 +461,7 @@ copy = UniversalID::Packer.unpack(packed)
 copy.save
 ```
 
-## ActiveRecord::Relations
+### ActiveRecord::Relations
 
 Universal ID also supports ActiveRecord relations/scopes.
 You can easily serialize complex queries into a portable and sharable format.
@@ -446,7 +488,7 @@ decoded.loaded? #=> false
 campaigns = decoded.load
 ```
 
-## SignedGlobalID
+### SignedGlobalID
 
 Features like `signing` _(to prevent tampering)_, `purpose`, and `expiration` are provided by SignedGlobalIDs.
 These features _(and more)_ will eventually be added to Universal ID, but until then...
@@ -468,35 +510,6 @@ decoded = uid.decode
 URI::UID.from_sgid(sgid, for: "mismatch")
 #=> nil
 ```
-
-## Fingerprinting (Implicit Versioning)
-
-Each UID is fingerprinted adds as part of the serialization process.
-
-Fingerprints are comprised of the following components:
-
-1. `Class (Class)`  - The encoded object's class
-2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
-
-> :bulb: The timestamp or `mtime` is determined the moment a UID is created.
-
-Fingerprints providate a simple mechanic to help manage versions of the data format...** without the need for explicit versioning**.
-Whenever the class definition changes, the mtime updates, resulting in a different fingerprint.
-This is especially useful in scenarios where the data format evolves over time, such as in long-lived applications.
-
-```ruby
-uid = URI::UID.build(campaign)
-
-uid.fingerprint
-#=> "CwuAkscJf6hDYW1wYWlnbtf_ReuZnGWeG5MD"
-
-uid.fingerprint(decode: true)
-#=> [Campaign(id: integer, ...), <Time>]
-```
-
-Fingerprints can help you maintain consistency and reliability when working with serialized data over time.
-
-> :bulb: While fingerpint creation is automatic and implicit, usage is optional... ready whenever you need it.
 
 ## Sponsors
 
