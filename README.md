@@ -36,7 +36,7 @@
 
 # Universal ID
 
-Universal ID provides recursive serialization for Ruby objects, allowing you to transform any object to/from a URL-safe string.
+Universal ID provides recursive serialization for Ruby objects, allowing you to transform any object to/from a URL-Safe string.
 UID enables a wide range of use-cases for your applications and scripts.
 
 It leverages [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
@@ -468,7 +468,7 @@ copy.save #=> true
 ```
 
 > [!TIP]
-> If you don't need a URL-safe UID, you can use `UniversalID::Packer` to speed things up.
+> If you don't need a URL-Safe UID, you can use `UniversalID::Packer` to speed things up.
 
 ```ruby
 packed = UniversalID::Packer.pack(campaign, options)
