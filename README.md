@@ -172,7 +172,7 @@ The following extension datatypes ship with Universal ID.
 - `SignedGlobalID`
 
 > [!NOTE]
-> Extensions are autoloaded whenever the relaed datatype is detected.
+> Extensions are autoloaded whenever the related datatype is detected.
 
 > [!IMPORTANT]
 > **Why Universal ID with ActiveRecord?**
