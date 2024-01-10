@@ -42,6 +42,10 @@ and enables a wide range of use-cases for your applications and scripts.
 It leverages [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 When combined, these libraries are up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
 
+> [!TIP]
+> All the code examples below can be tested on your local machine. Just clone the repo and run `bin/console` to begin exploring.
+> Don't forget to execute `bundle` first to ensure all dependencies are up to date. **Happy coding!**
+
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
@@ -61,10 +65,6 @@ When combined, these libraries are up to 30% faster and within 2-5% compression 
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
-
-> [!TIP]
-> All the code examples below can be tested on your local machine. Just clone the repo and run `bin/console` to begin exploring.
-> Don't forget to execute `bundle` first to ensure all dependencies are up to date. **Happy coding!**
 
 ## Supported Data Types
 
