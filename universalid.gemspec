@@ -30,10 +30,11 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
+  s.add_dependency "activesupport", ">= 6.1"
   s.add_dependency "brotli", ">= 0.4"
-  s.add_dependency "msgpack", ">= 1.7"
   s.add_dependency "config", ">= 5.0"
-  s.add_dependency "zeitwerk"
+  s.add_dependency "msgpack", ">= 1.7"
+  s.add_dependency "zeitwerk", ">= 2.6"
 
   s.add_development_dependency "actionview"
   s.add_development_dependency "activerecord"

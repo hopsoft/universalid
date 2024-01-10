@@ -55,15 +55,7 @@ class UniversalID::PrepackOptions
   end
 
   def blank?(value)
-    return true if value.nil?
-    return false if !!value == value # booleans
-
-    result = false
-    result ||= value.empty? if value.respond_to?(:empty?)
-    result ||= value.blank? if value.respond_to?(:blank?)
-    result ||= value.strip.empty? if value.is_a?(String)
-    result ||= value.compact.empty? if value.is_a?(Array) || value.is_a?(Hash)
-    result
+    (value == false) ? false : value.blank?
   end
 
   def present?(value)
