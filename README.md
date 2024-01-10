@@ -171,7 +171,8 @@ The following extension datatypes ship with Universal ID.
 - `GlobalID`
 - `SignedGlobalID`
 
-> :bulb: Extensions are autoloaded when the relaed datatype is detected.
+> [!NOTE]
+> Extensions are autoloaded when the relaed datatype is detected.
 
 **Why Universal ID with ActiveRecord?**
 
@@ -386,7 +387,8 @@ Fingerprints are comprised of the following components:
 1. `Class (Class)`  - The encoded object's class
 2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
 
-> :bulb: The timestamp or `mtime` is determined the moment a UID is created.
+> [!NOTE]
+> The timestamp or `mtime` is determined the moment a UID is created.
 
 Fingerprints providate a simple mechanic to help manage versions of the data format...** without the need for explicit versioning**.
 Whenever the class definition changes, the mtime updates, resulting in a different fingerprint.
@@ -404,7 +406,8 @@ uid.fingerprint(decode: true)
 
 Fingerprints can help you maintain consistency and reliability when working with serialized data over time.
 
-> :bulb: While fingerpint creation is automatic and implicit, usage is optional... ready whenever you need it.
+> [!TIP]
+> While fingerpint creation is automatic and implicit, usage is optional... ready whenever you need it.
 
 ### Make Copies of ActiveRecord Models
 
@@ -468,7 +471,8 @@ copy.save
 Universal ID also supports ActiveRecord relations/scopes.
 You can easily serialize complex queries into a portable and sharable format.
 
-> :bulb: Universal ID clears cached data within the relation before encoding. This minimizes payload size while preserving the integrity of the underlying query.
+> [!NOTE]
+> Universal ID clears cached data within the relation before encoding. This minimizes payload size while preserving the integrity of the underlying query.
 
 ```ruby
 relation = Campaign.joins(:emails).where("emails.subject LIKE ?", "Flash Sale%")
