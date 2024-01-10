@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class URI::UID::ActiveRecordTest < Minitest::Test
-  def test_new_model_exclude_unsaved_changes
+  def test_new_model_exclude_changes
     campaign = Campaign.forge
     uid = URI::UID.build(campaign)
     decoded = URI::UID.parse(uid.to_s).decode
@@ -10,17 +10,17 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     assert_empty decoded.attributes.compact
   end
 
-  def test_new_model_include_unsaved_changes
+  def test_new_model_include_changes
     campaign = Campaign.forge
-    uid = URI::UID.build(campaign, include_unsaved_changes: true)
+    uid = URI::UID.build(campaign, include_changes: true)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign.class, decoded.class
     assert_equal campaign.attributes, decoded.attributes
   end
 
-  def test_new_model_include_unsaved_changes_exclude_blanks
+  def test_new_model_include_changes_exclude_blanks
     campaign = Campaign.forge
-    uid = URI::UID.build(campaign, include_unsaved_changes: true, include_blank: false)
+    uid = URI::UID.build(campaign, include_changes: true, include_blank: false)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign.class, decoded.class
     assert_equal campaign.attributes, decoded.attributes
@@ -51,10 +51,10 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     refute_equal campaign.description, decoded.description
   end
 
-  def test_changed_persisted_model_include_unsaved_changes
+  def test_changed_persisted_model_include_changes
     campaign = Campaign.forge!
     campaign.description = "Changed Description"
-    uid = URI::UID.build(campaign, include_unsaved_changes: true)
+    uid = URI::UID.build(campaign, include_changes: true)
     decoded = URI::UID.parse(uid.to_s).decode
     assert_equal campaign, decoded
     assert_equal campaign.description, decoded.description
@@ -69,7 +69,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       include_blank: false
 
       database:
-        include_unsaved_changes: true
+        include_changes: true
         include_timestamps: false
     YAML
 

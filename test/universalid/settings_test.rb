@@ -11,7 +11,7 @@ class UniversalID::SettingsTest < Minitest::Test
         database: {
           include_keys: true,
           include_timestamps: true,
-          include_unsaved_changes: false,
+          include_changes: false,
           include_descendants: false,
           descendant_depth: 0
         }

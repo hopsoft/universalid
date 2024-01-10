@@ -10,7 +10,7 @@ class UniversalID::PrepackOptionsTest < Minitest::Test
       database: {
         include_keys: true,
         include_timestamps: true,
-        include_unsaved_changes: false,
+        include_changes: false,
         include_descendants: false,
         descendant_depth: 0
       }
@@ -31,7 +31,7 @@ class UniversalID::PrepackOptionsTest < Minitest::Test
       database: {
         include_keys: true,
         include_timestamps: true,
-        include_unsaved_changes: false,
+        include_changes: false,
         include_descendants: false,
         descendant_depth: 0
       }
@@ -49,7 +49,7 @@ class UniversalID::PrepackOptionsTest < Minitest::Test
     expected = {
       include_keys: true,
       include_timestamps: true,
-      include_unsaved_changes: false,
+      include_changes: false,
       include_descendants: false,
       descendant_depth: 0
     }
@@ -61,7 +61,7 @@ class UniversalID::PrepackOptionsTest < Minitest::Test
     expected = {
       include_keys: false,
       include_timestamps: false,
-      include_unsaved_changes: false,
+      include_changes: false,
       include_descendants: false,
       descendant_depth: 0
     }

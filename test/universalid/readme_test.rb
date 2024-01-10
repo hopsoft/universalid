@@ -7,7 +7,7 @@ class UniversalID::ReadmeTest < Minitest::Test
     assert_new_record campaign
 
     options = {
-      include_unsaved_changes: true,
+      include_changes: true,
       include_descendants: true,
       descendant_depth: 2
     }
@@ -33,7 +33,7 @@ class UniversalID::ReadmeTest < Minitest::Test
     end
 
     options = {
-      include_unsaved_changes: true,
+      include_changes: true,
       include_descendants: true,
       descendant_depth: 2
     }
@@ -53,7 +53,7 @@ class UniversalID::ReadmeTest < Minitest::Test
     options = {
       include_keys: false,
       include_timestamps: false,
-      include_unsaved_changes: true,
+      include_changes: true,
       include_descendants: true,
       descendant_depth: 2
     }

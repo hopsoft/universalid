@@ -25,12 +25,12 @@ class UniversalID::PrepackDatabaseOptions
     !include_timestamps?
   end
 
-  def include_unsaved_changes?
-    !!@settings.include_unsaved_changes
+  def include_changes?
+    !!@settings.include_changes
   end
 
-  def exclude_unsaved_changes?
-    !include_unsaved_changes?
+  def exclude_changes?
+    !include_changes?
   end
 
   def descendant_depth

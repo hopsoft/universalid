@@ -47,7 +47,7 @@ if defined? ActiveRecord
         record.attributes.select { |name, _| prepack_options.keep_key? name }.tap do |attrs|
           reject_keys! attrs if prepack_database_options.exclude_keys?
           reject_timestamps! attrs if prepack_database_options.exclude_timestamps?
-          reject_unsaved_changes! attrs if prepack_database_options.exclude_unsaved_changes?
+          reject_unsaved_changes! attrs if prepack_database_options.exclude_changes?
         end
       end
 
@@ -78,7 +78,7 @@ if defined? ActiveRecord
       return false if prepack_options.includes.any? && attribute_names.any? { |attr| prepack_options.includes[attr] }
 
       # record has unsaved non-pk changes and we want to keep them
-      return false if prepack_database_options.include_unsaved_changes? && attribute_names.any? { |attr| record.changes[attr] }
+      return false if prepack_database_options.include_changes? && attribute_names.any? { |attr| record.changes[attr] }
 
       prepack_database_options.include_keys?
     end
@@ -113,7 +113,7 @@ if defined? ActiveRecord
 
       has_many_descendant_instances_by_association_name.each do |name, relation|
         descendants = relation.each_with_object([]) do |descendant, memo|
-          next unless descendant.persisted? || prepack_database_options.include_unsaved_changes?
+          next unless descendant.persisted? || prepack_database_options.include_changes?
 
           descendant.instance_variable_set(:@_uid_depth, prepack_database_options.current_depth + 1)
           prepacked = UniversalID::Prepacker.prepack(descendant, prepack_options.to_h)

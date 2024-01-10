@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
-  def test_new_model_exclude_unsaved_changes
+  def test_new_model_exclude_changes
     campaign = Campaign.forge
     encoded = UniversalID::Encoder.encode(campaign)
     decoded = UniversalID::Encoder.decode(encoded)
@@ -10,17 +10,17 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     assert_empty decoded.attributes.compact
   end
 
-  def test_new_model_include_unsaved_changes
+  def test_new_model_include_changes
     campaign = Campaign.forge
-    encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true)
+    encoded = UniversalID::Encoder.encode(campaign, include_changes: true)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign.class, decoded.class
     assert_equal campaign.attributes, decoded.attributes
   end
 
-  def test_new_model_include_unsaved_changes_exclude_blanks
+  def test_new_model_include_changes_exclude_blanks
     campaign = Campaign.forge
-    encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true, include_blank: false)
+    encoded = UniversalID::Encoder.encode(campaign, include_changes: true, include_blank: false)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign.class, decoded.class
     assert_equal campaign.attributes, decoded.attributes
@@ -51,10 +51,10 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     refute_equal campaign.description, decoded.description
   end
 
-  def test_changed_persisted_model_include_unsaved_changes
+  def test_changed_persisted_model_include_changes
     campaign = Campaign.forge!
     campaign.description = "Changed Description"
-    encoded = UniversalID::Encoder.encode(campaign, include_unsaved_changes: true)
+    encoded = UniversalID::Encoder.encode(campaign, include_changes: true)
     decoded = UniversalID::Encoder.decode(encoded)
     assert_equal campaign, decoded
     assert_equal campaign.description, decoded.description
@@ -69,7 +69,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
         include_blank: false
 
         database:
-          include_unsaved_changes: true
+          include_changes: true
           include_timestamps: false
     YAML
 
@@ -111,7 +111,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
     end
 
     options = {
-      include_unsaved_changes: true,
+      include_changes: true,
       include_descendants: true,
       descendant_depth: 2
     }
@@ -140,7 +140,7 @@ class UniversalID::Encoder::ActiveRecordTest < Minitest::Test
       exclude: [:description, :body, :file_data],
       include_keys: false,
       include_timestamps: false,
-      include_unsaved_changes: false,
+      include_changes: false,
       include_descendants: true,
       descendant_depth: 2
     }

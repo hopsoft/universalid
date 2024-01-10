@@ -9,7 +9,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     refute campaign.emails.map(&:persisted?).any?
 
     options = {
-      include_unsaved_changes: true, # required to support new records
+      include_changes: true, # required to support new records
       include_descendants: true,
       descendant_depth: 1
     }
@@ -30,7 +30,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     campaign = Campaign.forge emails: 3
 
     options = {
-      include_unsaved_changes: true, # required to support new records
+      include_changes: true, # required to support new records
       include_descendants: false,
       descendant_depth: 1
     }
@@ -104,7 +104,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     end
 
     options = {
-      include_unsaved_changes: true,
+      include_changes: true,
       include_descendants: true,
       descendant_depth: 2
     }
