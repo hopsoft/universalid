@@ -172,11 +172,11 @@ The following extension datatypes ship with Universal ID.
 - `SignedGlobalID`
 
 > [!NOTE]
-> Extensions are autoloaded when the relaed datatype is detected.
+> Extensions are autoloaded whenever the relaed datatype is detected.
 
 > [!IMPORTANT]
 > **Why Universal ID with ActiveRecord?**
-> ActiveRecord already has GlobalID, a robust library for serializing individual ActiveRecord models.
+> ActiveRecord already has GlobalID, a robust library for serializing individual models.
 > Universal ID covers a much **wider range of use cases**.
 
 Here are a few reasons you may want to consider Universal ID with ActiveRecord.
@@ -191,7 +191,7 @@ Here are a few reasons you may want to consider Universal ID with ActiveRecord.
   Universal ID goes beyond single models. It can include associated records, even those with unsaved changes, creating a comprehensive snapshot of complex record states.
 
 - **Copying/Cloning**:
-  Universal Need supports making copies of records _(including associations)_, making it ideal for duplicating complex datasets.
+  Universal ID supports making copies of records _(including associations)_, making it ideal for duplicating complex datasets.
 
 - **More Control**:
   Universal ID gives you control over the serialization process. You can choose which columns to include/exclude, allowing for tailored, optimized payloads to fit your needs.
@@ -199,7 +199,7 @@ Here are a few reasons you may want to consider Universal ID with ActiveRecord.
 - **Queries/Relations**:
   Universal ID extends also supports ActiveRecord::Relation, enabling the serialization of complex database queries and scopes.
 
-In summary, while GlobalID excels in its specific use case, Universal ID offers extended capabilities that are particularly useful in scenarios involving unsaved records, complex associations, data cloning, and database queries.
+In summary, while GlobalID excels in its specific use case, Universal ID offers more power for use-cases that involve unsaved records, complex associations, data cloning, and database queries.
 
 ```ruby
 # setup some records
@@ -252,10 +252,11 @@ decoded.emails.last.persisted? #=> true
 
 ### Custom Types
 
-Universal ID is **extensible, enabling you to register your own datatypes with custom serialization rules.
+Universal ID is extensible, enabling you to register your own datatypes with custom serialization rules.
 Simply convert the required data to a Ruby primitive or composite value.
 
 ```ruby
+# create a custom type
 class UserSettings
   attr_accessor :user_id, :preferences
 
@@ -265,6 +266,7 @@ class UserSettings
   end
 end
 
+# register the custom type with Universal ID
 UniversalID::MessagePackFactory.register(
   type: UserSettings,
   packer: ->(user_preferences, packer) do
@@ -278,6 +280,7 @@ UniversalID::MessagePackFactory.register(
   end
 )
 
+# create an instance of the custom type
 settings = UserSettings.new(1,
   theme: "dark",
   notifications: "email",
@@ -286,9 +289,11 @@ settings = UserSettings.new(1,
   privacy: "private"
 )
 
+# serialize the custom type
 uri = URI::UID.build(settings).to_s
 #=> "uid://universalid/G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7NV3bYttEww7xuUkzasu2HEO..."
 
+# deserialize the custom type
 uid = URI::UID.parse(uri)
 #=> #<URI::UID payload=G1QAQAT-c_cO7qJcAk-TtsAiadci_IA5xoH7N..., fingerprint=CwiAkccNf6xVc2VyU2V0dGluZ3MD>
 
@@ -298,7 +303,7 @@ uid.decode
 
 ## Options
 
-Universal ID supports a small, but powerful, set of options used to "prepack" the object before it's packed with Msgpack.
+Universal ID supports a small, but powerful, set of options used to "prepack" the object before it's packed with MessagePack.
 These options instruct Universal ID on how to prepare the object for serialization.
 
 ```yml
@@ -340,12 +345,12 @@ prepack:
 
     # ......................................................................................................
     # The max depth (number) of loaded in-memory descendants to include when `include_descendants == true`
-    # For example, a value of (3) would include the following:
+    # For example, a value of (2) would include the following:
     #   Parent > Child > Grandchild
     descendant_depth: 0
 ```
 
-Options can be applied whenever creating a UID. _Options can be passed in structured or flat format._
+Options can be applied whenever creating a UID.
 
 ```ruby
 hash = { a: 1, b: 2, c: 3 }
@@ -359,6 +364,9 @@ uid = URI::UID.parse(uri)
 uid.decode
 #=> {:a=>1, :c=>3}
 ```
+
+> [!NOTE]
+> Options can be passed in structured or flat format.
 
 It's also possible to register frequently used options.
 
@@ -389,11 +397,8 @@ Fingerprints are comprised of the following components:
 1. `Class (Class)`  - The encoded object's class
 2. `Timestamp (Time)` - The mtime (UTC) of the file that defined the object's class
 
-> [!NOTE]
-> The timestamp or `mtime` is determined the moment a UID is created.
-
-Fingerprints providate a simple mechanic to help manage versions of the data format...** without the need for explicit versioning**.
-Whenever the class definition changes, the mtime updates, resulting in a different fingerprint.
+Fingerprints providate a simple mechanism to help manage versions of the data format... **without the need for explicit versioning**.
+Whenever the class definition changes, the `mtime` updates, resulting in a different fingerprint.
 This is especially useful in scenarios where the data format evolves over time, such as in long-lived applications.
 
 ```ruby
@@ -406,9 +411,11 @@ uid.fingerprint(decode: true)
 #=> [Campaign(id: integer, ...), <Time>]
 ```
 
-Fingerprints can help you maintain consistency and reliability when working with serialized data over time.
+> [!NOTE]
+> The timestamp or `mtime` is determined the moment a UID is created.
 
 > [!TIP]
+> Fingerprints can help you maintain consistency and reliability when working with serialized data over time.
 > While fingerpint creation is automatic and implicit, usage is optional... ready whenever you need it.
 
 ### Copy ActiveRecord Models
@@ -444,7 +451,7 @@ uid = URI::UID.parse(uri)
 #=> #<URI::UID payload=G7kAIBylMxZa7MouY3gUqHKkIx3hk4s8NT5xW..., fingerprint=CwuAkscJf6hDYW1wYWlnbtf_ReuZnGWeG5MD>
 
 copy = uid.decode
-#=> #<Campaign:0x00000001135c7448 id: nil, name: "My Campaign", description: nil, trigger: nil, created_at: nil, updated_at: nil>
+#=> #<Campaign:0x00000001135c7448 id: nil, name: "My Campaign", ...>
 
 copy == campaign
 #=> false
@@ -460,7 +467,8 @@ copy.emails.map(&:attachments).flatten.map(&:id)
 copy.save #=> true
 ```
 
-If you don't need a URL-safe UID, you can use the `Packer` directly to speed things up.
+> [!TIP]
+> If you don't need a URL-safe UID, you can use `UniversalID::Packer` to speed things up.
 
 ```ruby
 packed = UniversalID::Packer.pack(campaign, options)
@@ -472,9 +480,6 @@ copy.save
 
 Universal ID also supports ActiveRecord relations/scopes.
 You can easily serialize complex queries into a portable and sharable format.
-
-> [!NOTE]
-> Universal ID clears cached data within the relation before encoding. This minimizes payload size while preserving the integrity of the underlying query.
 
 ```ruby
 relation = Campaign.joins(:emails).where("emails.subject LIKE ?", "Flash Sale%")
@@ -495,6 +500,9 @@ decoded.loaded? #=> false
 # run the query
 campaigns = decoded.load
 ```
+
+> [!NOTE]
+> Universal ID clears cached data within the relation before encoding. This minimizes payload size while preserving the integrity of the underlying query.
 
 ### SignedGlobalID
 
