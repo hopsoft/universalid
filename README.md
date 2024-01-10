@@ -62,7 +62,9 @@ When combined, these libraries are up to 30% faster and within 2-5% compression 
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
 
-> :rocket: **Ready to Dive In?**: All the code examples below can be tested on your local machine. Just clone the repo and run `bin/console` to begin exploring. Don't forget to execute `bundle` first to ensure all dependencies are up to date. Happy coding!
+> [!TIP]
+> All the code examples below can be tested on your local machine. Just clone the repo and run `bin/console` to begin exploring.
+> Don't forget to execute `bundle` first to ensure all dependencies are up to date. **Happy coding!**
 
 ## Supported Data Types
 
