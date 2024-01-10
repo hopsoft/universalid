@@ -51,8 +51,8 @@ When combined, these libraries are up to 30% faster and within 2-5% compression 
 ## Table of Contents
 
   - [Supported Data Types](#supported-data-types)
-    - [Primitives](#primitives)
-    - [Composites](#composites)
+    - [Primitive Types](#primitive-types)
+    - [Composite Types](#composite-types)
     - [Extension Types](#extension-types)
     - [Custom Types](#custom-types)
   - [Options](#options)
@@ -68,7 +68,7 @@ When combined, these libraries are up to 30% faster and within 2-5% compression 
 
 ## Supported Data Types
 
-### Primitives
+### Primitive Types
 
 Universal ID supports most Ruby primitive datatypes.
 
@@ -101,9 +101,9 @@ uid.decode
 #=> :demo
 ```
 
-### Composites
+### Composite Types
 
-Composite datatype support is where things start to get interesting.
+Composite _(compound, complex)_ datatype support is where things start to get interesting.
 Universal ID supports the following composite datatypes.
 
 - `Array`
