@@ -176,28 +176,28 @@ The following extension datatypes ship with Universal ID.
 
 > [!IMPORTANT]
 > **Why Universal ID with ActiveRecord?**
-> ActiveRecord has GlobalID, a robust library for serializing individual ActiveRecord models.
-> Universal ID adds functionality to cover a **wider range of use cases**.
+> ActiveRecord already has GlobalID, a robust library for serializing individual ActiveRecord models.
+> Universal ID covers a much **wider range of use cases**.
 
 Here are a few reasons you may want to consider Universal ID with ActiveRecord.
 
 - **New Records**:
-  Unlike GlobalID, Universal ID can serialize models that haven't been saved to the database yet.
+  Universal ID can serialize models that haven't been saved to the database yet.
 
 - **Changesets**:
-  It can serialize ActiveRecord models with unsaved changes, ensuring that even transient states are captured.
+  Universal ID can serialize ActiveRecord models with unsaved changes, ensuring that even transient states are captured.
 
 - **Associations**:
   Universal ID goes beyond single models. It can include associated records, even those with unsaved changes, creating a comprehensive snapshot of complex record states.
 
-- **Cloning**:
-  Need to make a copy of a record _(including associations)_? Universal ID handles this effortlessly, making it ideal for duplicating complex datasets.
+- **Copying/Cloning**:
+  Universal Need supports making copies of records _(including associations)_, making it ideal for duplicating complex datasets.
 
-- **Control**:
-  With Universal ID, you have control over the serialization process. You can precisely choose which columns to include or exclude, allowing for tailored, optimized payloads that fit your specific needs.
+- **More Control**:
+  Universal ID gives you control over the serialization process. You can choose which columns to include/exclude, allowing for tailored, optimized payloads to fit your needs.
 
 - **Queries/Relations**:
-  Universal ID extends its capabilities to ActiveRecord relations, enabling the serialization of complex queries and scopes.
+  Universal ID extends also supports ActiveRecord::Relation, enabling the serialization of complex database queries and scopes.
 
 In summary, while GlobalID excels in its specific use case, Universal ID offers extended capabilities that are particularly useful in scenarios involving unsaved records, complex associations, data cloning, and database queries.
 
