@@ -38,7 +38,7 @@
 Universal ID leverages both [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 When combined, these libraries are up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
 
-**Universal ID opens the flood gates with a deluge of [powerful yet easily implemented _NEW_ use-cases ↗](docs/use_cases.md) for your apps and scripts.**
+**Universal ID opens the flood gates with a deluge of powerful yet easily implemented [solutions ↗](docs/use_cases.md) across a variety of problem domains.
 
 > [!TIP]
 > All the code examples below can be tested on your local machine. Just clone the repo _(↑or use Gitpod above↑)_ and run `bin/console` to begin exploring.
