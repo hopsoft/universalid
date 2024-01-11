@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../test_helper"
-
 class URI::UID::GlobalIDTest < Minitest::Test
   def test_uid_to_and_from_global_id
     product = {

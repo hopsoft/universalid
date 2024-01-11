@@ -13,7 +13,7 @@ prepack:
   include: []
 
   # ..........................................................................................................
-  # Whether or not to omit blank values when packing (nil, {}, [], "", etc.)
+  # Whether or not to include blank values when packing (nil, {}, [], "", etc.)
   include_blank: true
 
   # ==========================================================================================================
@@ -32,7 +32,7 @@ prepack:
     # ......................................................................................................
     # Whether or not to include unsaved changes
     # Assign to `true` when packing new records
-    include_unsaved_changes: false
+    include_changes: false
 
     # ......................................................................................................
     # Whether or not to include loaded in-memory descendants (i.e. child associations)

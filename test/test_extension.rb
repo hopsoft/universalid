@@ -1,26 +1,40 @@
 # frozen_string_literal: true
 
+require "active_record"
+require "awesome_print"
+require "benchmark"
+require "bigdecimal"
+require "date"
+require "etc"
+require "faker"
+require "globalid"
+require "minitest/autorun"
+require "minitest/parallel"
+require "minitest/reporters"
+require "model_probe"
+require "simplecov"
+
+# MiniTest setup
+Minitest.parallel_executor = Minitest::Parallel::Executor.new([Etc.nprocessors, 1].max) # thread count
+Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
+
+# Coverage setup
+SimpleCov.start do
+  project_name "UniversalID"
+  add_filter [
+    "lib/universalid/message_pack/types", # coverage doesn't work on these
+    "lib/universalid/message_pack_types", # coverage not needed
+    "lib/universalid/refinements", # coverage doesn't work on these
+    "test" # coverage not wanted
+  ]
+end
+
+require "universalid"
+
+# Minimal subset of Rails tooling for testing purposes
+require_relative "rails_kit/setup"
+
 class Minitest::Test
-  @@active_record_instance = nil
-
-  def initialize(...)
-    super(...)
-    return if @@active_record_instance
-
-    time = Benchmark.measure do
-      Campaign.create_for_test do |campaign|
-        self.class.class_variable_set(:@@active_record_instance, campaign)
-      end
-    end
-
-    time = time.real.round(5)
-    message = Rainbow("Flex ActiveRecord before run to prevent skewing individual test benchmarks (").yellow
-    message << Rainbow("#{"%.5f" % time}s").yellow.bright
-    message << Rainbow(")").yellow
-    puts message
-    puts
-  end
-
   alias_method :original_run, :run
 
   def run

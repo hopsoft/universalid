@@ -1,0 +1,127 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+srand ENV.fetch("TEST_SEED", Time.now).to_i
+
+require "objspace"
+require_relative "../test/rails_kit/setup"
+require_relative "../lib/universalid"
+require_relative "benchmarks/lib/runner"
+
+FILE = ARGV[0]
+
+case FILE
+when nil then Dir["#{__dir__}/benchmarks/**/*.rb"].shuffle.each { |file| require file }
+when "active_record" then Dir["#{__dir__}/benchmarks/active_record/**/*.rb"].shuffle.each { |file| require file }
+when "hash" then Dir["#{__dir__}/benchmarks/hash/**/*.rb"].shuffle.each { |file| require file }
+else require_relative "benchmarks/#{FILE}"
+end
+
+exit 0
+
+
+
+# seed data ..................................................................................................
+
+# benchmarks .................................................................................................
+write(
+  [
+    style("Benchmarking ", :cyan, :bright),
+    style(number_with_delimiter(ITERATIONS), :lime),
+    style(" #{"iteration".pluralize(ITERATIONS)} ", :cyan, :bright),
+    style("with ", :cyan, :bright),
+    style(number_with_delimiter(Campaign.count + Email.count + Attachment.count), :lime),
+    style(" related records marshaled as an atomic singular unit", :cyan, :bright)
+  ].join
+)
+
+# ............................................................................................................
+#run("UID.build Hash ....... +descendants") { URI::UID.build campaign_hash }
+#run("UID.build ActiveRecord +descendants") { URI::UID.build campaign, include_descendants: true, descendant_depth: 2 }
+#run("UID.build ActiveRecord +descendants copy") { URI::UID.build campaign, include_keys: false, include_descendants: true, descendant_depth: 2 }
+## ............................................................................................................
+#run("UID.build Hash ....... +descendants -blank") { URI::UID.build campaign_hash, include_blank: false }
+#run("UID.build ActiveRecord +descendants -blank") { URI::UID.build campaign, include_blank: false, include_descendants: true, descendant_depth: 2 }
+#run("UID.build ActiveRecord +descendants -blank copy") { URI::UID.build campaign, include_keys: false, include_blanks: false, include_descendants: true, descendant_depth: 2 }
+## ............................................................................................................
+#run("UID.parse Hash ....... +descendants") { URI::UID.parse campaign_hash_uid_string }
+#run("UID.parse ActiveRecord +descendants") { URI::UID.parse campaign_uid_string }
+## ............................................................................................................
+#run("UID.decode Hash ....... +descendants") { campaign_hash_uid.decode }
+#run("UID.decode ActiveRecord +descendants") { campaign_uid.decode }
+## ............................................................................................................
+#run("ActiveRecord → GlobalID") { campaign.to_gid_param }
+#run("ActiveRecord → SignedGlobalID") { campaign.to_sgid_param }
+#run("Encoder.encode ActiveRecord -descentants (== gid)") { UniversalID::Encoder.encode campaign }
+#run("UID.build ActiveRecord -descentants") { URI::UID.build campaign }
+#run("UID.build ActiveRecord -descentants -blank") { URI::UID.build campaign, include_blank: false }
+#run("UID.build ActiveRecord -descentants -blank copy") { URI::UID.build campaign, include_blank: false, include_keys: false }
+## ............................................................................................................
+#run("UID → GID → UID.from_gid → UID.decode  +descendants") do
+  #URI::UID.from_gid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_gid_param).decode
+#end
+
+#run("UID → SGID → UID.from_sgid → UID.decode +descendants") do
+  #URI::UID
+    #.from_sgid(URI::UID.build(campaign, include_descendants: true, descendant_depth: 2)
+    #.to_sgid_param(for: "benchmarks"), for: "benchmarks").decode
+#end
+
+# ............................................................................................................
+
+#write "Marshal", :yellow, :bright, pad: "⎯", subtext: <<~DESC
+  #Creates a deep COPY of the record and it's associations and unsaved changes using Ruby's native Marshal.
+  #This serves as the baseline for comparison with UniversalID serialization.
+  #NOTE: This isn't an apples/apples comparison UniversalID serialization but it serves as our baseline for now.
+#DESC
+#baseline = { payload: Marshal.dump(@campaign) }
+#baseline[:dump] = run("Marshal.dump") { Marshal.dump @campaign }
+#baseline[:load] = run("Marshal.load") { Marshal.load baseline[:payload] }
+#puts
+#puts "#{style "Payload size", :faint, width: Runner::WIDTH, pad: "."}  #{number_to_human_size baseline[:payload].bytesize} #{style "(baseline)", :faint}"
+
+# ............................................................................................................
+
+#write "UniversalID::Packer", :cyan, :bright, pad: "⎯", subtext: <<~DESC
+  #Creates a shallow COPY of the record without associations.
+  #Only serializes the primary key and does not include unsaved changes.
+  #Unpack performs a database query to retrieve the record and hydrates an ActiveRecord model.
+  #NOTE: This acts like a deep copy because the associations can be lazy loaded from the database.
+#DESC
+#result = { payload: UniversalID::Packer.pack(@campaign) }
+#result[:dump] = run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign }
+#result[:load] = run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack result[:payload] }
+#puts "\nComparisons"
+#compare "Payload size", result[:payload].bytesize, baseline[:payload].bytesize, formatted: number_to_human_size(result[:payload].bytesize.round, precision: 2), baseline_label: "Marshal.dump"
+#compare "UniversalID::Packer.pack", result[:dump].real, baseline[:dump].real, formatted: number_to_human(result[:dump].real, precision: 2), baseline_label: "Marshal.dump"
+#compare "UniversalID::Packer.unpack", result[:load].real, baseline[:load].real, formatted: number_to_human(result[:load].real, precision: 2), baseline_label: "Marshal.load"
+
+# ............................................................................................................
+
+write "UniversalID::Packer", :cyan, :bright, pad: "⎯", subtext: <<~DESC
+  TODO: Write this up...
+DESC
+options = { include_descendants: true, descendant_depth: 2 }
+result = { payload: UniversalID::Packer.pack(@campaign, options) }
+result[:dump] = run ("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+result[:load] = run ("UniversalID::Packer.pack") { UniversalID::Packer.unpack result[:payload] }
+puts "\nComparisons"
+compare "Payload size", result[:payload].bytesize, baseline[:payload].bytesize, formatted: number_to_human_size(result[:payload].bytesize.round, precision: 2), baseline_label: "Marshal.dump"
+compare "UniversalID::Packer.pack", result[:dump].real, baseline[:dump].real, formatted: number_to_human(result[:dump].real, precision: 2), baseline_label: "Marshal.dump"
+compare "UniversalID::Packer.unpack", result[:load].real, baseline[:load].real, formatted: number_to_human(result[:load].real, precision: 2), baseline_label: "Marshal.load"
+
+# ............................................................................................................
+
+#publish Rainbow("ActiveRecord -pks, -fks, -timestamps ".ljust(98, ".")).lime.bright do
+  #options = {include_keys: false, include_timestamps: false}
+  #packed = UniversalID::Packer.pack(@campaign, options)
+  #run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+  #run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+#end
+
+#publish Rainbow("ActiveRecord -pks, -fks, -timestamps, +descendants ".ljust(98, ".")).lime.bright do
+  #options = {include_keys: false, include_timestamps: false, include_descendants: true, descendant_depth: 2}
+  #packed = UniversalID::Packer.pack(@campaign, options)
+  #run("UniversalID::Packer.pack") { UniversalID::Packer.pack @campaign, options }
+  #run("UniversalID::Packer.unpack") { UniversalID::Packer.unpack packed }
+#end
