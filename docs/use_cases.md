@@ -3,7 +3,7 @@
 Universal ID unlocks a lot of **NEW** possibile solutions across a variety of problem domains.
 
 > [!NOTE]
-> The following use-cases demonstrate the versatility and power of Universal ID in numerous application and business scenarios.
+> _The following use-cases demonstrate the versatility and power of Universal ID in numerous application and business scenarios._
 
 ## Use Cases
 
@@ -117,6 +117,5 @@ Serialize travel plans and itineraries, allowing users to save and share their t
 - **Version Control of Design Files**
 Serialize design artifacts for version control in graphic design and CAD applications.
 
----
-
-_As you can see, Universal ID supports creative solutions that will help you improve efficiency, reliability, and even the end-user experience._
+> [!NOTE]
+> _As you can see, Universal ID supports creative solutions that will help you improve efficiency, reliability, and even the end-user experience._
