@@ -1,6 +1,6 @@
 # Universal ID
 
-Universal ID unlocks a myriad of **NEW possibile solutions** across a variety problem domains.
+Universal ID unlocks a lot of **NEW** possibile solutions across a variety of problem domains.
 
 ## Use Cases
 
