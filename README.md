@@ -33,7 +33,7 @@
   </a>
 </p>
 
-## Fast, recursive, and URL-Safe serialization for any Ruby object.
+## Fast, recursive, optimized, URL-Safe serialization for any Ruby object
 
 Universal ID leverages both [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 When combined, these libraries are up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
@@ -101,7 +101,7 @@ uid.decode
 
 ### Composite Types
 
-Composite _(or compound, complex, etc.)_ datatype support is where things start to get interesting.
+Composite _(or complex, compound, etc.)_ datatype support is where things start to get interesting.
 Universal ID supports the following native Ruby composite datatypes:
 
 - `Array`
@@ -175,7 +175,7 @@ The following extension datatypes ship with Universal ID:
 > [!IMPORTANT]
 > **Why Universal ID with ActiveRecord?**
 > ActiveRecord already has GlobalID, a robust library for serializing individual models.
-> Universal ID covers a much **wider range of use cases**.
+> **Universal ID covers a much wider range of use cases**.
 
 Here are a few reasons you may want to consider Universal ID with ActiveRecord.
 
@@ -195,7 +195,7 @@ Here are a few reasons you may want to consider Universal ID with ActiveRecord.
   Universal ID gives you control over the serialization process. You can choose which columns to include/exclude, allowing for tailored, optimized payloads to fit your needs.
 
 - **Queries/Relations**:
-  Universal ID extends also supports ActiveRecord::Relation, enabling the serialization of complex database queries and scopes.
+  Universal ID also supports ActiveRecord::Relations, enabling the serialization of complex database queries and scopes.
 
 In summary, while GlobalID excels in its specific use case, Universal ID offers more power for use-cases that involve unsaved records, complex associations, data cloning, and database queries.
 
@@ -395,7 +395,7 @@ Fingerprints are comprised of the following components:
 1. `Class (Class)`  - The encoded object's class
 2. `Timestamp (Time)` - The `mtime` (UTC) of the file that defined the object's class
 
-Fingerprints providate a simple mechanism to help manage versions of the data format... **without the need for explicit versioning**.
+Fingerprints provide a simple mechanism to help manage data format versions... **minimizing the need for custom versioning solutions**.
 Whenever the class definition changes, the `mtime` updates, resulting in a different fingerprint.
 This is especially useful in scenarios where the data format evolves over time, such as in long-lived applications.
 
@@ -466,7 +466,7 @@ copy.save #=> true
 ```
 
 > [!TIP]
-> If you don't need a URL-Safe UID, you can use `UniversalID::Packer` to speed things up.
+> If you don't need a URL-Safe UID, you can use `UniversalID::Packer` to speed things up a bit.
 
 ```ruby
 packed = UniversalID::Packer.pack(campaign, options)

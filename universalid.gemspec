@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors = ["Nate Hopkins (hopsoft)"]
   s.email = ["natehop@gmail.com"]
 
-  s.summary = "Fast, recursive, and URL-Safe serialization for any Ruby object."
+  s.summary = "Fast, recursive, optimized, URL-Safe serialization for any Ruby object"
   s.description = <<~DESC
     Universal ID opens the flood gates with a deluge of profoundly powerful
     yet easily implemented new use-cases for your apps and scripts.
