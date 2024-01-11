@@ -4,13 +4,11 @@ Universal ID unlocks a lot of **NEW** possibile solutions across a variety of pr
 
 > [!NOTE]
 > _The following use-cases demonstrate the power and versatility of Universal ID._
+> _You'll discover that Universal ID supports **NEW** and creative solutions that will help improve efficiency, reliability, and the end-user experience._
 
 ## Use Cases
 
-Consider some of these use-cases to jump start your imagination and creativity.
-
-> [!NOTE]
-> _You'll discover that Universal ID supports **NEW** and creative solutions that will help improve efficiency, reliability, and the end-user experience._
+**Consider some of these use-cases to jump start your imagination and creativity.**
 
 - **State Management for Web Applications**:
   Facilitate seamless user experiences in web applications by preserving and transferring UI states, even across different sessions.
