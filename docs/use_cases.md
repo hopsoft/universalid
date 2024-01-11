@@ -10,7 +10,7 @@ Universal ID unlocks a lot of **NEW** possibile solutions across a variety of pr
 Consider some of these use-cases to jump start your imagination and creativity.
 
 > [!NOTE]
-> You'll find Universal ID supports creative solutions that will help you improve efficiency, reliability, and even the end-user experience._
+> _You'll find Universal ID supports creative solutions that will help you improve efficiency, reliability, and even the end-user experience._
 
 - **State Management for Web Applications**:
   Facilitate seamless user experiences in web applications by preserving and transferring UI states, even across different sessions.
