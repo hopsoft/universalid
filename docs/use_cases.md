@@ -2,10 +2,10 @@
 
 Universal ID unlocks a lot of **NEW** possibile solutions across a variety of problem domains.
 
-## Use Cases
-
 > [!NOTE]
-> The following use-cases demonstrate the versatility and power of Universal ID in various application and business scenarios.
+> The following use-cases demonstrate the versatility and power of Universal ID in numerous application and business scenarios.
+
+## Use Cases
 
 Consider some of these use-cases to jump start your imagination and creativity.
 
