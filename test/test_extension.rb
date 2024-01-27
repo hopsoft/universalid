@@ -13,6 +13,7 @@ require "minitest/parallel"
 require "minitest/reporters"
 require "model_probe"
 require "simplecov"
+require "timecop"
 
 # MiniTest setup
 Minitest.parallel_executor = Minitest::Parallel::Executor.new([Etc.nprocessors, 1].max) # thread count
