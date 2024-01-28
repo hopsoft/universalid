@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UniversalID::Packer::GlobalIDTest < Minitest::Test
+class UniversalID::MessagePack::GlobalIDTest < Minitest::Test
   def test_global_id
     campaign = Campaign.forge!
     expected = campaign.to_gid

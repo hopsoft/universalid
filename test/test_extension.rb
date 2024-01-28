@@ -35,6 +35,8 @@ require "universalid"
 # Minimal subset of Rails tooling for testing purposes
 require_relative "rails_kit/setup"
 
+module UniversalID::MessagePack; end
+
 class Minitest::Test
   alias_method :original_run, :run
 

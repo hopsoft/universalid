@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-class UniversalID::Packer::SignedGlobalIDTest < Minitest::Test
-  def test_signed_global_id
+class UniversalID::MessagePack::SignedGlobalIDTest < Minitest::Test
+  def test_pack_and_unpack
     campaign = Campaign.forge!
     expected = campaign.to_sgid
     packed = UniversalID::MessagePackFactory.pack(campaign.to_sgid)
@@ -11,7 +11,7 @@ class UniversalID::Packer::SignedGlobalIDTest < Minitest::Test
 end
 
 class URI::UID::SignedGlobalIDTest < Minitest::Test
-  def test_signed_global_id
+  def test_build_parse_decode
     product = {
       name: "Wireless Bluetooth Headphones",
       price: 179.99,

@@ -36,7 +36,6 @@ module ActiveRecordForge
         end
       end
 
-      # binding.pry if $nate && klass == Campaign
       (records.size == 1) ? records.first : records
     end
 
