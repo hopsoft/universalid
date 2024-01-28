@@ -48,4 +48,5 @@ require_relative "models/email"
 require_relative "models/attachment"
 
 # Seed some data
+# ActiveRecord::Base.logger = Logger.new(STDOUT)
 Campaign.forge! 10, emails: 5, attachments: 3

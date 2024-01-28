@@ -39,6 +39,7 @@ class Minitest::Test
   alias_method :original_run, :run
 
   def run
+    Campaign.destroy_all
     result = nil
     time = Benchmark.measure { result = original_run }
     time = time.real.round(5)

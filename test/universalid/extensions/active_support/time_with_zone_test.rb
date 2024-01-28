@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-class TimeWithZoneTest < Minitest::Test
-  def test_marshaling_with_universal_id_for_all_active_support_time_zones
+class URI::UID::TimeWithZoneTest < Minitest::Test
+  def test_uid_build_and_decode_for_all_active_support_time_zones
     month = ActiveSupport::TimeZone["UTC"].now.beginning_of_year
 
     Timecop.freeze time do
@@ -12,7 +12,8 @@ class TimeWithZoneTest < Minitest::Test
           assert time.is_a?(ActiveSupport::TimeWithZone)
 
           uri = URI::UID.build(time).to_s
-          decoded = URI::UID.parse(uri).decode
+          uid = URI::UID.parse(uri)
+          decoded = uid.decode
 
           assert_equal time, decoded
         end

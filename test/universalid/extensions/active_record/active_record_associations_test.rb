@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class URI::UID::ActiveRecordTest < Minitest::Test
+class URI::UID::ActiveRecordAssociationsTest < Minitest::Test
   def test_new_model_with_loaded_has_many_associations
     campaign = Campaign.forge emails: 3
 
@@ -13,8 +13,10 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       include_descendants: true,
       descendant_depth: 1
     }
-    uid = URI::UID.build(campaign, options)
-    decoded = URI::UID.parse(uid.to_s).decode
+
+    uri = URI::UID.build(campaign, options).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
 
     # verify that the decoded instance is not persisted
     refute decoded.persisted?
@@ -35,8 +37,9 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       descendant_depth: 1
     }
 
-    uid = URI::UID.build(campaign, options)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, options).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign.attributes, decoded.attributes
     assert decoded.emails.none?
   end
@@ -48,8 +51,9 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     assert campaign.persisted?
     assert campaign.emails.map(&:persisted?).all?
 
-    uid = URI::UID.build(campaign, include_descendants: true, descendant_depth: 1)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, include_descendants: true, descendant_depth: 1).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
 
     # verify that the decoded instance is persisted
     assert decoded.persisted?
@@ -64,16 +68,18 @@ class URI::UID::ActiveRecordTest < Minitest::Test
 
   def test_persisted_model_with_loaded_has_many_associations_exclude_descendants
     campaign = Campaign.forge! emails: 3
-    uid = URI::UID.build(campaign, descendant_depth: 1) # include_descendants: false (default)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, descendant_depth: 1).to_s # include_descendants: false (default)
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign, decoded
     refute decoded.emails.loaded?
   end
 
   def test_persisted_model_with_loaded_has_many_associations_include_descendants_descendant_depth_0
     campaign = Campaign.forge! emails: 3
-    uid = URI::UID.build(campaign, include_descendants: true) # descendant_depth: 0 (default)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, include_descendants: true).to_s # descendant_depth: 0 (default)
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign, decoded
     refute decoded.emails.loaded?
   end
@@ -81,8 +87,9 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   def test_persisted_model_with_loaded_has_many_associations_2_deep
     campaign = Campaign.forge! emails: 3, attachments: 2
 
-    uid = URI::UID.build(campaign, include_descendants: true, descendant_depth: 2)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, include_descendants: true, descendant_depth: 2).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
 
     assert_equal campaign, decoded
     assert_equal campaign.emails, decoded.emails
@@ -109,8 +116,9 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       descendant_depth: 2
     }
 
-    encoded = URI::UID.build(campaign, options).to_s
-    decoded = URI::UID.parse(encoded).decode
+    uri = URI::UID.build(campaign, options).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
 
     # verify in-memory records have changes
     assert campaign.changed?

@@ -1,20 +1,17 @@
 # frozen_string_literal: true
 
-class URI::UID::GlobalIDTest < Minitest::Test
-  def test_uid_to_and_from_global_id
-    product = {
-      name: "Wireless Bluetooth Earbuds",
-      price: 99.99,
-      category: "Electronics"
-    }
-
-    uid = URI::UID.build(product)
-    gid = uid.to_gid_param
-    decoded = URI::UID.from_gid(gid).decode
-    assert_equal product, decoded
+class UniversalID::Packer::SignedGlobalIDTest < Minitest::Test
+  def test_signed_global_id
+    campaign = Campaign.forge!
+    expected = campaign.to_sgid
+    packed = UniversalID::MessagePackFactory.pack(campaign.to_sgid)
+    unpacked = UniversalID::MessagePackFactory.unpack(packed)
+    assert_equal expected, unpacked
   end
+end
 
-  def test_uid_to_and_from_signed_global_id
+class URI::UID::SignedGlobalIDTest < Minitest::Test
+  def test_signed_global_id
     product = {
       name: "Wireless Bluetooth Headphones",
       price: 179.99,

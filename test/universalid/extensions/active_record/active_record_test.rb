@@ -3,8 +3,9 @@
 class URI::UID::ActiveRecordTest < Minitest::Test
   def test_new_model_exclude_changes
     campaign = Campaign.forge
-    uid = URI::UID.build(campaign)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign.class, decoded.class
     refute_equal campaign.attributes, decoded.attributes
     assert_empty decoded.attributes.compact
@@ -12,32 +13,36 @@ class URI::UID::ActiveRecordTest < Minitest::Test
 
   def test_new_model_include_changes
     campaign = Campaign.forge
-    uid = URI::UID.build(campaign, include_changes: true)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, include_changes: true).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign.class, decoded.class
     assert_equal campaign.attributes, decoded.attributes
   end
 
   def test_new_model_include_changes_exclude_blanks
     campaign = Campaign.forge
-    uid = URI::UID.build(campaign, include_changes: true, include_blank: false)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, include_changes: true, include_blank: false).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign.class, decoded.class
     assert_equal campaign.attributes, decoded.attributes
   end
 
   def test_persisted_model
     campaign = Campaign.forge!
-    uid = URI::UID.build(campaign)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign, decoded
   end
 
   def test_persisted_model_marked_for_destruction
     campaign = Campaign.forge!
     campaign.mark_for_destruction
-    uid = URI::UID.build(campaign)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign, decoded
     assert decoded.marked_for_destruction?
   end
@@ -45,8 +50,9 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   def test_changed_persisted_model
     campaign = Campaign.forge!
     campaign.description = "Changed Description"
-    uid = URI::UID.build(campaign)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign, decoded
     refute_equal campaign.description, decoded.description
   end
@@ -54,8 +60,9 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   def test_changed_persisted_model_include_changes
     campaign = Campaign.forge!
     campaign.description = "Changed Description"
-    uid = URI::UID.build(campaign, include_changes: true)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, include_changes: true).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
     assert_equal campaign, decoded
     assert_equal campaign.description, decoded.description
   end
@@ -86,8 +93,9 @@ class URI::UID::ActiveRecordTest < Minitest::Test
     campaign.description = "Changed Description"
     campaign.trigger = "Changed Trigger"
 
-    uid = URI::UID.build(campaign, **settings)
-    decoded = URI::UID.parse(uid.to_s).decode
+    uri = URI::UID.build(campaign, **settings).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
 
     # same record
     assert_equal campaign, decoded
@@ -113,7 +121,7 @@ class URI::UID::ActiveRecordTest < Minitest::Test
   #
   # NOTE: The mtime timestamp will be nil for Ruby primitives
   #
-  def test_persisted_model_with_custom_encode_and_decode_handlers
+  def test_persisted_model_with_encode_and_decode_blocks
     campaign = Campaign.forge!
 
     # take control of encoding the uid payload to handle fingerprinting
@@ -132,7 +140,10 @@ class URI::UID::ActiveRecordTest < Minitest::Test
       URI::UID.encode data, options.merge(include: %w[id demo])
     end
 
-    decoded = URI::UID.parse(uid.to_s).decode do |data, klass, timestamp|
+    uri = uid.to_s
+    uid = URI::UID.parse(uri)
+
+    decoded = uid.decode do |data, klass, timestamp|
       record = klass.find_by(id: data[:id])
       record.instance_variable_set(:@demo, data[:demo])
 
