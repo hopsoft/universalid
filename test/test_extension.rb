@@ -61,4 +61,28 @@ class Minitest::Test
 
     result
   end
+
+  def self.scalars
+    {
+      bigdecimal: BigDecimal("123.45"),
+      complex: Complex(1, 2),
+      date: Date.today,
+      datetime: DateTime.now,
+      false_class: false,
+      float: 123.45,
+      integer: 123,
+      nil_class: nil,
+      range: 1..100,
+      rational: Rational(3, 4),
+      regexp: /abc/,
+      string: "hello",
+      symbol: :symbol,
+      time: Time.now,
+      true_class: true
+    }
+  end
+
+  def scalars
+    self.class.scalars
+  end
 end
