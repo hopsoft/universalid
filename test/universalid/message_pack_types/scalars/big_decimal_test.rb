@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UniversalID::Packer::BigDecimalTest < Minitest::Test
-  def test_pack_and_unpack
+  def test_pack_unpack
     value = BigDecimal("9876543210.0123456789")
     packed = UniversalID::Packer.pack(value)
     unpacked = UniversalID::Packer.unpack(packed)
@@ -13,7 +13,7 @@ class UniversalID::Packer::BigDecimalTest < Minitest::Test
 end
 
 class UniversalID::Encoder::BigDecimalTest < Minitest::Test
-  def test_encode_and_decode
+  def test_encode_decode
     value = BigDecimal("9876543210.0123456789")
     encoded = UniversalID::Encoder.encode(value)
     decoded = UniversalID::Encoder.decode(encoded)
@@ -41,7 +41,6 @@ class URI::UID::BigDecimalTest < Minitest::Test
     uid = URI::UID.from_gid(gid)
     decoded = uid.decode
 
-    assert_equal "Z2lkOi8vdW5pdmVyc2FsLWlkL1VuaXZlcnNhbElEOjpFeHRlbnNpb25zOjpHbG9iYWxJRE1vZGVsL0N3eUF4eFlCdFRrNE56WTFORE15TVRBdU1ERXlNelExTmpjNE9RTQ", gid
     assert_equal value, decoded
   end
 
@@ -51,7 +50,6 @@ class URI::UID::BigDecimalTest < Minitest::Test
     uid = URI::UID.from_sgid(sgid)
     decoded = uid.decode
 
-    assert_equal "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJbVpuYVdRNkx5OTFibWwyWlhKellXd3RhV1F2Vlc1cGRtVnljMkZzU1VRNk9rVjRkR1Z1YzJsdmJuTTZPa2RzYjJKaGJFbEVUVzlrWld3dlEzZDVRWGg0V1VKMFZHczBUbnBaTVU1RVRYbE5WRUYxVFVSRmVVMTZVVEZPYW1NMFQxRk5Cam9HUlZRPSIsImV4cCI6bnVsbCwicHVyIjoiZGVmYXVsdCJ9fQ==--7fbfd828dbd6864c4aa022cb99e8b61385a99c3d", sgid
     assert_equal value, decoded
   end
 end

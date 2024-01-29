@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UniversalID::Packer::DateTimeTest < Minitest::Test
-  def test_big_decimal
+  def test_pack_unpack
     value = DateTime.new(2023, 2, 3, 4, 5, 6)
     packed = UniversalID::Packer.pack(value)
     unpacked = UniversalID::Packer.unpack(packed)
@@ -13,7 +13,7 @@ class UniversalID::Packer::DateTimeTest < Minitest::Test
 end
 
 class UniversalID::Encoder::DateTimeTest < Minitest::Test
-  def test_big_decimal
+  def test_encode_decode
     value = DateTime.new(2023, 2, 3, 4, 5, 6)
     encoded = UniversalID::Encoder.encode(value)
     decoded = UniversalID::Encoder.decode(encoded)
@@ -25,13 +25,31 @@ class UniversalID::Encoder::DateTimeTest < Minitest::Test
 end
 
 class URI::UID::DateTimeTest < Minitest::Test
-  def test_big_decimal
+  def test_build_parse_decode
     value = DateTime.new(2023, 2, 3, 4, 5, 6)
     uri = URI::UID.build(value).to_s
     uid = URI::UID.parse(uri)
     decoded = uid.decode
 
     assert uri.start_with?("uid://universalid/GycA-I2UqT1eHWcT5K1IzSR7uz2EL1lpAlIAMIy2p9whw_5OueUtAFMB")
+    assert_equal value, decoded
+  end
+
+  def test_global_id
+    value = DateTime.new(2023, 2, 3, 4, 5, 6)
+    gid = URI::UID.build(value).to_gid_param
+    uid = URI::UID.from_gid(gid)
+    decoded = uid.decode
+
+    assert_equal value, decoded
+  end
+
+  def test_signed_global_id
+    value = DateTime.new(2023, 2, 3, 4, 5, 6)
+    sgid = URI::UID.build(value).to_sgid_param
+    uid = URI::UID.from_sgid(sgid)
+    decoded = uid.decode
+
     assert_equal value, decoded
   end
 end
