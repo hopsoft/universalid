@@ -8,7 +8,7 @@ class UniversalID::Packer::NilClassTest < Minitest::Test
 
     assert_equal 1, packed.size
     assert_equal "\xC0".b, packed
-    assert_equal value, unpacked
+    assert_nil unpacked
   end
 end
 
@@ -20,7 +20,7 @@ class UniversalID::Encoder::NilClassTest < Minitest::Test
 
     assert_equal 7, encoded.size
     assert_equal "CwCAwAM", encoded
-    assert_equal value, decoded
+    assert_nil decoded
   end
 end
 
@@ -32,7 +32,7 @@ class URI::UID::NilClassTest < Minitest::Test
     decoded = uid.decode
 
     assert uri.start_with?("uid://universalid/CwCAwAM")
-    assert_equal value, decoded
+    assert_nil decoded
   end
 
   def test_global_id
@@ -50,6 +50,6 @@ class URI::UID::NilClassTest < Minitest::Test
     uid = URI::UID.from_sgid(sgid)
     decoded = uid.decode
 
-    assert_equal value, decoded
+    assert_nil decoded
   end
 end
