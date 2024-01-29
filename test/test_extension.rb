@@ -19,16 +19,17 @@ require "timecop"
 Minitest.parallel_executor = Minitest::Parallel::Executor.new([Etc.nprocessors, 1].max) # thread count
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 
+# TODO: Get coverage working
 # Coverage setup
-SimpleCov.start do
-  project_name "UniversalID"
-  add_filter [
-    "lib/universalid/message_pack/types", # coverage doesn't work on these
-    "lib/universalid/message_pack_types", # coverage not needed
-    "lib/universalid/refinements", # coverage doesn't work on these
-    "test" # coverage not wanted
-  ]
-end
+# SimpleCov.start do
+#   project_name "UniversalID"
+#   add_filter [
+#     "lib/universalid/message_pack_types", # ....................coverage doesn't work on these
+#     "lib/universalid/extensions/**/*message_pack_type.rb", # ...coverage doesn't work on these
+#     "lib/universalid/refinements", # ...........................coverage doesn't work on these
+#     "test" # ...................................................coverage not wanted
+#   ]
+# end
 
 require "universalid"
 
