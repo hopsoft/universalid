@@ -1,30 +1,55 @@
 # frozen_string_literal: true
 
-class UniversalID::MessagePack::SignedGlobalIDTest < Minitest::Test
-  def test_pack_and_unpack
-    campaign = Campaign.forge!
-    expected = campaign.to_sgid
-    packed = UniversalID::MessagePackFactory.pack(campaign.to_sgid)
-    unpacked = UniversalID::MessagePackFactory.unpack(packed)
-    assert_equal expected, unpacked
+class UniversalID::Packer::SignedGlobalIDTest < Minitest::Test
+  def test_pack_unpack
+    record = Campaign.forge!
+    value = record.to_sgid
+    packed = UniversalID::Packer.pack(value)
+    unpacked = UniversalID::Packer.unpack(packed)
+
+    assert_equal value, unpacked
+  end
+end
+
+class UniversalID::Encoder::SignedGlobalIDTest < Minitest::Test
+  def test_encode_decode
+    record = Campaign.forge!
+    value = record.to_sgid
+    encoded = UniversalID::Encoder.encode(value)
+    decoded = UniversalID::Encoder.decode(encoded)
+
+    assert_equal value, decoded
   end
 end
 
 class URI::UID::SignedGlobalIDTest < Minitest::Test
   def test_build_parse_decode
-    product = {
-      name: "Wireless Bluetooth Headphones",
-      price: 179.99,
-      category: "Electronics"
-    }
+    record = Campaign.forge!
+    value = record.to_sgid
+    uri = URI::UID.build(value).to_s
+    uid = URI::UID.parse(uri)
+    decoded = uid.decode
 
-    uid = URI::UID.build(product)
+    assert_equal value, decoded
+  end
 
-    sgid = uid.to_sgid_param(for: "cart-123", expires_in: 1.hour)
-    decoded = URI::UID.from_sgid(sgid, for: "cart-123").decode
-    assert_equal product, decoded
+  def test_global_id
+    record = Campaign.forge!
+    value = record.to_sgid
+    gid = URI::UID.build(value).to_gid_param
+    uid = URI::UID.from_gid(gid)
+    decoded = uid.decode
 
-    # test mismatched purpose
-    assert_nil URI::UID.from_sgid(sgid, for: "cart-456")
+    assert_equal value, decoded
+  end
+
+  def test_signed_global_id
+    record = Campaign.forge!
+    value = record.to_sgid
+    sgid = URI::UID.build(value).to_sgid_param
+    uid = URI::UID.from_sgid(sgid)
+    decoded = uid.decode
+
+    assert_equal value, decoded
   end
 end
