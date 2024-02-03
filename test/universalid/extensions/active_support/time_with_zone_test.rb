@@ -1,25 +1,65 @@
 # frozen_string_literal: true
 
+class UniversalID::Packer::TimeWithZoneTest < Minitest::Test
+  def test_pack_unpack
+    time_with_zones do |value|
+      packed = UniversalID::Packer.pack(value)
+      unpacked = UniversalID::Packer.unpack(packed)
+
+      assert_kind_of ActiveSupport::TimeWithZone, value
+      assert_kind_of ActiveSupport::TimeWithZone, unpacked
+      assert_equal value, unpacked
+    end
+  end
+end
+
+class UniversalID::Encoder::TimeWithZoneTest < Minitest::Test
+  def test_encode_decode
+    time_with_zones do |value|
+      encoded = UniversalID::Encoder.encode(value)
+      decoded = UniversalID::Encoder.decode(encoded)
+
+      assert_kind_of ActiveSupport::TimeWithZone, value
+      assert_kind_of ActiveSupport::TimeWithZone, decoded
+      assert_equal value, decoded
+    end
+  end
+end
+
 class URI::UID::TimeWithZoneTest < Minitest::Test
-  def test_uid_build_and_decode_for_all_active_support_time_zones
-    month = ActiveSupport::TimeZone["UTC"].now.beginning_of_year
+  def test_build_parse_decode
+    time_with_zones do |value|
+      uri = URI::UID.build(value).to_s
+      uid = URI::UID.parse(uri)
+      decoded = uid.decode
 
-    Timecop.freeze time do
-      11.times do |i|
-        ActiveSupport::TimeZone.all.each do |time_zone|
-          time = month.in_time_zone(time_zone).advance(days: rand(1..28), minutes: rand(1..59))
+      assert_kind_of ActiveSupport::TimeWithZone, value
+      assert_kind_of ActiveSupport::TimeWithZone, decoded
+      assert_equal value, decoded
+    end
+  end
 
-          assert time.is_a?(ActiveSupport::TimeWithZone)
+  def test_global_id
+    time_with_zones do |value|
+      gid = URI::UID.build(value).to_gid_param
+      uid = URI::UID.from_gid(gid)
+      decoded = uid.decode
 
-          uri = URI::UID.build(time).to_s
-          uid = URI::UID.parse(uri)
-          decoded = uid.decode
+      assert_kind_of ActiveSupport::TimeWithZone, value
+      assert_kind_of ActiveSupport::TimeWithZone, decoded
+      assert_equal value, decoded
+    end
+  end
 
-          assert_equal time, decoded
-        end
+  def test_signed_global_id
+    time_with_zones do |value|
+      sgid = URI::UID.build(value).to_sgid_param
+      uid = URI::UID.from_sgid(sgid)
+      decoded = uid.decode
 
-        month.advance months: 1
-      end
+      assert_kind_of ActiveSupport::TimeWithZone, value
+      assert_kind_of ActiveSupport::TimeWithZone, decoded
+      assert_equal value, decoded
     end
   end
 end

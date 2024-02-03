@@ -9,6 +9,7 @@ module ActiveRecordForge
     klass.define_singleton_method(:foundry) { @foundry ||= ActiveRecordForge::Foundry.new(self) }
     klass.define_singleton_method(:forge) { |*args, **kwargs| foundry.forge(*args, **kwargs) }
     klass.define_singleton_method(:forge!) { |*args, **kwargs| foundry.forge!(*args, **kwargs) }
+    klass.define_singleton_method(:generate_attributes) { foundry.generate_attributes }
   end
 
   class Foundry
@@ -41,30 +42,6 @@ module ActiveRecordForge
 
     def forge!(...)
       forge(...).tap { |forged| forged.is_a?(Array) ? forged.each(&:save!) : forged.save! }
-    end
-
-    private
-
-    def_delegators :klass, :columns, :column_names, :primary_key, :reflections, :reflect_on_all_associations
-
-    def association(name)
-      associations.find { |a| a.name.to_s == name.to_s }
-    end
-
-    def associations(macro: nil)
-      list = reflect_on_all_associations
-      list = list.select { |a| a.macro == macro.to_sym } if macro
-      list
-    end
-
-    def association_names(macro: nil)
-      associations(macro: macro).map { |a| a.name.to_s }
-    end
-
-    def foreign_key_column_names
-      reflections.each_with_object([]) do |(name, reflection), memo|
-        memo << reflection.foreign_key if reflection.macro == :belongs_to
-      end
     end
 
     def generate_attributes
@@ -102,6 +79,30 @@ module ActiveRecordForge
       end
 
       attributes.with_indifferent_access
+    end
+
+    private
+
+    def_delegators :klass, :columns, :column_names, :primary_key, :reflections, :reflect_on_all_associations
+
+    def association(name)
+      associations.find { |a| a.name.to_s == name.to_s }
+    end
+
+    def associations(macro: nil)
+      list = reflect_on_all_associations
+      list = list.select { |a| a.macro == macro.to_sym } if macro
+      list
+    end
+
+    def association_names(macro: nil)
+      associations(macro: macro).map { |a| a.name.to_s }
+    end
+
+    def foreign_key_column_names
+      reflections.each_with_object([]) do |(name, reflection), memo|
+        memo << reflection.foreign_key if reflection.macro == :belongs_to
+      end
     end
   end
 end
