@@ -9,6 +9,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       VERSION = UniversalID::VERSION
       SCHEME = "uid"
       HOST = "universalid"
+      PATTERN = /\A#{SCHEME}:\/\/#{HOST}\/\w+#\w+\z/o
 
       class << self
         def encoder
@@ -27,6 +28,11 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
           return nil if value.strip.empty?
 
           new(*::URI.split(value))
+        end
+
+        def match?(uri)
+          return true if uri.is_a?(self)
+          uri.to_s.match? PATTERN
         end
 
         def build_string(payload, object = nil)

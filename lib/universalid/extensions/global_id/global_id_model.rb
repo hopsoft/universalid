@@ -15,10 +15,7 @@ if defined? GlobalID::Identification
       @uid = case universal_id
       when URI::UID then universal_id
       when String
-        case universal_id
-        when /\A#{URI::UID::SCHEME}/o then URI::UID.parse(universal_id)
-        else URI::UID.from_payload(universal_id)
-        end
+        URI::UID.match?(universal_id) ? URI::UID.parse(universal_id) : URI::UID.from_payload(universal_id)
       end
 
       @id = uid&.payload
