@@ -45,6 +45,7 @@ if defined? ActiveRecord
 
           new_models = models.select(&:new_record?)
           models -= new_models
+          association_collection = record.public_send(name)
 
           # restore persisted models
           # NOTE: ActiveRecord is smart enough to not re-create or re-add
@@ -52,7 +53,10 @@ if defined? ActiveRecord
           record.public_send :"#{name}=", models if models.any?
 
           # restore new unsaved models
-          record.public_send(name).target.concat new_models if new_models.any?
+          association_collection.target.concat new_models if new_models.any?
+
+          # mark association relation as loaded
+          association_collection.proxy_association.instance_variable_set :@loaded, true
         end
       end
     end

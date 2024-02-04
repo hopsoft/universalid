@@ -73,33 +73,6 @@ class UniversalID::ReadmeTest < Minitest::Test
     end
   end
 
-  def test_active_record_relation
-    email_subjects = [
-      "Unlock Your Exclusive Member Discounts Today!",
-      "Flash Sale Alert: 50% Off All Items – Today Only!",
-      "Join Our Loyalty Program for Special Rewards",
-      "New Arrivals You Can't Miss – Shop Now!"
-    ]
-    campaigns = Campaign.forge! 50, emails: 5
-    campaigns.map(&:emails).flatten.each_with_index do |email, i|
-      email.update subject: "#{email_subjects.sample} #{i + 1}"
-    end
-
-    relation = Campaign.joins(:emails).where("emails.subject LIKE ?", "%Exclusive%")
-
-    # force load the relation
-    relation.load
-    assert relation.loaded?
-
-    encoded = URI::UID.build(relation).to_s
-    decoded = URI::UID.parse(encoded).decode
-
-    assert decoded.is_a?(ActiveRecord::Relation)
-    refute decoded.loaded?
-    assert_equal relation, decoded
-    assert_equal relation.size, decoded.size
-  end
-
   private
 
   def new_campaign

@@ -11,7 +11,8 @@ UniversalID::MessagePackFactory.register(
   unpacker: ->(unpacker) do
     class_name = unpacker.read
     hash = unpacker.read
-    klass = Object.const_get(class_name) if Object.const_defined?(class_name)
+    klass = Object.const_get(class_name) if class_name && Object.const_defined?(class_name)
+    klass ||= Struct.new(*hash.keys)
 
     if klass
       # shenanigans to support ::Ruby 3.0.X and 3.1.X
