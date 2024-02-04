@@ -14,8 +14,9 @@ if defined? GlobalID::Identification
     def initialize(universal_id)
       @uid = case universal_id
       when URI::UID then universal_id
-      when String
-        URI::UID.match?(universal_id) ? URI::UID.parse(universal_id) : URI::UID.from_payload(universal_id)
+      when String then URI::UID.match?(universal_id) ?
+        URI::UID.parse(universal_id) :
+        URI::UID.from_payload(universal_id)
       end
 
       @id = uid&.payload
