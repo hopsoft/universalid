@@ -49,7 +49,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
             # NOTE: fingerprint mismatch can happen when building from a UID payload
             #       ensure the fingerprint is correct
             if uid&.valid? && URI::UID.fingerprint(uid.decode) != uid.fingerprint
-              uid.instance_variable_set :@decoded_fingerprint, nil
+              remove_instance_variable :@decoded_fingerprint if instance_variable_defined?(:@decoded_fingerprint)
               uid.instance_variable_set :@fragment, URI::UID.build(uid.decode).fingerprint
             end
           end
@@ -134,7 +134,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       def decode(force: false)
         return nil unless valid?
 
-        @decoded = nil if force
+        remove_instance_variable :@decoded if force && instance_variable_defined?(:@decoded)
         return @decoded if defined?(@decoded)
 
         @decoded ||= yield(decode_payload, *decode_fingerprint) if block_given?
