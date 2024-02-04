@@ -2,54 +2,49 @@
 
 class UniversalID::Packer::GlobalIDTest < Minitest::Test
   def test_pack_unpack
-    record = Campaign.forge!
-    value = record.to_gid
-    packed = UniversalID::Packer.pack(value)
-    unpacked = UniversalID::Packer.unpack(packed)
+    expected = Campaign.forge!.to_gid
+    packed = UniversalID::Packer.pack(expected)
+    actual = UniversalID::Packer.unpack(packed)
 
-    assert_equal value, unpacked
+    assert_equal expected, actual
   end
 end
 
 class UniversalID::Encoder::GlobalIDTest < Minitest::Test
   def test_encode_decode
-    record = Campaign.forge!
-    value = record.to_gid
-    encoded = UniversalID::Encoder.encode(value)
-    decoded = UniversalID::Encoder.decode(encoded)
+    expected = Campaign.forge!.to_gid
+    encoded = UniversalID::Encoder.encode(expected)
+    actual = UniversalID::Encoder.decode(encoded)
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 end
 
 class URI::UID::GlobalIDTest < Minitest::Test
   def test_build_parse_decode
-    record = Campaign.forge!
-    value = record.to_gid
-    uri = URI::UID.build(value).to_s
+    expected = Campaign.forge!.to_gid
+    uri = URI::UID.build(expected).to_s
     uid = URI::UID.parse(uri)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 
   def test_global_id
-    record = Campaign.forge!
-    value = record.to_gid
-    gid = URI::UID.build(value).to_gid_param
+    expected = Campaign.forge!.to_gid
+    gid = URI::UID.build(expected).to_gid_param
     uid = URI::UID.from_gid(gid)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 
   def test_signed_global_id
-    record = Campaign.forge!
-    value = record.to_gid
-    sgid = URI::UID.build(value).to_sgid_param
+    expected = Campaign.forge!.to_gid
+    sgid = URI::UID.build(expected).to_sgid_param
     uid = URI::UID.from_sgid(sgid)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 end

@@ -2,49 +2,49 @@
 
 class UniversalID::Packer::OpenStructTest < Minitest::Test
   def test_pack_unpack
-    value = OpenStruct.new(scalars)
-    packed = UniversalID::Packer.pack(value)
-    unpacked = UniversalID::Packer.unpack(packed)
+    expected = OpenStruct.new(scalars)
+    packed = UniversalID::Packer.pack(expected)
+    actual = UniversalID::Packer.unpack(packed)
 
-    assert_equal value, unpacked
+    assert_equal expected, actual
   end
 end
 
 class UniversalID::Encoder::OpenStructTest < Minitest::Test
   def test_encode_decode
-    value = OpenStruct.new(scalars)
-    encoded = UniversalID::Encoder.encode(value)
-    decoded = UniversalID::Encoder.decode(encoded)
+    expected = OpenStruct.new(scalars)
+    encoded = UniversalID::Encoder.encode(expected)
+    actual = UniversalID::Encoder.decode(encoded)
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 end
 
 class URI::UID::OpenStructTest < Minitest::Test
   def test_build_parse_decode
-    value = OpenStruct.new(scalars)
-    uri = URI::UID.build(value).to_s
+    expected = OpenStruct.new(scalars)
+    uri = URI::UID.build(expected).to_s
     uid = URI::UID.parse(uri)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 
   def test_global_id
-    value = OpenStruct.new(scalars)
-    gid = URI::UID.build(value).to_gid_param
+    expected = OpenStruct.new(scalars)
+    gid = URI::UID.build(expected).to_gid_param
     uid = URI::UID.from_gid(gid)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 
   def test_signed_global_id
-    value = OpenStruct.new(scalars)
-    sgid = URI::UID.build(value).to_sgid_param
+    expected = OpenStruct.new(scalars)
+    sgid = URI::UID.build(expected).to_sgid_param
     uid = URI::UID.from_sgid(sgid)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 end

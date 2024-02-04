@@ -63,6 +63,63 @@ class Minitest::Test
     result
   end
 
+  def load_has_many(record, depth: 0)
+    count = 0
+    with_has_many record do |relation|
+      next unless count < depth
+      count += 1
+      relation.load
+      relation.each { |rec| load_has_many(rec, depth: depth - 1) }
+    end
+  end
+
+  def with_has_many(record)
+    record.class.reflect_on_all_associations.each do |association|
+      next unless association.is_a?(ActiveRecord::Reflection::HasManyReflection)
+      relation = record.public_send(association.name)
+      yield relation
+    end
+  end
+
+  def assert_has_many_loaded(record, depth: 1)
+    count = 0
+    with_has_many record do |relation|
+      next unless count <= depth
+      count += 1
+      assert relation.loaded?
+      relation.each { |rec| assert_has_many_loaded(rec, depth: depth - 1) }
+    end
+  end
+
+  def refute_has_many_loaded(record)
+    with_has_many record do |relation|
+      refute relation.loaded?
+    end
+  end
+
+  def assert_has_many(expected, actual)
+    assert_equal expected.size, actual.size
+    expected.each_with_index { |record, i| assert_record record, actual[i] }
+  end
+
+  def assert_record(expected, actual)
+    assert_equal expected.attributes, actual.attributes
+    assert_equal expected.persisted?, actual.persisted?
+    assert_equal expected.changed?, actual.changed?
+
+    with_has_many expected do |relation|
+      expected_relation = relation
+      actual_relation = actual.public_send(expected_relation.proxy_association.reflection.name)
+      assert_equal expected_relation.size, actual_relation.size
+      next unless expected_relation.loaded?
+      next unless actual_relation.loaded?
+
+      expected_relation.each_with_index do |record, i|
+        assert_record record, actual_relation[i]
+      end
+    end
+  end
+
   def self.scalars
     {
       bigdecimal: BigDecimal("123.45"),

@@ -2,64 +2,64 @@
 
 class UniversalID::Packer::TimeWithZoneTest < Minitest::Test
   def test_pack_unpack
-    time_with_zones do |value|
-      packed = UniversalID::Packer.pack(value)
-      unpacked = UniversalID::Packer.unpack(packed)
+    time_with_zones do |expected|
+      packed = UniversalID::Packer.pack(expected)
+      actual = UniversalID::Packer.unpack(packed)
 
-      assert_kind_of ActiveSupport::TimeWithZone, value
-      assert_kind_of ActiveSupport::TimeWithZone, unpacked
-      assert_equal value, unpacked
+      assert_kind_of ActiveSupport::TimeWithZone, expected
+      assert_kind_of ActiveSupport::TimeWithZone, actual
+      assert_equal expected, actual
     end
   end
 end
 
 class UniversalID::Encoder::TimeWithZoneTest < Minitest::Test
   def test_encode_decode
-    time_with_zones do |value|
-      encoded = UniversalID::Encoder.encode(value)
-      decoded = UniversalID::Encoder.decode(encoded)
+    time_with_zones do |expected|
+      encoded = UniversalID::Encoder.encode(expected)
+      actual = UniversalID::Encoder.decode(encoded)
 
-      assert_kind_of ActiveSupport::TimeWithZone, value
-      assert_kind_of ActiveSupport::TimeWithZone, decoded
-      assert_equal value, decoded
+      assert_kind_of ActiveSupport::TimeWithZone, expected
+      assert_kind_of ActiveSupport::TimeWithZone, actual
+      assert_equal expected, actual
     end
   end
 end
 
 class URI::UID::TimeWithZoneTest < Minitest::Test
   def test_build_parse_decode
-    time_with_zones do |value|
-      uri = URI::UID.build(value).to_s
+    time_with_zones do |expected|
+      uri = URI::UID.build(expected).to_s
       uid = URI::UID.parse(uri)
-      decoded = uid.decode
+      actual = uid.decode
 
-      assert_kind_of ActiveSupport::TimeWithZone, value
-      assert_kind_of ActiveSupport::TimeWithZone, decoded
-      assert_equal value, decoded
+      assert_kind_of ActiveSupport::TimeWithZone, expected
+      assert_kind_of ActiveSupport::TimeWithZone, actual
+      assert_equal expected, actual
     end
   end
 
   def test_global_id
-    time_with_zones do |value|
-      gid = URI::UID.build(value).to_gid_param
+    time_with_zones do |expected|
+      gid = URI::UID.build(expected).to_gid_param
       uid = URI::UID.from_gid(gid)
-      decoded = uid.decode
+      actual = uid.decode
 
-      assert_kind_of ActiveSupport::TimeWithZone, value
-      assert_kind_of ActiveSupport::TimeWithZone, decoded
-      assert_equal value, decoded
+      assert_kind_of ActiveSupport::TimeWithZone, expected
+      assert_kind_of ActiveSupport::TimeWithZone, actual
+      assert_equal expected, actual
     end
   end
 
   def test_signed_global_id
-    time_with_zones do |value|
-      sgid = URI::UID.build(value).to_sgid_param
+    time_with_zones do |expected|
+      sgid = URI::UID.build(expected).to_sgid_param
       uid = URI::UID.from_sgid(sgid)
-      decoded = uid.decode
+      actual = uid.decode
 
-      assert_kind_of ActiveSupport::TimeWithZone, value
-      assert_kind_of ActiveSupport::TimeWithZone, decoded
-      assert_equal value, decoded
+      assert_kind_of ActiveSupport::TimeWithZone, expected
+      assert_kind_of ActiveSupport::TimeWithZone, actual
+      assert_equal expected, actual
     end
   end
 end

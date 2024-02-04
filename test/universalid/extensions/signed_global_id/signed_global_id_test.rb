@@ -2,54 +2,49 @@
 
 class UniversalID::Packer::SignedGlobalIDTest < Minitest::Test
   def test_pack_unpack
-    record = Campaign.forge!
-    value = record.to_sgid
-    packed = UniversalID::Packer.pack(value)
+    expected = Campaign.forge!.to_sgid
+    packed = UniversalID::Packer.pack(expected)
     unpacked = UniversalID::Packer.unpack(packed)
 
-    assert_equal value, unpacked
+    assert_equal expected, unpacked
   end
 end
 
 class UniversalID::Encoder::SignedGlobalIDTest < Minitest::Test
   def test_encode_decode
-    record = Campaign.forge!
-    value = record.to_sgid
-    encoded = UniversalID::Encoder.encode(value)
+    expected = Campaign.forge!.to_sgid
+    encoded = UniversalID::Encoder.encode(expected)
     decoded = UniversalID::Encoder.decode(encoded)
 
-    assert_equal value, decoded
+    assert_equal expected, decoded
   end
 end
 
 class URI::UID::SignedGlobalIDTest < Minitest::Test
   def test_build_parse_decode
-    record = Campaign.forge!
-    value = record.to_sgid
-    uri = URI::UID.build(value).to_s
+    expected = Campaign.forge!.to_sgid
+    uri = URI::UID.build(expected).to_s
     uid = URI::UID.parse(uri)
     decoded = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, decoded
   end
 
   def test_global_id
-    record = Campaign.forge!
-    value = record.to_sgid
-    gid = URI::UID.build(value).to_gid_param
+    expected = Campaign.forge!.to_sgid
+    gid = URI::UID.build(expected).to_gid_param
     uid = URI::UID.from_gid(gid)
     decoded = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, decoded
   end
 
   def test_signed_global_id
-    record = Campaign.forge!
-    value = record.to_sgid
-    sgid = URI::UID.build(value).to_sgid_param
+    expected = Campaign.forge!.to_sgid
+    sgid = URI::UID.build(expected).to_sgid_param
     uid = URI::UID.from_sgid(sgid)
     decoded = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, decoded
   end
 end

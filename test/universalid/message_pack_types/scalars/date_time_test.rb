@@ -2,54 +2,54 @@
 
 class UniversalID::Packer::DateTimeTest < Minitest::Test
   def test_pack_unpack
-    value = DateTime.new(2023, 2, 3, 4, 5, 6)
-    packed = UniversalID::Packer.pack(value)
-    unpacked = UniversalID::Packer.unpack(packed)
+    expected = DateTime.new(2023, 2, 3, 4, 5, 6)
+    packed = UniversalID::Packer.pack(expected)
+    actual = UniversalID::Packer.unpack(packed)
 
     assert_equal 40, packed.size
     assert_equal "\xC7%\x04\xD9#2023-02-03T04:05:06.000000000+00:00".b, packed
-    assert_equal value, unpacked
+    assert_equal expected, actual
   end
 end
 
 class UniversalID::Encoder::DateTimeTest < Minitest::Test
   def test_encode_decode
-    value = DateTime.new(2023, 2, 3, 4, 5, 6)
-    encoded = UniversalID::Encoder.encode(value)
-    decoded = UniversalID::Encoder.decode(encoded)
+    expected = DateTime.new(2023, 2, 3, 4, 5, 6)
+    encoded = UniversalID::Encoder.encode(expected)
+    actual = UniversalID::Encoder.decode(encoded)
 
     assert_equal 56, encoded.size
     assert_equal "GycA-I2UqT1eHWcT5K1IzSR7uz2EL1lpAlIAMIy2p9whw_5OueUtAFMB", encoded
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 end
 
 class URI::UID::DateTimeTest < Minitest::Test
   def test_build_parse_decode
-    value = DateTime.new(2023, 2, 3, 4, 5, 6)
-    uri = URI::UID.build(value).to_s
+    expected = DateTime.new(2023, 2, 3, 4, 5, 6)
+    uri = URI::UID.build(expected).to_s
     uid = URI::UID.parse(uri)
-    decoded = uid.decode
+    actual = uid.decode
 
     assert uri.start_with?("uid://universalid/GycA-I2UqT1eHWcT5K1IzSR7uz2EL1lpAlIAMIy2p9whw_5OueUtAFMB")
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 
   def test_global_id
-    value = DateTime.new(2023, 2, 3, 4, 5, 6)
-    gid = URI::UID.build(value).to_gid_param
+    expected = DateTime.new(2023, 2, 3, 4, 5, 6)
+    gid = URI::UID.build(expected).to_gid_param
     uid = URI::UID.from_gid(gid)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 
   def test_signed_global_id
-    value = DateTime.new(2023, 2, 3, 4, 5, 6)
-    sgid = URI::UID.build(value).to_sgid_param
+    expected = DateTime.new(2023, 2, 3, 4, 5, 6)
+    sgid = URI::UID.build(expected).to_sgid_param
     uid = URI::UID.from_sgid(sgid)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value, decoded
+    assert_equal expected, actual
   end
 end

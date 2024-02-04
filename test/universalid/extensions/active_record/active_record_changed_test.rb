@@ -2,69 +2,69 @@
 
 class UniversalID::Packer::ActiveRecordChangedTest < Minitest::Test
   def test_pack_unpack
-    value = Campaign.forge!
-    value.assign_attributes(Campaign.generate_attributes)
+    expected = Campaign.forge!
+    expected.assign_attributes(Campaign.generate_attributes)
 
-    assert value.changed?
+    assert expected.changed?
 
-    packed = UniversalID::Packer.pack(value, include_changes: true)
-    unpacked = UniversalID::Packer.unpack(packed)
+    packed = UniversalID::Packer.pack(expected, include_changes: true)
+    actual = UniversalID::Packer.unpack(packed)
 
-    assert_equal value.attributes, unpacked.attributes
+    assert_equal expected.attributes, actual.attributes
   end
 end
 
 class UniversalID::Encoder::ActiveRecordChangedTest < Minitest::Test
   def test_encode_decode
-    value = Campaign.forge!
-    value.assign_attributes(Campaign.generate_attributes)
+    expected = Campaign.forge!
+    expected.assign_attributes(Campaign.generate_attributes)
 
-    assert value.changed?
+    assert expected.changed?
 
-    encoded = UniversalID::Encoder.encode(value, include_changes: true)
-    decoded = UniversalID::Encoder.decode(encoded)
+    encoded = UniversalID::Encoder.encode(expected, include_changes: true)
+    actual = UniversalID::Encoder.decode(encoded)
 
-    assert_equal value.attributes, decoded.attributes
+    assert_equal expected.attributes, actual.attributes
   end
 end
 
 class URI::UID::ActiveRecordChangedTest < Minitest::Test
   def test_build_parse_decode
-    value = Campaign.forge!
-    value.assign_attributes(Campaign.generate_attributes)
+    expected = Campaign.forge!
+    expected.assign_attributes(Campaign.generate_attributes)
 
-    assert value.changed?
+    assert expected.changed?
 
-    uri = URI::UID.build(value, include_changes: true).to_s
+    uri = URI::UID.build(expected, include_changes: true).to_s
     uid = URI::UID.parse(uri)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value.attributes, decoded.attributes
+    assert_equal expected.attributes, actual.attributes
   end
 
   def test_global_id
-    value = Campaign.forge!
-    value.assign_attributes(Campaign.generate_attributes)
+    expected = Campaign.forge!
+    expected.assign_attributes(Campaign.generate_attributes)
 
-    assert value.changed?
+    assert expected.changed?
 
-    gid = URI::UID.build(value, include_changes: true).to_gid_param
+    gid = URI::UID.build(expected, include_changes: true).to_gid_param
     uid = URI::UID.from_gid(gid)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value.attributes, decoded.attributes
+    assert_equal expected.attributes, actual.attributes
   end
 
   def test_signed_global_id
-    value = Campaign.forge!
-    value.assign_attributes(Campaign.generate_attributes)
+    expected = Campaign.forge!
+    expected.assign_attributes(Campaign.generate_attributes)
 
-    assert value.changed?
+    assert expected.changed?
 
-    sgid = URI::UID.build(value, include_changes: true).to_sgid_param
+    sgid = URI::UID.build(expected, include_changes: true).to_sgid_param
     uid = URI::UID.from_sgid(sgid)
-    decoded = uid.decode
+    actual = uid.decode
 
-    assert_equal value.attributes, decoded.attributes
+    assert_equal expected.attributes, actual.attributes
   end
 end
