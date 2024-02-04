@@ -39,7 +39,14 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         end
 
         def from_payload(payload, object = nil)
-          parse build_string(payload, object)
+          parse(build_string(payload, object)).tap do |uid|
+            # NOTE: fingerprint mismatch can happen when building from a UID payload
+            #       ensure the fingerprint is correct
+            if uid&.valid? && URI::UID.fingerprint(uid.decode) != uid.fingerprint
+              uid.instance_variable_set :@decoded_fingerprint, nil
+              uid.instance_variable_set :@fragment, URI::UID.build(uid.decode).fingerprint
+            end
+          end
         end
 
         def encode(object, options = {})
@@ -103,7 +110,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       end
 
       def fingerprint(decode: false)
-        return decode_fingerprint if decode
+        return @decoded_fingerprint ||= decode_fingerprint if decode
         fragment
       end
 
@@ -118,11 +125,14 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         !valid?
       end
 
-      def decode
+      def decode(force: false)
         return nil unless valid?
-        return yield(decode_payload, *decode_fingerprint) if block_given?
 
-        decode_payload
+        @decoded = nil if force
+        return @decoded if defined?(@decoded)
+
+        @decoded ||= yield(decode_payload, *decode_fingerprint) if block_given?
+        @decoded ||= decode_payload
       end
 
       def deconstruct_keys(_keys)
