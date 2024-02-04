@@ -9,6 +9,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       VERSION = UniversalID::VERSION
       SCHEME = "uid"
       HOST = "universalid"
+      PATTERN = /\A#{SCHEME}:\/\/#{HOST}\/[-_0-9A-Z]+#[-_0-9A-Z]+\z/io
 
       class << self
         def encoder
@@ -29,6 +30,11 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
           new(*::URI.split(value))
         end
 
+        def match?(uri)
+          return true if uri.is_a?(self)
+          uri.to_s.match? PATTERN
+        end
+
         def build_string(payload, object = nil)
           "#{SCHEME}://#{HOST}/#{payload}##{fingerprint(object)}"
         end
@@ -36,6 +42,17 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         def build(object, options = {}, &block)
           path = "/#{encode(object, options, &block)}"
           parse "#{SCHEME}://#{HOST}#{path}##{fingerprint(object)}"
+        end
+
+        def from_payload(payload, object = nil)
+          parse(build_string(payload, object)).tap do |uid|
+            # NOTE: fingerprint mismatch can happen when building from a UID payload
+            #       ensure the fingerprint is correct
+            if uid&.valid? && URI::UID.fingerprint(uid.decode) != uid.fingerprint
+              remove_instance_variable :@decoded_fingerprint if instance_variable_defined?(:@decoded_fingerprint)
+              uid.instance_variable_set :@fragment, URI::UID.build(uid.decode).fingerprint
+            end
+          end
         end
 
         def encode(object, options = {})
@@ -99,7 +116,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       end
 
       def fingerprint(decode: false)
-        return decode_fingerprint if decode
+        return @decoded_fingerprint ||= decode_fingerprint if decode
         fragment
       end
 
@@ -114,11 +131,14 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
         !valid?
       end
 
-      def decode
+      def decode(force: false)
         return nil unless valid?
-        return yield(decode_payload, *decode_fingerprint) if block_given?
 
-        decode_payload
+        remove_instance_variable :@decoded if force && instance_variable_defined?(:@decoded)
+        return @decoded if defined?(@decoded)
+
+        @decoded ||= yield(decode_payload, *decode_fingerprint) if block_given?
+        @decoded ||= decode_payload
       end
 
       def deconstruct_keys(_keys)
