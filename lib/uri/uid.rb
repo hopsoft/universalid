@@ -38,6 +38,10 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
           parse "#{SCHEME}://#{HOST}#{path}##{fingerprint(object)}"
         end
 
+        def from_payload(payload, object = nil)
+          parse build_string(payload, object)
+        end
+
         def encode(object, options = {})
           return yield(object, options) if block_given?
           encoder.encode object, options
