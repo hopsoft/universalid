@@ -9,7 +9,7 @@ unless defined?(::URI::UID) || ::URI.scheme_list.include?("UID")
       VERSION = UniversalID::VERSION
       SCHEME = "uid"
       HOST = "universalid"
-      PATTERN = /\A#{SCHEME}:\/\/#{HOST}\/\w+#\w+\z/o
+      PATTERN = /\A#{SCHEME}:\/\/#{HOST}\/[-_0-9A-Z]+#[-_0-9A-Z]+\z/io
 
       class << self
         def encoder

@@ -121,7 +121,7 @@ class Minitest::Test
   end
 
   def self.scalars
-    {
+    @scalars ||= {
       bigdecimal: BigDecimal("123.45"),
       complex: Complex(1, 2),
       date: Date.today,
