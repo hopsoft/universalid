@@ -67,38 +67,42 @@ Universal ID introduces a paradigm shift and enables straightforward simple [**s
 
 ## URI::UID
 
-Universal ID introduces a new URI defintion that can represent any Ruby object, yet its API is simple.
-UID strings are URL-safe and can be reliably transported over the wire using HTTP.
-The payload is optimized to be as small as possible... _especially notable with large objects._
+Universal ID introduces a new URI defintion that can recursively marshal any Ruby object into an URL-safe string
+that can be safely transported over the wire with HTTP.
+
+> [!NOTE]
+> The payload is optimized to be as small as possible, _which is especially notable with large objects._
+
+The best part: **The API is simple.**
 
 ```ruby
-data = { name: "Universal ID Demo", data: { message: "This is cool." } }
+data = :ANY_OBJECT_YOU_CAN_IMAGINE
 
 uid = URI::UID.build(data)
-#<URI::UID payload=ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb..., fingerprint=CwSAkccFf6RIYXNoAw>
+#<URI::UID payload=Cw6AxxoAQU5ZX09CSkVDVF9ZT1VfQ0FOX0lNQ..., fingerprint=CwWAkccHf6ZTeW1ib2wD>
 
 uid.payload
-"ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb9YAZGF0YYHHBwBtZXNzYWdlrVRoaXMgaXMgY29vbC4D"
+"Cw6AxxoAQU5ZX09CSkVDVF9ZT1VfQ0FOX0lNQUdJTkUD"
 
 uid.fingerprint
-"CwSAkccFf6RIYXNoAw"
+"CwWAkccHf6ZTeW1ib2wD"
 
 uri = uid.to_s
-"uid://universalid/ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb9YAZGF0YYHHBwBtZXNzYWdlrVRoaXMgaXMgY29vbC4D#CwSAkccFf6RIYXNoAw"
+"uid://universalid/Cw6AxxoAQU5ZX09CSkVDVF9ZT1VfQ0FOX0lNQUdJTkUD#CwWAkccHf6ZTeW1ib2wD"
 
 parsed = URI::UID.parse(uri)
-#<URI::UID payload=ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb..., fingerprint=CwSAkccFf6RIYXNoAw>
+#<URI::UID payload=Cw6AxxoAQU5ZX09CSkVDVF9ZT1VfQ0FOX0lNQ..., fingerprint=CwWAkccHf6ZTeW1ib2wD>
 
 parsed.decode
-{:name=>"Universal ID Demo", :data=>{:message=>"This is cool."}}
+:ANY_OBJECT_YOU_CAN_IMAGINE
 
 # it's also possible to parse the payload by itself
 
 parsed = URI::UID.from_payload(uid.payload)
-#<URI::UID payload=ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb..., fingerprint=CwSAkccFf6RIYXNoAw>
+#<URI::UID payload=Cw6AxxoAQU5ZX09CSkVDVF9ZT1VfQ0FOX0lNQ..., fingerprint=CwWAkccHf6ZTeW1ib2wD>
 
 parsed.decode
-{:name=>"Universal ID Demo", :data=>{:message=>"This is cool."}}
+:ANY_OBJECT_YOU_CAN_IMAGINE
 ```
 
 ## Supported Data Types
