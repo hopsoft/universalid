@@ -71,7 +71,7 @@ Universal ID introduces a new URI defintion that can recursively marshal any Rub
 that can be safely transported over the wire with HTTP.
 
 > [!NOTE]
-> The payload is optimized to be as small as possible, _which is especially notable with large objects._
+> The payload is optimized to be as small as possible... _especially notable with large objects._
 
 The best part: **The API is simple.**
 
