@@ -67,8 +67,8 @@ Universal ID introduces a paradigm shift and enables straightforward simple [**s
 
 ## URI::UID
 
-Universal ID introduces a new URI defintion that can recursively marshal any Ruby object into an URL-safe string
-which can be safely transported over the wire with HTTP.
+Universal ID introduces a new URI defintion that can recursively serialize any Ruby object into an URL-safe string
+which can be safely transported via HTTP.
 
 > [!NOTE]
 > The payload is optimized to be as small as possible... _especially notable with large objects._
