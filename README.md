@@ -38,7 +38,7 @@
 Universal ID leverages both [MessagePack](https://msgpack.org/) and [Brotli](https://github.com/google/brotli) _(a combo built for speed and best-in-class data compression)_.
 When combined, these libraries are up to 30% faster and within 2-5% compression rates compared to Protobuf. <a title="Source" href="https://g.co/bard/share/e5bdb17aee91">↗</a>
 
-Universal ID opens the flood gates with a deluge of powerful yet easily implemented [**solutions** ↗](docs/use_cases.md) across a variety of problem domains.
+Universal ID introduces a paradigm shift and enables straightforward simple [**solutions** ↗](docs/use_cases.md) for a variety of complex problem domains.
 
 > [!TIP]
 > All the code examples below can be tested on your local machine. Just clone the repo _(↑or use Gitpod above↑)_ and run `bin/console` to begin exploring.
@@ -63,6 +63,42 @@ Universal ID opens the flood gates with a deluge of powerful yet easily implemen
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
+
+## URI::UID
+
+Universal ID introduces a new URI defintion that can represent any Ruby object, yet its API is simple.
+UID strings are URL-safe and can be reliably transported over the wire using HTTP.
+The payload is optimized to be as small as possible... _especially notable with large objects._
+
+```ruby
+data = { name: "Universal ID Demo", data: { message: "This is cool." } }
+
+uid = URI::UID.build(data)
+#<URI::UID payload=ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb..., fingerprint=CwSAkccFf6RIYXNoAw>
+
+uid.payload
+"ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb9YAZGF0YYHHBwBtZXNzYWdlrVRoaXMgaXMgY29vbC4D"
+
+uid.fingerprint
+"CwSAkccFf6RIYXNoAw"
+
+uri = uid.to_s
+"uid://universalid/ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb9YAZGF0YYHHBwBtZXNzYWdlrVRoaXMgaXMgY29vbC4D#CwSAkccFf6RIYXNoAw"
+
+parsed = URI::UID.parse(uri)
+#<URI::UID payload=ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb..., fingerprint=CwSAkccFf6RIYXNoAw>
+
+parsed.decode
+{:name=>"Universal ID Demo", :data=>{:message=>"This is cool."}}
+
+# it's also possible to parse the payload by itself
+
+parsed = URI::UID.from_payload(uid.payload)
+#<URI::UID payload=ixuAgtYAbmFtZbFVbml2ZXJzYWwgSUQgRGVtb..., fingerprint=CwSAkccFf6RIYXNoAw>
+
+parsed.decode
+{:name=>"Universal ID Demo", :data=>{:message=>"This is cool."}}
+```
 
 ## Supported Data Types
 
