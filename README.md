@@ -2,7 +2,7 @@
 
 <p>
   <a href="http://blog.codinghorror.com/the-best-code-is-no-code-at-all/">
-    <img alt="Lines of Code" src="https://img.shields.io/badge/loc-795-47d299.svg" />
+    <img alt="Lines of Code" src="https://img.shields.io/badge/loc-811-47d299.svg" />
   </a>
   <a href="https://codeclimate.com/github/hopsoft/universalid/maintainability">
     <img src="https://api.codeclimate.com/v1/badges/567624cbe733fafc2330/maintainability" />
@@ -48,6 +48,7 @@ Universal ID introduces a paradigm shift and enables straightforward simple [**s
 
 ## Table of Contents
 
+  - [URI::UID](#uriuid)
   - [Supported Data Types](#supported-data-types)
     - [Primitive Types](#primitive-types)
     - [Composite Types](#composite-types)
