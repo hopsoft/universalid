@@ -120,6 +120,27 @@ class Minitest::Test
     end
   end
 
+  def assert_active_support_cache_store(expected, actual, data: scalars, expires_in: nil)
+    refute data.blank?
+
+    data.keys.each do |key|
+      case key
+      when :nil_class
+        assert_nil expected.read(key)
+        assert_nil actual.read(key)
+      else
+        assert_equal expected.read(key), actual.read(key)
+      end
+    end
+
+    sleep expires_in.to_f
+
+    data.keys.each do |key|
+      assert_nil expected.read(key)
+      assert_nil actual.read(key)
+    end
+  end
+
   def self.scalars
     @scalars ||= {
       bigdecimal: BigDecimal("123.45"),

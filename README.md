@@ -206,6 +206,8 @@ The following extension datatypes ship with Universal ID:
 
 - `ActiveRecord::Base`
 - `ActiveRecord::Relation`
+- `ActiveSupport::Cache::Entry`
+- `ActiveSupport::Cache::Store`
 - `ActiveSupport::TimeWithZone`
 - `GlobalID`
 - `SignedGlobalID`
